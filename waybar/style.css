@@ -1,0 +1,105 @@
+@import "colors.css"; 
+
+* {
+    font-family: "Noto Sans", "Noto Sans Mono", "Symbols Nerd Font";
+    font-size: 14px;
+    min-height: 0;
+    transition: all 0.3s cubic-bezier(.55, .055, .675, .19);
+}
+
+window {
+    background: transparent;
+}
+
+#workspaces {
+    background-color: transparent;
+}
+
+#workspaces button {
+    min-width: 12px;
+    min-height: 12px;
+    
+    padding: 0 6px;
+    margin: 6px 2px;
+    
+    background-color: @workspace-background;
+    background-size: 10px 10px; 
+    background-repeat: no-repeat;
+    background-position: center;
+    color: transparent;
+    
+    border: none;
+    border-radius: 100%;
+    box-shadow: inset 0 0 0 1px transparent;
+}
+
+#workspaces button:hover {
+    background-color: @workspace-active;
+    opacity: 0.7;
+    box-shadow: inherit;
+    text-shadow: inherit;
+}
+
+#workspaces button.active {
+    background-color: @workspace-active;
+    min-width: 24px;
+    border-radius: 24px;
+}
+
+#bluetooth,
+#pulseaudio,
+#clock,
+#battery,
+#power-profiles-daemon,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#backlight,
+#wireplumber,
+#tray,
+#network,
+#mode,
+#scratchpad {
+    padding: 8px 12px;
+    border: 1px solid @module-border;
+    border-radius: 12px;
+    background-color: @module-background;
+}
+
+#clock {
+    color: @text;
+}
+
+#pulseaudio,
+#wireplumber {
+    color: @teal;
+}
+
+#network {
+    color: @yellow;
+}
+
+#idle_inhibitor {
+    color: #7cb342;
+}
+
+#idle_inhibitor.activated {
+    color: @red;
+}
+
+#battery {
+    color: @green;
+}
+
+#power-profiles-daemon.performance {
+    color: @red;
+}
+
+#power-profiles-daemon.balanced {
+    color: @teal;
+}
+
+#power-profiles-daemon.power-saver {
+    color: @green;
+}

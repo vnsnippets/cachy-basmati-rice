@@ -1,0 +1,96 @@
+{
+  "position": "top",
+  "margin-top": 10,
+  "margin-left": 10,
+  "margin-right": 10,
+  "spacing": 4,
+  "modules-left": ["clock"],
+  "modules-center": ["hyprland/workspaces"],
+  "modules-right": ["network", "wireplumber", "battery", "power-profiles-daemon"],
+
+  "clock": {
+    "format": "{:%Y-%m-%d %H:%M}",
+    "tooltip": false
+  },
+
+  "hyprland/workspaces": {
+    "format": "",
+    "active-only": false,
+    "all-outputs": false, // Change this to false
+    "sort-by-number": true,
+    "format-icons": {
+        "default": ""
+    }
+  },
+
+  "network": {
+    "format-wifi": "<span size='13000' foreground='#f5e0dc'>  </span>{essid}",
+    "format-ethernet": "<span size='13000' foreground='#f5e0dc'>󰤭  </span> Disconnected",
+    "format-linked": "{ifname} (No IP) ",
+    "format-disconnected": "<span size='13000' foreground='#f5e0dc'>  </span>Disconnected",
+    "tooltip-format-wifi": "Signal Strength: {signalStrength}%"
+  },
+
+  "wireplumber": {
+    "format": "{icon}", // Only icon by default [cite: 1]
+    "format-muted": "",
+    "on-click": "mode", // Toggles format and format-alt (reveals text)
+    "on-click-right": "pavucontrol", // Right-click opens mixer
+    "format-icons": ["", "", ""],
+    "scroll-step": 5, // Change volume by 5% on scroll
+    "format-alt": "{icon} {volume}%", // The text revealed on click
+    "max-volume": 100,
+    "tooltip-format": "{volume}%"
+  },
+
+  "battery": {
+    "states": {
+      "warning": 30,
+      "critical": 15
+    }, 
+    "format": "{icon} {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
+
+    "format-alt": "{icon} {capacity}%", 
+    "format-icons": ["", "", "", "", ""]
+  },
+
+  "power-profiles-daemon": {
+    "format": "{icon}",
+    "tooltip": false,
+    "format-icons": {
+      "default": "",
+      "performance": "",
+      "balanced": "",
+      "power-saver": ""
+    }
+  }
+}
+
+// "pulseaudio": {
+//   "format": "{icon}  {volume}%",
+//   "format-muted": "",
+//   "format-icons": {
+//       "default": ["", "", " "]
+//   },
+//   "on-click": "pavucontrol"
+// }
+
+// "bluetooth": {
+//   "format": "󰂯", // Icon only when on
+//   "format-disabled": "󰂲", // Icon when bluetooth is off
+//   "format-connected": "󰂱", // Icon when a device is connected
+//   "format-connected-battery": "󰂱", // Still icon only by default
+  
+//   // Click reveals status and battery percentage of connected devices
+//   "format-alt": " {status} | {device_alias} {device_battery_percentage}%",
+  
+//   "tooltip-format": "{num_connections} connected",
+//   "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+//   "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+//   "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
+  
+//   "on-click": "mode", // Toggles the text reveal
+//   "on-click-right": "blueman-manager" // Opens a GUI manager if you have one installed
+// }
