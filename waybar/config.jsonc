@@ -6,7 +6,7 @@
   "spacing": 4,
   "modules-left": ["clock"],
   "modules-center": ["hyprland/workspaces"],
-  "modules-right": ["network", "wireplumber", "battery", "power-profiles-daemon"],
+  "modules-right": ["network", "pulseaudio", "battery", "power-profiles-daemon"],
 
   "clock": {
     "format": "{:%Y-%m-%d %H:%M}",
@@ -31,16 +31,17 @@
     "tooltip-format-wifi": "Signal Strength: {signalStrength}%"
   },
 
-  "wireplumber": {
-    "format": "{icon}", // Only icon by default [cite: 1]
+  "pulseaudio": {
+    "format": "{icon}",
     "format-muted": "",
-    "on-click": "mode", // Toggles format and format-alt (reveals text)
-    "on-click-right": "pavucontrol", // Right-click opens mixer
-    "format-icons": ["", "", ""],
-    "scroll-step": 5, // Change volume by 5% on scroll
-    "format-alt": "{icon} {volume}%", // The text revealed on click
-    "max-volume": 100,
-    "tooltip-format": "{volume}%"
+    "tooltip-format": "({format_source}) {desc}",
+    "format-source": "Active",
+    "format-source-muted": "Muted",
+    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "format-icons": {
+        "headphone": "",
+        "default": ["", "", ""]
+    }
   },
 
   "battery": {
@@ -68,13 +69,19 @@
   }
 }
 
-// "pulseaudio": {
-//   "format": "{icon}  {volume}%",
-//   "format-muted": "",
-//   "format-icons": {
-//       "default": ["", "", " "]
-//   },
-//   "on-click": "pavucontrol"
+// "wireplumber": {
+  // "states": {
+      // "muted": " (Muted)",
+      // "unmuted": ""
+  // },
+  // "format": "{icon}", // Only icon by default [cite: 1]
+  // "format-muted": "",
+  // "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+  // "on-click-right": "pavucontrol", // Right-click opens mixer
+  // "format-icons": ["", "", ""],
+  // "scroll-step": 5, // Change volume by 5% on scroll
+  // "max-volume": 100,
+  // "tooltip-format-muted": "Muted"
 // }
 
 // "bluetooth": {
