@@ -6,7 +6,7 @@
   "spacing": 4,
   "modules-left": ["clock"],
   "modules-center": ["hyprland/workspaces"],
-  "modules-right": ["network", "pulseaudio", "battery", "power-profiles-daemon"],
+  "modules-right": ["network", "pulseaudio", "battery", "power-profiles-daemon", "custom/power"],
 
   "clock": {
     "format": "{:%Y-%m-%d %H:%M}",
@@ -66,6 +66,11 @@
       "balanced": "",
       "power-saver": ""
     }
+  },
+  "custom/power": {
+    "format": "⏻",
+    "tooltip": false,
+    "on-click": "shutdown now"
   }
 }
 

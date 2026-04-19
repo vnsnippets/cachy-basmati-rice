@@ -60,7 +60,8 @@ window {
 #tray,
 #network,
 #mode,
-#scratchpad {
+#scratchpad,
+#custom-power {
     padding: 8px 12px;
     border: 1px solid @module-border;
     border-radius: 12px;
@@ -102,4 +103,14 @@ window {
 
 #power-profiles-daemon.power-saver {
     color: @green;
+}
+
+#custom-power {
+    color: @red;
+}
+
+#custom-power:hover {
+    background-color: @red;
+    color: @module-border;
+    border-radius: 10px;
 }
