@@ -8,5 +8,15 @@ import qs.Utilities
 WidgetBase {
     id: volumeWidget
     icon: ""
-    // onClicked: Quickshell.exec(["poweroff"])
+
+    // Style: Idle
+    style.foreground.idle: Theme.color_red
+    
+    // Style: Hover
+    style.background.hover: Theme.color_red
+    style.foreground.hover: Theme.color_dark
+
+    // Style: Active
+    style.background.active: Theme.color_red
+    style.foreground.active: Theme.color_dark
 }
