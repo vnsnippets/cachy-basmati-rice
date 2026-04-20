@@ -13,7 +13,7 @@ QtObject {
     readonly property color color_blue: "#3498db"
     readonly property color color_teal: "#81c8be"
     readonly property color color_green: "#a6d189"
-    readonly property color color_yellow: "#f1c40f"
+    readonly property color color_yellow: "#e5c890"
     readonly property color color_red: "#e78284"
 
     readonly property int size: 40

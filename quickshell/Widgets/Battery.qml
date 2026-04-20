@@ -43,7 +43,6 @@ WidgetBase {
     // Style logic
     style.foreground.idle: {
         if (state === 5) {
-            // pending charge → yellow
             return Theme.color_yellow
         } else if (percentage <= critical) {
             return Theme.color_red
