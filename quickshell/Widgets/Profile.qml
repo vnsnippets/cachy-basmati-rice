@@ -29,8 +29,6 @@ WidgetBase {
     // Live bindings: these re‑evaluate whenever currentProfile changes
     icon: iconMap[currentProfile]
     style.foreground.idle: colorMap[currentProfile]
-    style.background.hover: style.foreground.idle
-    style.background.active: style.foreground.idle
 
     // Rotate profiles on click
     onClicked: {
@@ -48,10 +46,4 @@ WidgetBase {
             break
         }
     }
-
-    // Shared styles
-    style.border.hover: Theme.color_dark
-    style.foreground.hover: Theme.color_dark
-    style.border.active: Theme.color_dark
-    style.foreground.active: Theme.color_dark
 }

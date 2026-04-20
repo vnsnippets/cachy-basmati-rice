@@ -67,16 +67,6 @@ WidgetBase {
     // Style: Idle
     style.foreground.idle: Theme.color_teal
     
-    // Style: Hover
-    style.background.hover: Theme.color_teal
-    style.foreground.hover: Theme.color_dark
-    style.border.hover: Theme.color_dark
-
-    // Style: Active
-    style.background.active: Theme.color_teal
-    style.foreground.active: Theme.color_dark
-    style.border.active: Theme.color_dark
-
     icon: isMuted ? "" : ""
     label: volume + "%"
 

@@ -56,6 +56,7 @@ ShellRoot {
                 RowLayout {
                     spacing: defaultSpacing
                     Volume { id: volumeWidget }
+                    Battery { id: batteryWidget }
                     Profile { id: profileWidget }
                     Power { id: powerWidget }
                 }
