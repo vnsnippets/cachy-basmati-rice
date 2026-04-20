@@ -8,12 +8,16 @@ import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
 import Quickshell.Widgets
 
-import "./Utilities"
-import "./Widgets"
-import "./Modules"
+import qs
+import qs.Utilities
+import qs.Widgets
 
 ShellRoot {
     id: root
+
+    readonly property int defaultSpacing: 4
+    readonly property int defaultSize: 40
+    readonly property int defaultMargin: 10
 
     Variants {
         model: Quickshell.screens
@@ -23,32 +27,26 @@ ShellRoot {
             property var modelData: modelData
             screen: modelData
 
-            implicitHeight: 40
+            implicitHeight: defaultSize
 
             anchors { top: true; left: true; right: true; }
-            margins { top: 10; bottom: 0; left: 10; right: 10; }
+            margins { top: defaultMargin; bottom: 0; left: defaultMargin; right: defaultMargin; }
             
             color: "transparent"
 
 
             RowLayout {
                 anchors.fill: parent
-                spacing: 0
+                spacing: defaultSpacing
 
                 // --- LEFT: Clock ---
-                Clock {
-                    backgroundColor: Theme.background
-                    foregroundColor: Theme.foreground
-                    borderColor: Theme.border
-                    fontSize: Theme.fontsize
-                    fontFamily: Theme.fontfamily
-                }
+                Clock { id: clockWidget }
 
                 Item { Layout.fillWidth: true } // Spacer
 
                 // --- MIDDLE: Workspace Dots ---
                 Row {
-                    spacing: 10
+                    spacing: defaultSpacing
                     Layout.alignment: Qt.AlignCenter
                 }
 
@@ -56,14 +54,9 @@ ShellRoot {
 
                 // --- RIGHT --- //
                 RowLayout {
-                    spacing: 4
-                    Volume {
-                        backgroundColor: Theme.background
-                        foregroundColor: Theme.foreground
-                        borderColor: Theme.border
-                        fontSize: Theme.fontsize
-                        fontFamily: Theme.fontfamily
-                    }
+                    spacing: defaultSpacing
+                    Volume { id: volumeWidget }
+                    Power { id: powerWidget }
                 }
             }
         }

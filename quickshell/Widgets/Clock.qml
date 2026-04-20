@@ -1,22 +1,34 @@
 import QtQuick
 import Quickshell
 
-import "../Utilities"
+import qs
+import qs.Utilities
 
-Pill {
+WidgetBase {
     property int interval: 1000
     property string format: "yyyy-MM-dd HH:mm:ss"
+    property string tooltipformat: "D dd MMMyyyy-MM-dd HH:mm:ss"
+
+    function ordinalDay(day) {
+        if (day % 10 === 1 && day % 100 !== 11) return day + "st";
+        if (day % 10 === 2 && day % 100 !== 12) return day + "nd";
+        if (day % 10 === 3 && day % 100 !== 13) return day + "rd";
+        return day + "th";
+    }
 
     id: clockPill
-    labelText: Qt.formatDateTime(new Date(), format)
-    tooltipText: Qt.formatDateTime(new Date(), format)
-    // iconText: ""
+    interactive: false
+    
+    label: Qt.formatDateTime(new Date(), format)
+    tooltip: Qt.formatDate(new Date(), "MMMM") + " " + ordinalDay(new Date()) + ", " + Qt.formatDate(new Date(), "yyyy");
         
     Timer {
         interval: interval; running: true; repeat: true
         onTriggered: () => {
-            clockPill.labelText = Qt.formatDateTime(new Date(), format)
-            clockPill.tooltipText = Qt.formatDateTime(new Date(), format)
+            const d = new Date()
+            clockPill.label = Qt.formatDateTime(d, format)
+            clockPill.tooltip = Qt.formatDate(d, "MMMM") + " " + ordinalDay(new Date()) + ", " + Qt.formatDate(d, "yyyy");
+
         }
     }
 }

@@ -2,10 +2,14 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-import "../Utilities"
+import qs
+import qs.Utilities
 
-Pill {
+WidgetBase {
     id: volumeWidget
+    readonly property string defaultIncrement: "+5%"
+    readonly property string defaultDecrement: "-5%"
+
     property int volume: 0
     property bool isMuted: false
     property bool changeLocked: false
@@ -42,8 +46,8 @@ Pill {
         stdout: SplitParser { onRead: (data) => isMuted = String(data).includes("yes") }
     }
 
-    Process { id: volUp; command: ["pactl", "set-sink-volume", "@DEFAULT_SINK@", "+5%"] }
-    Process { id: volDown; command: ["pactl", "set-sink-volume", "@DEFAULT_SINK@", "-5%"] }
+    Process { id: volUp; command: ["pactl", "set-sink-volume", "@DEFAULT_SINK@", defaultIncrement] }
+    Process { id: volDown; command: ["pactl", "set-sink-volume", "@DEFAULT_SINK@", defaultDecrement] }
     Process { id: muteToggler; command: ["pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle"] }
     Process { id: mixerLauncher; command: ["pavucontrol"] }
 
@@ -60,12 +64,12 @@ Pill {
         execute(muteFetcher);
     }
 
-    iconText: isMuted ? "" : ""
-    labelText: volume + "%"
+    icon: isMuted ? "" : ""
+    label: volume + "%"
 
     onClicked: execute(muteToggler)
     onDoubleClicked: execute(mixerLauncher)
-    onScroll: (event) => {
+    onScrolled: (event) => {
         if (changeLocked) return;
 
         if (event.angleDelta.y > 0 && volume < 100) {
