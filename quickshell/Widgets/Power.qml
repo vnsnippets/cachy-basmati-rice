@@ -15,8 +15,10 @@ WidgetBase {
     // Style: Hover
     style.background.hover: Theme.color_red
     style.foreground.hover: Theme.color_dark
+    style.border.hover: Theme.color_dark
 
     // Style: Active
     style.background.active: Theme.color_red
     style.foreground.active: Theme.color_dark
+    style.border.active: Theme.color_dark
 }

@@ -8,11 +8,12 @@ import qs.Style
 
 Rectangle {
     id: container
-    readonly property int defaultSize: 40
+    readonly property int defaultSize: 38
     readonly property int defaultHPadding: 24
-    readonly property int defaultBorderWidth: 1
-    readonly property int defaultBorderRoundness: 3
+    readonly property real defaultBorderWidth: 1
+    readonly property real defaultBorderRoundness: 3.2
     readonly property int defaultSpacing: 4
+    readonly property int defaultTransitionDuration: 250
 
     property string icon: ""
     property string label: ""
@@ -31,25 +32,23 @@ Rectangle {
     signal doubleClicked()
     signal scrolled(var wheel)
 
-    scale: locks.pressed ? 0.94 : (locks.hover ? 0.96 : 1.0)
-    color: locks.hover ? style.background.hover : style.background.idle
-    border.color: locks.pressed ? style.border.active : (locks.hover ? style.border.hover : style.border.idle)
-
+    scale: 1.0
+    color: style.background.idle
+    border.color: style.border.idle
+    border.width: defaultBorderWidth
+    radius: height / defaultBorderRoundness
     Layout.preferredHeight: defaultSize
     implicitWidth: label === "" ? defaultSize : content.width + defaultHPadding
-    radius: height / defaultBorderRoundness
-    border.width: defaultBorderWidth
 
     RowLayout {
         id: content
         anchors.centerIn: parent
         spacing: defaultSpacing
 
-        Text { 
+        Text {
             id: icontext
             text: icon
-            color: locks.pressed ? container.style.foreground.active : 
-                (locks.hover ? container.style.foreground.hover : container.style.foreground.idle)
+            color: container.style.foreground.idle
             font.pixelSize: Theme.font_size
             font.family: Theme.font_family
             visible: text !== ""
@@ -57,11 +56,10 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
         }
 
-        Text { 
+        Text {
             id: labeltext
             text: label
-            color: locks.pressed ? container.style.foreground.active : 
-                (locks.hover ? container.style.foreground.hover : container.style.foreground.idle)
+            color: container.style.foreground.idle
             font.pixelSize: Theme.font_size
             font.family: Theme.font_family
             visible: text !== ""
@@ -72,30 +70,53 @@ Rectangle {
 
     MouseArea {
         anchors.fill: parent
-        cursorShape: interactive ? Qt.PointingHandCursor : Qt.ArrowCursor
         hoverEnabled: true
+        cursorShape: interactive ? Qt.PointingHandCursor : Qt.ArrowCursor
 
-        onPressed: if (interactive) container.locks.pressed = true
-        onReleased: container.locks.pressed = false
-        
         onClicked: if (interactive) container.clicked()
         onDoubleClicked: if (interactive) container.doubleClicked()
-        
-        onEntered: if (interactive) container.locks.hover = true
-        onExited: {
-            container.locks.hover = false
-            container.locks.pressed = false
-        }
+        onWheel: (wheel) => { if (interactive) container.scrolled(wheel) }
 
-        onWheel: (e) => {
-            if (interactive) container.scrolled(e)
-        }
+        onPressed: if (interactive) container.state = "pressed"
+        onReleased: if (interactive) container.state = "hover"
+        onEntered: if (interactive) container.state = "hover"
+        onExited: container.state = "idle"
     }
 
-    Behavior on scale {
-        NumberAnimation {
-            duration: 150
-            easing.type: Easing.OutCubic
+    // --- states ---
+    states: [
+        State {
+            name: "idle"
+            PropertyChanges { target: container; scale: 1.0; color: style.background.idle; border.color: style.border.idle }
+            PropertyChanges { target: icontext; color: container.style.foreground.idle }
+            PropertyChanges { target: labeltext; color: container.style.foreground.idle }
+        },
+        State {
+            name: "hover"
+            PropertyChanges { target: container; scale: 0.96; color: style.background.hover; border.color: style.border.hover }
+            PropertyChanges { target: icontext; color: container.style.foreground.hover }
+            PropertyChanges { target: labeltext; color: container.style.foreground.hover }
+        },
+        State {
+            name: "pressed"
+            PropertyChanges { target: container; scale: 0.94; color: style.background.active; border.color: style.border.active }
+            PropertyChanges { target: icontext; color: container.style.foreground.active }
+            PropertyChanges { target: labeltext; color: container.style.foreground.active }
         }
-    }
+    ]
+
+    // --- transitions ---
+    transitions: [
+        Transition {
+            from: "*"
+            to: "*"
+            ParallelAnimation {
+                NumberAnimation { properties: "scale"; duration: defaultTransitionDuration; easing.type: Easing.OutCubic }
+                ColorAnimation { properties: "color"; duration: defaultTransitionDuration; easing.type: Easing.InCubic }
+                ColorAnimation { properties: "border.color"; duration: defaultTransitionDuration; easing.type: Easing.OutCubic }
+                ColorAnimation { properties: "color"; target: icontext; duration: defaultTransitionDuration; easing.type: Easing.OutCubic }
+                ColorAnimation { properties: "color"; target: labeltext; duration: defaultTransitionDuration; easing.type: Easing.OutCubic }
+            }
+        }
+    ]    
 }
