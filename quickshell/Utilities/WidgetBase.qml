@@ -8,7 +8,7 @@ import qs.Style
 
 Rectangle {
     id: container
-    readonly property int defaultSize: 38
+    readonly property int defaultSize: 40
     readonly property int defaultHPadding: 24
     readonly property real defaultBorderWidth: 1
     readonly property real defaultBorderRoundness: 3.2
@@ -39,6 +39,7 @@ Rectangle {
     radius: height / defaultBorderRoundness
     Layout.preferredHeight: defaultSize
     implicitWidth: label === "" ? defaultSize : content.width + defaultHPadding
+    width: implicitWidth
 
     RowLayout {
         id: content
@@ -52,8 +53,9 @@ Rectangle {
             font.pixelSize: Theme.font_size
             font.family: Theme.font_family
             visible: text !== ""
-            horizontalAlignment: Text.AlignHCenter
+            Layout.margins: 0
             verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
         }
 
         Text {
@@ -63,8 +65,9 @@ Rectangle {
             font.pixelSize: Theme.font_size
             font.family: Theme.font_family
             visible: text !== ""
-            horizontalAlignment: Text.AlignHCenter
+            Layout.margins: 0
             verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
         }
     }
 
@@ -107,6 +110,15 @@ Rectangle {
 
     // --- transitions ---
     transitions: [
+        // entrance animation
+        // Transition {
+        //     from: ""
+        //     to: "idle"
+        //     ParallelAnimation {
+        //         NumberAnimation { properties: "opacity"; duration: 400; easing.type: Easing.OutCubic }
+        //         NumberAnimation { properties: "y"; duration: 400; easing.type: Easing.OutBack }
+        //     }
+        // },
         Transition {
             from: "*"
             to: "*"
@@ -118,5 +130,14 @@ Rectangle {
                 ColorAnimation { properties: "color"; target: labeltext; duration: defaultTransitionDuration; easing.type: Easing.OutCubic }
             }
         }
-    ]    
+    ]
+
+    Behavior on width {
+        SpringAnimation {
+            spring: 3      // stiffness of the spring
+            damping: 0.2   // how quickly it settles
+        }
+    }
+
+    Component.onCompleted: container.state = "idle"
 }
