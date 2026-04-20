@@ -21,7 +21,7 @@ QtObject {
     readonly property int margin: 10
     readonly property int padding: 24
     readonly property int border: 1
-    readonly property real roundness: 3.25
+    readonly property real roundness: 3
 
     readonly property int duration: 250
 }

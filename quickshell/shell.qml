@@ -51,6 +51,7 @@ ShellRoot {
                 // --- RIGHT --- //
                 RowLayout {
                     spacing: Theme.spacing
+                    Network { id: networkWidget }
                     Volume { id: volumeWidget }
                     Battery { id: batteryWidget }
                     Profile { id: profileWidget }
