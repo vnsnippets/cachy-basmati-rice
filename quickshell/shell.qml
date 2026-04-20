@@ -15,10 +15,6 @@ import qs.Widgets
 ShellRoot {
     id: root
 
-    readonly property int defaultSpacing: 4
-    readonly property int defaultSize: 40
-    readonly property int defaultMargin: 10
-
     Variants {
         model: Quickshell.screens
 
@@ -27,17 +23,17 @@ ShellRoot {
             property var modelData: modelData
             screen: modelData
 
-            implicitHeight: defaultSize
+            implicitHeight: Theme.size
 
             anchors { top: true; left: true; right: true; }
-            margins { top: defaultMargin; bottom: 0; left: defaultMargin; right: defaultMargin; }
+            margins { top: Theme.margin; bottom: 0; left: Theme.margin; right: Theme.margin; }
             
             color: "transparent"
 
 
             RowLayout {
                 anchors.fill: parent
-                spacing: defaultSpacing
+                spacing: Theme.spacing
 
                 // --- LEFT: Clock ---
                 Clock { id: clockWidget }
@@ -46,7 +42,7 @@ ShellRoot {
 
                 // --- MIDDLE: Workspace Dots ---
                 Row {
-                    spacing: defaultSpacing
+                    spacing: Theme.spacing
                     Layout.alignment: Qt.AlignCenter
                 }
 
@@ -54,7 +50,7 @@ ShellRoot {
 
                 // --- RIGHT --- //
                 RowLayout {
-                    spacing: defaultSpacing
+                    spacing: Theme.spacing
                     Volume { id: volumeWidget }
                     Battery { id: batteryWidget }
                     Profile { id: profileWidget }

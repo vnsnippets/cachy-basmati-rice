@@ -5,6 +5,11 @@ import qs
 import qs.Utilities
 
 WidgetBase {
+    id: clockWidget
+
+    style.foreground.idle: Theme.color_light
+    style.border.idle: Theme.color_slate
+
     property int interval: 1000
     property string format: "yyyy-MM-dd HH:mm:ss"
     property string tooltipformat: "D dd MMMyyyy-MM-dd HH:mm:ss"
@@ -16,9 +21,6 @@ WidgetBase {
         return day + "th";
     }
 
-    id: clockPill
-    interactive: false
-    
     label: Qt.formatDateTime(new Date(), format)
     tooltip: Qt.formatDate(new Date(), "MMMM") + " " + ordinalDay(new Date()) + ", " + Qt.formatDate(new Date(), "yyyy");
         
@@ -26,8 +28,8 @@ WidgetBase {
         interval: interval; running: true; repeat: true
         onTriggered: () => {
             const d = new Date()
-            clockPill.label = Qt.formatDateTime(d, format)
-            clockPill.tooltip = Qt.formatDate(d, "MMMM") + " " + ordinalDay(new Date()) + ", " + Qt.formatDate(d, "yyyy");
+            clockWidget.label = Qt.formatDateTime(d, format)
+            clockWidget.tooltip = Qt.formatDate(d, "MMMM") + " " + ordinalDay(new Date()) + ", " + Qt.formatDate(d, "yyyy");
 
         }
     }

@@ -4,20 +4,17 @@ import qs
 
 QtObject {
     property ClickableColorStyle background: ClickableColorStyle {
-        idle: Theme.color_background_idle
-        hover: Theme.color_background_hover
-        active: Theme.color_background_active
+        idle: Theme.color_dark
+        active: Theme.color_dark
     }
 
     property ClickableColorStyle foreground: ClickableColorStyle {
-        idle: Theme.color_foreground_idle
-        hover: Theme.color_foreground_hover
-        active: Theme.color_foreground_active
+        idle: Theme.color_light
+        active: Theme.color_light
     }
 
     property ClickableColorStyle border: ClickableColorStyle {
-        idle: Theme.color_border_idle
-        hover: Theme.color_border_hover
-        active: Theme.color_border_active
+        idle: Theme.color_slate
+        active: Theme.color_light
     }
 }

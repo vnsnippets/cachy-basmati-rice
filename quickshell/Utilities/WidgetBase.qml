@@ -8,12 +8,6 @@ import qs.Style
 
 Rectangle {
     id: container
-    readonly property int defaultSize: 40
-    readonly property int defaultHPadding: 24
-    readonly property real defaultBorderWidth: 1
-    readonly property real defaultBorderRoundness: 3.2
-    readonly property int defaultSpacing: 4
-    readonly property int defaultTransitionDuration: 250
 
     property string icon: ""
     property string label: ""
@@ -35,16 +29,16 @@ Rectangle {
     scale: 1.0
     color: style.background.idle
     border.color: style.border.idle
-    border.width: defaultBorderWidth
-    radius: height / defaultBorderRoundness
-    Layout.preferredHeight: defaultSize
-    implicitWidth: label === "" ? defaultSize : content.width + defaultHPadding
+    border.width: Theme.border
+    radius: height / Theme.roundness
+    Layout.preferredHeight: Theme.size
+    implicitWidth: label === "" ? Theme.size : content.width + Theme.padding
     width: implicitWidth
 
     RowLayout {
         id: content
         anchors.centerIn: parent
-        spacing: defaultSpacing
+        spacing: Theme.spacing
 
         Text {
             id: icontext
@@ -96,9 +90,9 @@ Rectangle {
         },
         State {
             name: "hover"
-            PropertyChanges { target: container; scale: 0.96; color: style.background.hover; border.color: style.border.hover }
-            PropertyChanges { target: icontext; color: container.style.foreground.hover }
-            PropertyChanges { target: labeltext; color: container.style.foreground.hover }
+            PropertyChanges { target: container; scale: 0.96; color: style.background.active; border.color: style.border.active }
+            PropertyChanges { target: icontext; color: container.style.foreground.active }
+            PropertyChanges { target: labeltext; color: container.style.foreground.active }
         },
         State {
             name: "pressed"
@@ -108,34 +102,25 @@ Rectangle {
         }
     ]
 
-    // --- transitions ---
+    // --- Transitions ---
     transitions: [
-        // entrance animation
-        // Transition {
-        //     from: ""
-        //     to: "idle"
-        //     ParallelAnimation {
-        //         NumberAnimation { properties: "opacity"; duration: 400; easing.type: Easing.OutCubic }
-        //         NumberAnimation { properties: "y"; duration: 400; easing.type: Easing.OutBack }
-        //     }
-        // },
         Transition {
             from: "*"
             to: "*"
             ParallelAnimation {
-                NumberAnimation { properties: "scale"; duration: defaultTransitionDuration; easing.type: Easing.OutCubic }
-                ColorAnimation { properties: "color"; duration: defaultTransitionDuration; easing.type: Easing.InCubic }
-                ColorAnimation { properties: "border.color"; duration: defaultTransitionDuration; easing.type: Easing.OutCubic }
-                ColorAnimation { properties: "color"; target: icontext; duration: defaultTransitionDuration; easing.type: Easing.OutCubic }
-                ColorAnimation { properties: "color"; target: labeltext; duration: defaultTransitionDuration; easing.type: Easing.OutCubic }
+                NumberAnimation { properties: "scale"; duration: Theme.duration; easing.type: Easing.OutCubic }
+                ColorAnimation { properties: "color"; duration: Theme.duration; easing.type: Easing.OutCubic }
+                ColorAnimation { properties: "border.color"; duration: Theme.duration; easing.type: Easing.OutCubic }
+                ColorAnimation { properties: "color"; target: icontext; duration: Theme.duration; easing.type: Easing.OutCubic }
+                ColorAnimation { properties: "color"; target: labeltext; duration: Theme.duration; easing.type: Easing.OutCubic }
             }
         }
     ]
 
     Behavior on width {
         SpringAnimation {
-            spring: 3      // stiffness of the spring
-            damping: 0.2   // how quickly it settles
+            spring: 15      // stiffness of the spring
+            damping: 0.25   // how quickly it settles
         }
     }
 
