@@ -8,72 +8,60 @@ import qs.Style
 import qs.Services
 
 WidgetBase {
-    id: wifiWidget
+    id: widget
 
-    property int watch_interval: 60000 // 60s
-    property bool watch: true
-    
-    property int critical: 30
-    property int warning: 60
+    property int criticalthreshold: 25
+    property int warningthreshold: 50
+    property bool autoreconnect: true
 
-    // Icons
-    readonly property string wifiIcon: ""
-    readonly property string wiredIcon: ""
+    // "" "" ""
 
-    // Bind directly to NMCLI properties
-    property bool connected: NMCLI.isConnected
-    property var activeWifi: NMCLI.active
-    property var activeEthernet: NMCLI.activeEthernet
+    icon: (NMCLI.isConnected) ? (NMCLI.active && NMCLI.active.ssid) ? "" : "" : ""
+    label: (NMCLI.isConnected) ? (NMCLI.active && NMCLI.active.ssid) ? `${NMCLI.active.ssid} (${NMCLI.active.strength})` : "Ethernet" : "Disconnected"
 
-    // Determine type
-    property bool isWifi: activeWifi !== null
-    property int strength: isWifi ? activeWifi.strength : 100
+    style.foreground.idle: (NMCLI.isConnected) ? (NMCLI.active && NMCLI.active.ssid) ?
+        (NMCLI.active.strength <= criticalthreshold) ? Theme.color_red : (NMCLI.active.strength <= warningthreshold) ? Theme.color_yellow : Theme.color_green
+        : Theme.color_green : Theme.color_red
 
-    // Icon selection
-    property string currentIcon: isWifi ? wifiIcon : wiredIcon
-
-    // Display
-    icon: currentIcon
-    label: isWifi ? activeWifi.ssid + " (" + strength + "%)" : NMCLI.activeConnection
-    tooltip: isWifi ? "Strength: (" + strength + "%)" : "Direct: " + NMCLI.activeConnection
-
-    // Style logic
-    style.foreground.idle: {
-        if (!isWifi) {
-            return Theme.color_green
-        } else if (strength <= critical) {
-            return Theme.color_red
-        } else if (strength <= warning) {
-            return Theme.color_yellow
-        } else {
-            return Theme.color_green
+    // React to NMCLI signals
+    Connections {
+        target: NMCLI
+        function onConnectionFailed(ssid) {
+            widget.icon = ""
+            tooltip = "Disconnected"
+            style.foreground.idle = Theme.color_red
         }
     }
 
-    // Secondary process to watch signal strength
-    Process {
-        id: strengthProc
-        command: ["nmcli", "-f", "IN-USE,SIGNAL", "device", "wifi", "list", "--rescan", "no"]
-        stdout: SplitParser {
-            onRead: (output) => {
-                var lines = output.trim().split("\n")
-                console.log(JSON.stringify(lines));
-                for (var i = 0; i < lines.length; i++) {
-                    var line = lines[i].trim()
-                    if (line.startsWith("*")) {
-                        var parts = line.split(/\s+/)
-                        if (parts.length >= 2) {
-                            strength = parseInt(parts[1])
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Rerun periodically to refresh strength
     Timer {
-        interval: watch_interval; running: watch; repeat: watch
-        onTriggered: strengthProc.running = true
+        interval: 15000
+        running: !NMCLI.isConnected && autoreconnect
+        repeat: true
+        onTriggered: NMCLI.getNetworks(() => {
+            const best = NMCLI.networks
+                .filter((e) => NMCLI.savedConnectionSsids.includes(e.ssid))
+                .reduce((previous, current) => {
+                    if (!previous) return current
+                    return (previous.strength > current.strength) ? previous : current
+                }, null)
+
+            NMCLI.activateConnection(best.ssid, (e) => {
+                console.log(JSON.stringify(e))
+            });
+        })
+    }
+
+    onClicked: () => {
+        if (!NMCLI.isConnected) {
+            _AutoConnect = true
+        } else if (NMCLI.active && NMCLI.active.ssid) {
+            NMCLI.disconnectFromNetwork()
+            _AutoConnect = false
+        }
+    }
+
+    // Initial refresh when widget loads
+    Component.onCompleted: {
+        NMCLI.refreshStatus(() => {})
     }
 }
