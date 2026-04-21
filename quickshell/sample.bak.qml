@@ -32,3 +32,23 @@
 //         }
 //     }
 // }
+
+// NMCLI Access Point
+// {
+//     "objectName": "",
+//     "lastIpcObject": {
+//         "active": false,
+//         "strength": 62,
+//         "frequency": 2417,
+//         "ssid": "Le Petit Poucet",
+//         "bssid": "00:01:02:00:03:F3",
+//         "security": "WPA2"
+//     },
+//     "ssid": "Le Petit Poucet",
+//     "bssid": "00:01:02:00:03:F3",
+//     "strength": 62,
+//     "frequency": 2417,
+//     "active": false,
+//     "security": "WPA2",
+//     "isSecure": true
+// }

@@ -1,5 +1,5 @@
-pragma Singleton
 pragma ComponentBehavior: Bound
+pragma Singleton
 
 import QtQuick
 import Quickshell
@@ -34,6 +34,7 @@ Singleton {
     readonly property alias immediateCheckTimer: immediateCheckTimer
 
     // Constants
+    readonly property var excludedDeviceTypes: [ "loopback" ]
     readonly property string deviceTypeWifi: "wifi"
     readonly property string deviceTypeEthernet: "ethernet"
     readonly property string connectionTypeWireless: "802-11-wireless"
@@ -631,7 +632,7 @@ Singleton {
 
             for (const line of lines) {
                 const parts = line.split(":");
-                if (parts.length >= 4) {
+                if (parts.length >= 4 && !excludedDeviceTypes.includes(parts[1])) {
                     const state = parts[2] || "";
                     if (isConnectedState(state)) {
                         connected = true;
@@ -1092,13 +1093,11 @@ Singleton {
 
     Component {
         id: commandProc
-
         CommandProcess {}
     }
 
     Component {
         id: apComp
-
         AccessPoint {}
     }
 
@@ -1250,12 +1249,14 @@ Singleton {
         id: rescanProc
 
         command: ["nmcli", "dev", root.nmcliCommandWifi, "list", "--rescan", "yes"]
-        onExited: root.getNetworks() // qmllint disable signal-handler-parameters
+        onExited: () => {
+            console.log(`[${new Date()}][Process][Rescan] Exiting\n\n`)
+            root.getNetworks() // qmllint disable signal-handler-parameters
+        }
     }
 
     Process {
         id: monitorProc
-
         running: true
         command: ["nmcli", "monitor"]
         environment: ({
@@ -1265,12 +1266,14 @@ Singleton {
         stdout: SplitParser {
             onRead: root.refreshOnConnectionChange()
         }
-        onExited: monitorRestartTimer.start() // qmllint disable signal-handler-parameters
+        onExited: {
+            monitorRestartTimer.start() // qmllint disable signal-handler-parameters
+            console.log(`[${new Date()}][Process][Monitor] Exiting\n\n`)
+        }
     }
 
     Timer {
         id: monitorRestartTimer
-
         interval: 2000
         onTriggered: {
             monitorProc.running = true;
@@ -1279,7 +1282,6 @@ Singleton {
 
     LoggingCategory {
         id: lc
-
         name: "caelestia.qml.services.nmcli"
         defaultLogLevel: LoggingCategory.Info
     }
