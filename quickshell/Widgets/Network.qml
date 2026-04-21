@@ -14,12 +14,12 @@ WidgetBase {
     property int warningthreshold: 50
     property bool autoreconnect: true
 
-    // "" "" ""
+    // "" "" "" "" "󰑓"
 
-    icon: (NMCLI.isConnected) ? (NMCLI.active && NMCLI.active.ssid) ? "" : "" : ""
-    label: (NMCLI.isConnected) ? (NMCLI.active && NMCLI.active.ssid) ? `${NMCLI.active.ssid} (${NMCLI.active.strength})` : "Ethernet" : "Disconnected"
+    icon: (NMCLI.active) ? (NMCLI.active.ssid) ? "" : "" : (autoreconnect) ? "󰑓" : ""
+    label: (NMCLI.active) ? ( NMCLI.active.ssid) ? `${NMCLI.active.ssid} (${NMCLI.active.strength}%)` : "Ethernet" : "Disconnected"
 
-    style.foreground.idle: (NMCLI.isConnected) ? (NMCLI.active && NMCLI.active.ssid) ?
+    style.foreground.idle: (NMCLI.active) ? (NMCLI.active.ssid) ?
         (NMCLI.active.strength <= criticalthreshold) ? Theme.color_red : (NMCLI.active.strength <= warningthreshold) ? Theme.color_yellow : Theme.color_green
         : Theme.color_green : Theme.color_red
 
@@ -34,8 +34,8 @@ WidgetBase {
     }
 
     Timer {
-        interval: 15000
-        running: !NMCLI.isConnected && autoreconnect
+        interval: 10000 //10s
+        running: !NMCLI.active && autoreconnect
         repeat: true
         onTriggered: NMCLI.getNetworks(() => {
             const best = NMCLI.networks
@@ -52,11 +52,11 @@ WidgetBase {
     }
 
     onClicked: () => {
-        if (!NMCLI.isConnected) {
-            _AutoConnect = true
+        if (!NMCLI.active) {
+            autoreconnect = true
         } else if (NMCLI.active && NMCLI.active.ssid) {
             NMCLI.disconnectFromNetwork()
-            _AutoConnect = false
+            autoreconnect = false
         }
     }
 
