@@ -36,7 +36,7 @@ ShellRoot {
                 spacing: Theme.spacing
 
                 // --- LEFT: Clock ---
-                Clock { id: clockWidget }
+                Clock { id: clock }
 
                 Item { Layout.fillWidth: true } // Spacer
 
@@ -51,11 +51,12 @@ ShellRoot {
                 // --- RIGHT --- //
                 RowLayout {
                     spacing: Theme.spacing
-                    Network { id: networkWidget }
-                    Volume { id: volumeWidget }
-                    Battery { id: batteryWidget }
-                    Profile { id: profileWidget }
-                    Power { id: powerWidget }
+                    Network { id: connectivity }
+                    Volume { id: audio }
+                    Battery { id: battery }
+                    Profile { id: mode }
+                    Caffeine { id: caffeine }
+                    Power { id: shutdown }
                 }
             }
         }

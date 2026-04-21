@@ -54,7 +54,7 @@ WidgetBase {
     onClicked: () => {
         if (!NMCLI.active) {
             autoreconnect = true
-        } else if (NMCLI.active && NMCLI.active.ssid) {
+        } else if (NMCLI.active.ssid) {
             NMCLI.disconnectFromNetwork()
             autoreconnect = false
         }

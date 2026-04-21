@@ -6,7 +6,7 @@ import qs
 import qs.Utilities
 
 WidgetBase {
-    id: volumeWidget
+    id: widget
     icon: ""
 
     // Style: Idle
