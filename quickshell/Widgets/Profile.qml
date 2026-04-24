@@ -3,36 +3,35 @@ import Quickshell
 import Quickshell.Services.UPower
 
 import qs
-import qs.Utilities
 import qs.Style
 
-WidgetBase {
-    id: powerWidget
+Base {
+    id: container
 
     // Icons
-    readonly property var iconMap: ({
+    readonly property var icon_map: ({
         [PowerProfile.PowerSaver]:  "",
         [PowerProfile.Balanced]:    "",
         [PowerProfile.Performance]: ""
     })
 
     // Colors
-    readonly property var colorMap: ({
+    readonly property var color_map: ({
         [PowerProfile.PowerSaver]:  Theme.color_green,
         [PowerProfile.Balanced]:    Theme.color_yellow,
         [PowerProfile.Performance]: Theme.color_red
     })
 
     // Bind directly to the service
-    property var currentProfile: PowerProfiles.profile
+    property var current_profile: PowerProfiles.profile
 
-    // Live bindings: these re‑evaluate whenever currentProfile changes
-    icon: iconMap[currentProfile]
-    style.foreground.idle: colorMap[currentProfile]
+    // Live bindings: these re‑evaluate whenever current_profile changes
+    icon: icon_map[current_profile]
+    style.foreground.idle: color_map[current_profile]
 
     // Rotate profiles on click
     onClicked: {
-        switch (currentProfile) {
+        switch (current_profile) {
         case PowerProfile.PowerSaver:
             PowerProfiles.profile = PowerProfile.Balanced
             break

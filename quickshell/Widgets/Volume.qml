@@ -3,10 +3,9 @@ import Quickshell
 import Quickshell.Io
 
 import qs
-import qs.Utilities
 
-WidgetBase {
-    id: volumeWidget
+Base {
+    id: container
     readonly property string defaultIncrement: "+5%"
     readonly property string defaultDecrement: "-5%"
 
@@ -56,7 +55,7 @@ WidgetBase {
     Timer {
         id: throttleTimer
         interval: 50 
-        onTriggered: volumeWidget.changeLocked = false
+        onTriggered: container.changeLocked = false
     }
 
     Component.onCompleted: {

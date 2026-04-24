@@ -2,10 +2,9 @@ import QtQuick
 import Quickshell
 
 import qs
-import qs.Utilities
 
-WidgetBase {
-    id: clockWidget
+Base {
+    id: container
 
     property string format: "yyyy-MM-dd HH:mm:ss"
 
