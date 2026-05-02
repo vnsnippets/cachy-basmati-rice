@@ -77,5 +77,8 @@ compile_commands.json
 
 # End of https://www.toptal.com/developers/gitignore/api/qt,qml,git
 
-Plugins
+*/**/Plugins
 .shell.debug
+.zsh_history
+.zcompdump
+*.local

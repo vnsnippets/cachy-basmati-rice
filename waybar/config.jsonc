@@ -79,7 +79,7 @@
       // "muted": " (Muted)",
       // "unmuted": ""
   // },
-  // "format": "{icon}", // Only icon by default [cite: 1]
+  // "format": "{icon}",
   // "format-muted": "",
   // "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
   // "on-click-right": "pavucontrol", // Right-click opens mixer

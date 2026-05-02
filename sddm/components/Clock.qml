@@ -28,9 +28,6 @@ Item {
         // Use the baseAccent property which QML has already parsed correctly
         var base = clock.baseAccent;
 
-        // Debug check (will show in sddm-greeter output)
-        // console.log("Clock Base Color: " + base + " Hue: " + base.hsvHue);
-
         // Material 3 logic: 
         // Hours = Vibrant/Deep version of accent
         // Minutes = Soft/Pastel version of accent

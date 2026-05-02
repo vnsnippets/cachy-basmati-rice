@@ -1,0 +1,121 @@
+{
+  "logo": {
+    "type": "none"
+    // "type": "kitty-direct",
+    // "source": "~/.config/fastfetch/marin.png",
+    // "width": 20,
+    // "height": 10,
+    // "position": "top"
+  },
+  "display": {
+    "key": {
+      "width": 20
+    },
+    "color": {
+      "keys": "",
+      "title": "",
+      "output": "",
+      "separator": ""
+    },
+    "separator": "",
+    "brightColor": true
+  },
+  "modules": [
+    {
+      "type": "custom",
+      "keyColor": "red",
+      "key": " Device"
+    },
+    {
+      "type": "host",
+      "key": " Host",
+      "keyColor": "magenta"
+    },
+    {
+      "type": "wm",
+      "keyColor": "magenta",
+      "key": " Session"
+    },
+    {
+      "type": "localip",
+      "keyColor": "magenta",
+      "key": " Local IP",
+      "showIpv4": true,
+      "showIpv6": false,
+      "showMac": false,
+      "showLoop": false,
+      "showPrefixLen": true,
+      "showMtu": false,
+      "showSpeed": false,
+      "showFlags": false,
+      "compact": false,
+      "defaultRouteOnly": true,
+      "showAllIps": false,
+      "namePrefix": ""
+    },
+    {
+      "type": "battery",
+      "keyColor": "magenta",
+      "key": " Battery",
+      "temp": true,
+      "percent": {
+        "green": 50,
+        "yellow": 20,
+        "type": 0
+      }
+    },
+    "break",
+    {
+      "type": "custom",
+      "keyColor": "red",
+      "key": " System"
+    },
+    {
+      "type": "cpu",
+      "keyColor": "yellow",
+      "key": " Processor",
+      "format": "{name}"
+    },
+    {
+      "type": "gpu",
+      "keyColor": "yellow",
+      "key": " Graphics",
+      "format": "{name}"
+    },
+    {
+      "type": "memory",
+      "keyColor": "yellow",
+      "key": "{icon} Memory"
+    },
+    "break",
+    {
+      "type": "custom",
+      "keyColor": "red",
+      "key": " Disk"
+    },
+    {
+      "type": "disk",
+      "key": " {name}",
+      "keyColor": "green",
+      "format": "{size-used} / {size-total} ({size-percentage})"
+    },
+    "break",
+    {
+      "type": "custom",
+      "keyColor": "red",
+      "key": "󰍹 Display"
+    },
+    {
+      "type": "display",
+      "key": " {name}",
+      "keyColor": "cyan",
+      "format": "{width}:{height}"
+    },
+    "break",
+    {
+      "type": "custom",
+      "format": "\u001b[33m󰮯 {#dim_white}⚬ ⚬ ⚬ ⚬ ⚬ \u001b[32m󰊠 \u001b[34m󰊠 \u001b[31m󰊠 \u001b[36m󰊠 \u001b[35m󰊠 \u001b[37m󰊠 \u001b[97m󰊠 "
+    },
+    "break"
+  ]
+}

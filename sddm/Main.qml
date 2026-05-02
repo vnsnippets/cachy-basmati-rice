@@ -73,7 +73,6 @@ Rectangle {
             sess = 0;
         }
 
-        console.log("Pixie SDDM: Attempting login for user [" + user + "] session index [" + sess + "]");
         sddm.login(user.trim(), pass, sess);
         loginTimeout.start();
     }
@@ -176,7 +175,6 @@ Rectangle {
                 // Slightly decreased saturation for a more professional look
                 var s = Math.max(0.35, Math.min(0.55, finalColor.hsvSaturation * 0.9));
                 container.extractedAccent = Qt.hsva(h, s, 0.95, 1.0);
-                console.log("Pixie SDDM: SUCCESS! Extracted Hue: " + (h * 360).toFixed(0) + "°");
                 processed = true; // Stop the timer
             }
         }
