@@ -39,13 +39,13 @@ RowLayout {
         property real animatedValue: 0
         readonly property color arcColor: {
             if (root.device.state === UPowerDeviceState.Charging) {
-                return Style.color_yellow
+                return Style.colors.yellow
             } else if (root.batteryPercentage <= Context.battery.criticalLimit) {
-                return Style.color_red
+                return Style.colors.red
             } else if (root.batteryPercentage <= Context.battery.warningLimit) {
-                return Style.color_yellow
+                return Style.colors.yellow
             } else {
-                return Style.color_green
+                return Style.colors.green
             }
         }
 
@@ -110,11 +110,12 @@ RowLayout {
     }
 
     Column {
+        Layout.fillWidth: true
         Text {
             readonly property bool isCharging: root.device.state === UPowerDeviceState.Charging || root.device.state === UPowerDeviceState.PendingCharge
             text: `AC: ${(isCharging) ? "Connected" : "Disconnected"}`
             font.pixelSize: 16
-            color: Style.color_light
+            color: Style.colors.text
         }
 
         Text {
@@ -127,7 +128,7 @@ RowLayout {
             visible: text !== ""
 
             font.pixelSize: 14
-            color: Style.color_light
+            color: Style.colors.text
             opacity: 0.6
 
             function secondsToHoursAndMinutesString(totalSeconds) {

@@ -6,8 +6,7 @@ import NetworkMonitorPlugin
 
 import qs
 import qs.Styles
-import qs.Services
-import qs.Widgets
+import qs.Controls
 
 /**
 * Network.qml
@@ -63,16 +62,8 @@ import qs.Widgets
 **/
 
 Clickable {
-    id: root
-    required property Component popup
-
-    // Use required properties for better performance/type safety
-    readonly property int criticalLimit: 25
-    readonly property int degraded_threshold: 60
-    
-    // Flattened properties to avoid object re-creation overhead
-    readonly property int network_state: NetworkMonitor.GlobalState
-    readonly property var active_device: NetworkMonitor.ActiveAccessPoint
+    id: clickable
+    property bool showLabel: true
 
     property color color_disconnected: null
     property color color_connecting: null
@@ -80,23 +71,59 @@ Clickable {
     property color color_connected_critical: null
     property color color_connected_limited: null
 
-    readonly property bool isScanning: Context.stopwatch.scan_networks?.running ?? false
-    
     readonly property color status_color: {
-        if (isScanning) return color_connecting;
-        if (network_state <= 20) return color_disconnected;
-        if (network_state <= 50) return color_connecting;
-        if (network_state < 70) return color_connected_limited;
-        const s = active_device?.Strength ?? 0;
-        if (s < criticalLimit) return color_connected_critical;
-        if (s < degraded_threshold) return color_connected_limited;
+        if (Context.stopwatch.scan_networks?.running) return color_connecting;
+        if (NetworkMonitor.GlobalState <= 20) return color_disconnected;
+        if (NetworkMonitor.GlobalState <= 50) return color_connecting;
+        if (NetworkMonitor.GlobalState < 70) return color_connected_limited;
+        const s = NetworkMonitor.ActiveAccessPoint?.Strength ?? 0;
+        if (s < Context.network.criticalLimit) return color_connected_critical;
+        if (s < Context.network.degradedLimit) return color_connected_limited;
         return color_connected_default;
     }
 
-    icon: (network_state >= 60) ? "": (network_state >= 30 || isScanning) ? "" : ""
-    label: (network_state >= 70) ? `${active_device?.Ssid} (${active_device.Strength}%)` : (network_state >= 60) ? `${active_device?.Ssid} (Local)` : (network_state >= 40) ? "Connecting" : "Disconnected"
-    style.text.idle: status_color
+    RowLayout {
+        anchors.centerIn: parent
+        spacing: Style.clickable.spacing
 
-    // onClicked: Networking.handleConnectionToggle()
-    onClicked: canvas.handleWidgetPopup(this);
+        Item {
+            implicitWidth: icon.width
+            implicitHeight: icon.height
+
+            StyledText {
+                text: "\uF8C5"
+                color: Qt.alpha(Style.colors.text, 0.35)
+                font.pixelSize: 18
+            }
+
+            StyledText {
+                id: icon
+                text: {
+                    if (Context.stopwatch.scan_networks?.running) return "";
+
+                    if (NetworkMonitor.GlobalState < 20) return "\uEE59";
+                    if (NetworkMonitor.GlobalState < 30) return "";
+
+                    const s = NetworkMonitor.ActiveAccessPoint?.Strength ?? 0;
+
+                    if (s < Context.network.criticalLimit) return "\uF8C8";
+                    if (s < Context.network.degradedLimit) return "\uF8C6";
+
+                    return "\uF8C5";
+                }
+                // (NetworkMonitor.GlobalState >= 60) ? "": (NetworkMonitor.GlobalState >= 30 || isScanning) ? "" : ""
+                style.idle: clickable.status_color
+                active: clickable.containsMouse
+                    font.pixelSize: 18
+            }
+
+        }
+
+        StyledText {
+            visible: showLabel
+            text: (NetworkMonitor.GlobalState >= 70) ? `${NetworkMonitor.ActiveAccessPoint?.Ssid} (${NetworkMonitor.ActiveAccessPoint.Strength}%)` : (NetworkMonitor.GlobalState >= 60) ? `${NetworkMonitor.ActiveAccessPoint?.Ssid} (Local)` : (NetworkMonitor.GlobalState >= 40) ? "Connecting" : "Disconnected"
+            style.idle: clickable.status_color
+            active: clickable.containsMouse
+        }
+    }
 }

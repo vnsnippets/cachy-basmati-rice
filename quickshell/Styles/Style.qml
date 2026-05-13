@@ -1,47 +1,88 @@
+pragma ComponentBehavior: Bound
 pragma Singleton
 
 import QtQuick
+import Quickshell
 
-Item {
-    readonly property color color_dark: "#EA181825"
-    readonly property color color_slate: "#313244"
-    readonly property color color_muted: "#B1B2C4"
-    readonly property color color_light: "#cdd6f4"
-    
-    readonly property color color_blue: "#89b4fa"
-    readonly property color color_teal: "#94e2d5"
-    readonly property color color_green: "#a6e3a1"
-    readonly property color color_yellow: "#f9e2af"
-    readonly property color color_red: "#f38ba8"
+import qs.Types
 
-    readonly property int border_width: 1
-    readonly property int border_radius: 12
-
-    readonly property QtObject dock: QtObject {
-        readonly property int spacing: 4
-        readonly property int margin: 10
-        readonly property int height: 40
+Singleton {
+    FontLoader {
+        id: _UbuntuSansMonoFluent
+        source: "../Assets/UbuntuSansMonoFluent-Regular.ttf"
     }
 
-    readonly property QtObject widgets: QtObject {
-        readonly property int width: 40
-        readonly property int height: 40
-        readonly property int spacing: 4
-        readonly property int padding: 24
+    readonly property QtObject colors: QtObject {
+        readonly property color rosewater: "#f5e0dc"
+        readonly property color flamingo: "#f2cdcd"
+        readonly property color pink: "#f5c2e7"
+        readonly property color mauve: "#cba6f7"
+        readonly property color red: "#f38ba8"
+        readonly property color maroon: "#eba0ac"
+        readonly property color peach: "#fab387"
+        readonly property color yellow: "#f9e2af"
+        readonly property color green: "#a6e3a1"
+        readonly property color teal: "#94e2d5"
+        readonly property color sky: "#89dceb"
+        readonly property color sapphire: "#74c7ec"
+        readonly property color blue: "#89b4fa"
+        readonly property color lavender: "#b4befe"
+
+        readonly property color text: "#cdd6f4"
+        // readonly property color subtext1: "#bac2de"
+        readonly property color subtext: "#a6adc8"
+        // readonly property color overlay2: "#9399b2"
+        // readonly property color overlay1: "#7f849c"
+        readonly property color overlay: "#6c7086"
+        // readonly property color surface2: "#585b70"
+        // readonly property color surface1: "#45475a"
+        readonly property color surface: "#313244"
+        readonly property color base: "#1e1e2e"
+        readonly property color mantle: "#181825"
+        readonly property color crust: "#11111b"
+
+        readonly property color slate: "#232634"
+        // readonly property color wayborder: "#394250"
+        readonly property color wayborder: "#737994"
     }
 
-    readonly property QtObject popup: QtObject {
-        readonly property real border_radius: 12
-        readonly property real spacing: 20
-        readonly property color background: color_dark
-        readonly property QtObject button: QtObject {
-            readonly property QtObject background: QtObject {
-                readonly property color idle: color_slate
-                readonly property color active: color_dark
-            }
+    readonly property int spacing: 4
+    readonly property int margin: 8
+    readonly property int borderWidth: 1
+
+    readonly property QtObject clickable: QtObject {
+        readonly property QtObject background: QtObject {
+            readonly property color idle: Style.colors.base
+            readonly property color active: Style.colors.base
         }
-        readonly property QtObject animations: QtObject {
-            readonly property int duration: 300
+        readonly property QtObject border: QtObject {
+            readonly property color idle: Style.colors.subtext
+            readonly property color active: Style.colors.text
+        }
+        readonly property QtObject text: QtObject {
+            readonly property color idle: Style.colors.green
+            readonly property color active: Style.colors.text
+        }
+
+        readonly property size dimensions: Qt.size(40, 40)
+        readonly property int radius: 8
+        readonly property int padding: 12
+        readonly property int spacing: 4
+    }
+
+    readonly property QtObject panel: QtObject {
+        readonly property int radius: 12
+        readonly property int padding: 12
+        readonly property int width: 1920/3
+
+        readonly property QtObject colors: QtObject {
+            readonly property color background: Style.colors.base
+            readonly property color border: Style.colors.wayborder
+        }
+
+        readonly property QtObject widget: QtObject {
+            readonly property int height: 68
+            readonly property color background: Qt.alpha(Style.colors.surface, 1)
         }
     }
 
@@ -50,8 +91,19 @@ Item {
     }
 
     readonly property QtObject fonts: QtObject {
-        readonly property int size: 14
+        readonly property int size: 16
         readonly property string family: "Noto Sans"
-        readonly property string icon: "Symbols Nerd Font"
+        readonly property string icon: _UbuntuSansMonoFluent.name
+    }
+
+    readonly property QtObject icons: QtObject {
+        readonly property QtObject network: QtObject {
+            readonly property string wifi: ""
+            readonly property string offline: ""
+        }
+        readonly property QtObject battery: QtObject {
+            readonly property string plugged: ""
+            readonly property string unplugged: ""
+        }
     }
 }

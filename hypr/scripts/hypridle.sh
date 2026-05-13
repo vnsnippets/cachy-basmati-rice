@@ -1,10 +1,31 @@
 #!/bin/bash
 
-# V0.0.2
+#Version: 0.0.3
+
 TEMP_FILE="/tmp/pre_idle_brightness"
+LOCK_FILE="/tmp/hypridle_script.lock" # Prevents overlapping loops
 TARGET_DIM=10
 STEP=5
 DELAY=0.01
+
+RestoreScreenBrightness() {
+    if [ -f "$TEMP_FILE" ]; then
+        # Simple lock to prevent multiple instances from fighting over brightnessctl
+        exec 200>$LOCK_FILE
+        flock -n 200 || exit 1
+
+        local SAVED=$(cat "$TEMP_FILE")
+        local CUR=$(brightnessctl -m | cut -d, -f4 | tr -d '%')
+
+        for i in $(seq "$CUR" "$STEP" "$SAVED"); do
+            brightnessctl set "${i}%"
+            sleep "$DELAY"
+        done
+        
+        brightnessctl set "${SAVED}%"
+        rm "$TEMP_FILE"
+    fi
+}
 
 ReduceScreenBrightness() {
     # Save current brightness percentage to temp file
@@ -19,24 +40,6 @@ ReduceScreenBrightness() {
         done
     fi
 }
-
-RestoreScreenBrightness() {
-    if [ -f "$TEMP_FILE" ]; then
-        local SAVED=$(cat "$TEMP_FILE")
-        local CUR=$(brightnessctl -m | cut -d, -f4 | tr -d '%')
-
-        # Fade up from current (10%) to the saved value
-        for i in $(seq "$CUR" "$STEP" "$SAVED"); do
-            brightnessctl set "${i}%"
-            sleep "$DELAY"
-        done
-        
-        # Ensure we hit the exact original value at the end
-        brightnessctl set "${SAVED}%"
-        rm "$TEMP_FILE"
-    fi
-}
-
 
 case "$1" in
     --state-idle)

@@ -5,22 +5,16 @@ import Quickshell.Io
 
 import qs
 import qs.Styles
+import qs.Controls
 import qs.Utilities
-import qs.Widgets
 
 Clickable {
-    id: root
+    id: clickable
 
     readonly property bool active: Context.process.prevent_screen_lock !== null
 
-    property color color_caffeineon: Style.color_red
-    property color color_caffeineoff: Style.color_light
-
-    // (Active: True)   - Caffeine active (System won't lock)
-    // (Active: False)  - Auto-lock is active (System will lock)
-    icon: (active) ? "󱂟" : ""
-    label: (active) ? `[${Context.process.prevent_screen_lock.processId}]` : ""
-    style.text.idle: (active) ? color_caffeineon : color_caffeineoff
+    required property color activeColor
+    required property color inactiveColor
     
     onClicked: () => {
         if (active) {
@@ -39,5 +33,12 @@ Clickable {
                 }
             });
         }
+    }
+
+    StyledText {
+        anchors.centerIn: parent
+        text: "\uF3C5" // (clickable.active) ? "󱂟" : ""
+        style.idle: (clickable.active) ? clickable.activeColor : clickable.inactiveColor
+        active: clickable.containsMouse
     }
 }

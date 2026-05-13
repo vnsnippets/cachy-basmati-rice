@@ -8,89 +8,130 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import Quickshell.Widgets
 
+import qs
+
 import qs.Styles
-import qs.Widgets
 import qs.Widgets.Audio
 import qs.Widgets.Battery
 import qs.Widgets.Caffeine
-import qs.Widgets.Clock
 import qs.Widgets.Network
-import qs.Widgets.Power
 import qs.Widgets.Workspaces
 
-RowLayout {
-    id: root
-    spacing: Style.dock.spacing
+import qs.Types
+import qs.Controls
+import qs.Utilities
 
-    anchors.topMargin: Style.dock.margin
-    anchors.leftMargin: Style.dock.margin
-    anchors.rightMargin: Style.dock.margin
+Item {
+    id: root
+
+    implicitHeight: container.height
 
     // --- LEFT ---
     RowLayout {
-        id: section_start
-        spacing: Style.dock.spacing
+        id: container
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: Style.spacing
 
-        ClockWidget { 
-            format: "yyyy-MM-dd HH:mm"
+        Loader {
+            active: shell._DEBUG_MODE_
+            sourceComponent: Clickable {
+                StyledText {
+                    anchors.centerIn: parent
+                    horizontalAlignment: Text.AlignHCenter
+                    text: "BETA"
+                    font.pixelSize: 12
+                    font.bold: true
+                }
+            }
+        }
+
+        Clickable {
+            implicitWidth: clock.width + Style.clickable.padding * 2
+            StyledText {
+                id: clock
+                anchors.centerIn: parent
+                text: Qt.formatDateTime(Context.clock.date, "yyyy-MM-dd HH:mm")
+            }
         }
     }
 
-    // --- MIDDLE: Workspace Dots ---
-    Rectangle {
-        readonly property int offset: section_end.width - section_start.width
+    FramedGroup {
+        anchors.centerIn: parent
+        color: Style.colors.slate
 
-        Layout.fillWidth: true
-        implicitHeight: parent.height
+        spacing: Style.spacing
+        offset: 12
+        radius: implicitWidth/2
 
-        Layout.leftMargin: Math.max(offset, 0)
-        Layout.rightMargin: Math.max(-offset, 0)
-
-        color: "transparent"
-
-        WorkspaceControl { 
-            style.border.active: Style.color_light
+        WorkspaceControl {
+            filterByMonitor: true
+            activeColor: Style.colors.green
+            inactiveColor: Style.clickable.background.idle
+            activeBorderColor: Style.colors.green
+            inactiveBorderColor: Style.clickable.border.idle
+            activeTextColor: Style.colors.base
+            inactiveTextColor: Style.colors.text
         }
     }
 
     // --- RIGHT ---
     RowLayout {
-        id: section_end
-        spacing: Style.dock.spacing
+        anchors.top: parent.top;
+        anchors.right: parent.right;
+        anchors.verticalCenter: parent.verticalCenter
+
+        spacing: Style.spacing
 
         NetworkWidget  {
-            popup: NetworkPopup {}
-            color_disconnected: Style.color_muted
-            color_connecting: Style.color_yellow
-            color_connected_default: Style.color_green
-            color_connected_critical: Style.color_red
-            color_connected_limited: Style.color_yellow
+            showLabel: false
+            color_disconnected: Style.colors.subtext
+            color_connecting: Style.colors.yellow
+            color_connected_default: Style.colors.green
+            color_connected_critical: Style.colors.red
+            color_connected_limited: Style.colors.yellow
         }
 
         AudioWidget {
-            color_inactive: Style.color_slate
-            color_default: Style.color_teal    
+            color_inactive: Style.colors.base
+            color_default: Style.colors.blue
         }
 
         BatteryWidget {
-            popup: BatteryPopup {}
-            color_critical: Style.color_red
-            color_warning: Style.color_yellow
-            color_charging: Style.color_yellow
-            color_default: Style.color_green
+            color_critical: Style.colors.red
+            color_warning: Style.colors.yellow
+            color_charging: Style.colors.yellow
+            color_default: Style.colors.green
         }
 
         CaffeineWidget {
-            color_caffeineon: Style.color_red
-            color_caffeineoff: Style.color_blue
+            activeColor: Style.colors.red
+            inactiveColor: Style.colors.blue
         }
 
-        PowerWidget {
-            Layout.alignment: Qt.AlignTop
-            style.text.idle: Style.color_red
-            style.background.active: Style.color_red
-            style.text.active: Style.color_dark
-            style.border.active: Style.color_red
+        Clickable {
+            id: powerWidget
+
+            colors.background.active: Style.colors.red
+            colors.border.active: Style.colors.red
+
+            onClicked: Context.process.shutdown = Daemon.execute(["poweroff"]);
+            StyledText {
+                anchors.centerIn: parent
+                text: "\uF619" //""
+                active: powerWidget.containsMouse
+                style.idle: Style.colors.red
+                style.active: Style.colors.base
+                font.pixelSize: 18
+                
+            }
         }
+        
+        // Clickable {
+        //     StyledText {
+        //         anchors.centerIn: parent
+        //         text:""
+        //     }
+        //     onClicked: scope.sidePanelOpen = !scope.sidePanelOpen
+        // }
     }
 }
