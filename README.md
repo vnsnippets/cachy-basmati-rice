@@ -11,3 +11,17 @@ You will need to set the `QML_IMPORT_PATH` environment variable to point to wher
 
 In all transparency, I make no claims on the plugin's quality.   
 Use at your own risk.
+
+### Custom Scripts
+Waking from sleep, Network Manager would hang - so I created a script:
+```bash
+# /usr/lib/systemd/system-sleep/ath11k-resume
+#!/bin/sh
+case "$1" in
+  post)
+    /usr/bin/modprobe -r ath11k_pci 2>/dev/null
+    /usr/bin/modprobe ath11k_pci
+    /usr/bin/systemctl restart NetworkManager
+    ;;
+esac
+```

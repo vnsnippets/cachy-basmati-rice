@@ -82,3 +82,5 @@ compile_commands.json
 .zsh_history
 .zcompdump
 *.local
+
+*.ignore
