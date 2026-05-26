@@ -45,14 +45,26 @@ hl.window_rule({
     max_size = "1000 800"
 })
 
+-- hl.window_rule({
+--     name  = "open-dolphin-floating",
+--     match = { class = "^(org.kde.dolphin)$" },
+
+--     float = true,
+--     size = "920 600",
+--     center = true,
+--     max_size = "1000 800"
+-- })
+
+-- File Picker
 hl.window_rule({
-    name  = "open-dolphin-floating",
-    match = { class = "^(org.kde.dolphin)$" },
+    name  = "open-file-picker-floating",
+    match = { class = "^(xdg-desktop-portal-gtk)$" },
 
     float = true,
     size = "920 600",
-    center = true,
-    max_size = "1000 800"
+    max_size = "1000 800",
+    stay_focused = true,
+    animation = "popin 25%"
 })
 
 -- Firefox

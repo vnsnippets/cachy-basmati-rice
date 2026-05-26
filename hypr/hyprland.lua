@@ -1,10 +1,10 @@
-terminal    = "uwsm app -- kitty"
-fileManager = "uwsm app -- nautilus"
-menu        = "uwsm app -- hyprlauncher"
+terminal    = "kitty"
+fileManager = "nautilus"
+menu        = "hyprlauncher"
 
 home = os.getenv("HOME")
 current_path = os.getenv("PATH")
-quickshell = "uwsm app -- quickshell -p " .. home .. "/.config/quickshell/Shell.qml"
+quickshell = "quickshell -p " .. home .. "/.config/quickshell/Shell.qml"
 
 require("modules.colors")
 
@@ -27,16 +27,34 @@ hl.permission({
 })
 
 hl.env("ZDOTDIR", home .. "/.config/zsh")
+
+hl.env("HYPRCURSOR_THEME", "Future-Cyan")
+hl.env("HYPRCURSOR_SIZE", "48")
+
+-- Fallback XCURSOR
 hl.env("XCURSOR_THEME", "Bibata-Modern-Ice")
 hl.env("XCURSOR_SIZE", "24")
-hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Ice")
-hl.env("HYPRCURSOR_SIZE", "24")
-hl.env("LC_TIME", "en_GB.UTF-8")
+
+-- hl.env("LC_TIME", "en_GB.UTF-8")
+
 hl.env("DOTNET_ROOT", "/usr/bin/dotnet")
 hl.env("PATH", current_path .. ":/usr/bin/dotnet:/usr/bin/dotnet/tools")
+
 -- hl.env("QML_IMPORT_PATH", home .. "/.config/quickshell/Plugins")
 hl.env("EDITOR", "micro")
 -- hl.env("HYPRSHOT_DIR", home .. "/Pictures/Screenshots")
+-- hl.env("GTK_USE_PORTAL", "1")
+
+-- Core environment parameters
+hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
+hl.env("XDG_SESSION_TYPE", "wayland")
+hl.env("XDG_SESSION_DESKTOP", "Hyprland")
+
+-- Toolkit Backend Overrides
+hl.env("QT_QPA_PLATFORM", "wayland;xcb")
+hl.env("GDK_BACKEND", "wayland,x11,*")
+hl.env("CLUTTER_BACKEND", "wayland")
+hl.env("SDL_VIDEODRIVER", "wayland")
 
 hl.config({
     misc = {
