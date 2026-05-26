@@ -1,0 +1,30 @@
+anchor=top-right
+font=monospace 10
+width=360
+max-history=10
+margin=20,20,20
+padding=16
+border-size=0
+border-radius=12
+default-timeout=5000
+group-by=summary
+icons=1
+
+## Default / Normal Urgency (Mocha Crust & Lavender)
+background-color=#1E1E2ED9
+text-color=#CDD6F4FF
+progress-color=#CBA6F7FF
+
+[urgency=low]
+background-color=#1E1E2ED9
+text-color=#CDD6F4FF
+default-timeout=3000
+
+[urgency=high]
+background-color=#F38BA8FF
+text-color=#1E1E2EFF
+progress-color=#CDD6F4FF
+default-timeout=0
+
+[grouped]
+format=<b>%s</b>\n%b
