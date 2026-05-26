@@ -13,10 +13,10 @@ RowLayout {
     // --- System Action Runner ---
     // Handles executing the actual system commands safely
     function runAction(command) {
-        // You can use Quickshell's Process service here if imported:
-        // Process.run(["sh", "-c", command])
         Debug.log("Executing System Action: " + command)
-        Daemon.execute(command);
+        Quickshell.execDetached({
+            command: command
+        });
     }
 
     // --- Power Action Map ---
@@ -27,14 +27,14 @@ RowLayout {
             desc: "Power off system safely",
             icon: "󰐥", 
             accent: Style.colors.red,
-            command: ["poweroff"]
+            command: ["hyprshutdown", "-t", "Powering Off", "--post-cmd", "systemctl poweroff"]
         },
         1: { // Reboot
             title: "Reboot",
             desc: "Restart the machine",
             icon: "󰜉",
             accent: Style.colors.peach,
-            command: ["reboot"]
+            command: ["hyprshutdown", "-t", "Rebooting", "--post-cmd", "systemctl reboot"]
         },
         2: { // Suspend
             title: "Suspend",
@@ -48,8 +48,7 @@ RowLayout {
             desc: "End current session",
             icon: "󰍃",
             accent: Style.colors.maroon,
-            // command: ["loginctl", "terminate-session", "$XDG_SESSION_ID"]
-            command: ["uwsm", "stop"]
+            command: ["hyprshutdown", "-t", "Terminating Session", "--post-cmd", "hyprctl dispatch exit"]
         }
     })
 

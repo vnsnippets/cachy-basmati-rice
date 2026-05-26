@@ -216,20 +216,7 @@ ColumnLayout {
 
             onClicked: {
                 appListView.currentIndex = model.index;
-                // model.app.execute();
-
-                // For UWSM
-                // 1. Take the app's native executable array (e.g., ["firefox", "--new-window"])
-                let nativeCommand = model.app.command;
-                
-                // 2. Build the UWSM prefixed command array
-                let uwsmCommand = ["uwsm", "app", "--"].concat(nativeCommand);
-                
-                // 3. Launch it detached so it safely breaks off into its own systemd scope
-                Quickshell.execDetached({
-                    command: uwsmCommand,
-                    workingDirectory: model.app.workingDirectory
-                });
+                model.app.execute();
                             
                 root.dismiss();
             }
