@@ -27,4 +27,4 @@ progress-color=#F38BA8FF
 default-timeout=0
 
 [grouped]
-format=<b>%s</b>\n%b
+format=<b>(%g) %s</b>\n%b
