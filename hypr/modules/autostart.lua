@@ -4,9 +4,13 @@
 -- Or execute your favorite apps at launch like this:
 --
 hl.on("hyprland.start", function () 
-  hl.exec_cmd("hypridle")
-  hl.exec_cmd("hyprpaper")
-  hl.exec_cmd("swaync")
-  hl.exec_cmd("/usr/lib/hyprpolkitagent/hyprpolkitagent")
-  hl.exec_cmd("quickshell -p $HOME/.config/quickshell/Shell.qml")
+  -- hl.exec_cmd("hypridle")
+  -- hl.exec_cmd("hyprpaper")
+  -- hl.exec_cmd("swaync")
+  -- hl.exec_cmd("/usr/lib/hyprpolkitagent/hyprpolkitagent")
+  -- hl.exec_cmd("quickshell -p $HOME/.config/quickshell/Shell.qml")
+  hl.exec_cmd("uwsm app -- hypridle")
+  hl.exec_cmd("uwsm app -- hyprpaper")
+  hl.exec_cmd("uwsm app -- /usr/lib/hyprpolkitagent/hyprpolkitagent")
+  hl.exec_cmd(quickshell)
 end)

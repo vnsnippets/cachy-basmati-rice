@@ -45,6 +45,23 @@ hl.window_rule({
     max_size = "1000 800"
 })
 
+hl.window_rule({
+    name  = "open-dolphin-floating",
+    match = { class = "^(org.kde.dolphin)$" },
+
+    float = true,
+    size = "920 600",
+    center = true,
+    max_size = "1000 800"
+})
+
+-- Firefox
+hl.window_rule({
+    name = "firefox-disable-opacity",
+    match = { class = "^(firefox)$" },
+    opacity = "1 override",
+})
+
 -- Layer rules also return a handle.
 -- local overlayLayerRule = hl.layer_rule({
 --     name  = "no-anim-overlay",

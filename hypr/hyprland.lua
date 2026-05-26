@@ -1,9 +1,10 @@
-terminal    = "kitty"
-fileManager = "nautilus"
-menu        = "rofi -show drun -theme $HOME/.config/rofi/theme.rasi"
+terminal    = "uwsm app -- kitty"
+fileManager = "uwsm app -- nautilus"
+menu        = "uwsm app -- hyprlauncher"
 
 home = os.getenv("HOME")
 current_path = os.getenv("PATH")
+quickshell = "uwsm app -- quickshell -p " .. home .. "/.config/quickshell/Shell.qml"
 
 require("modules.colors")
 
@@ -32,9 +33,9 @@ hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Ice")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("LC_TIME", "en_GB.UTF-8")
 hl.env("DOTNET_ROOT", "/usr/bin/dotnet")
-hl.env("LC_TIME", current_path .. ":/usr/bin/dotnet:/usr/bin/dotnet/tools")
+hl.env("PATH", current_path .. ":/usr/bin/dotnet:/usr/bin/dotnet/tools")
 -- hl.env("QML_IMPORT_PATH", home .. "/.config/quickshell/Plugins")
-hl.env("EDITOR", "nano")
+hl.env("EDITOR", "micro")
 -- hl.env("HYPRSHOT_DIR", home .. "/Pictures/Screenshots")
 
 hl.config({

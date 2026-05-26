@@ -48,7 +48,8 @@ RowLayout {
             desc: "End current session",
             icon: "󰍃",
             accent: Style.colors.maroon,
-            command: ["loginctl", "lock-session"]
+            // command: ["loginctl", "terminate-session", "$XDG_SESSION_ID"]
+            command: ["uwsm", "stop"]
         }
     })
 
