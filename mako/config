@@ -21,9 +21,9 @@ text-color=#CDD6F4FF
 default-timeout=3000
 
 [urgency=high]
-background-color=#F38BA8FF
-text-color=#1E1E2EFF
-progress-color=#CDD6F4FF
+background-color=#11111BEA
+text-color=#F38BA8FF
+progress-color=#F38BA8FF
 default-timeout=0
 
 [grouped]
