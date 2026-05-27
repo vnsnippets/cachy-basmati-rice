@@ -1,0 +1,51 @@
+# Global Property
+title-text: ""
+desktop-image: "background.png"
+desktop-image-scale-method: "stretch"
+# desktop-color: "#1E1E2E"
+terminal-font: "Unifont Regular 16"
+terminal-left: "0"
+terminal-top: "0"
+terminal-width: "100%"
+terminal-height: "100%"
+terminal-border: "0"
+
+# ==========================================
+# PERFECTLY VERTICALLY CENTERED BOOT MENU
+# ==========================================
++ boot_menu {
+  left = 50%-240
+  width = 480
+  
+  # Perfect vertical center offset: 50% of screen minus half of our total height layout
+  top = 50%-110
+  
+  # Fits exactly 4 items + our custom blank spacing rule perfectly
+  height = 220
+  
+  item_font = "Unifont Regular 16"
+  item_color = "#CDD6F4"
+  selected_item_color = "#CDD6F4"
+  icon_width = 0
+  icon_height = 0
+  item_icon_space = 0
+  item_height = 36
+  item_padding = 5
+  item_spacing = 10
+  selected_item_pixmap_style = "select_*.png"
+}
+
+# ==========================================
+# TIMEOUT TIMER (Placed exactly under the blank space)
+# ==========================================
++ label {
+  # Positioned right at the bottom edge of the boot menu frame
+  top = 95%-36
+  
+  left = 35%
+  width = 30%
+  align = "center"
+  id = "__timeout__"
+  text = "Booting in %d seconds"
+  color = "#CDD6F4"
+}
