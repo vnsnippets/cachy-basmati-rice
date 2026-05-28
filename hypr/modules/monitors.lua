@@ -4,7 +4,7 @@
 hl.monitor({
     output = "DP-2",
     mode = "highres",
-    position = "auto-up",
+    position = "0x0",
     scale = 1,
 })
 
@@ -12,7 +12,7 @@ hl.monitor({
 hl.monitor({
     output = "eDP-1",
     mode = "highres",
-    position = "auto",
+    position = "760x1440",
     scale = 1,
 })
 

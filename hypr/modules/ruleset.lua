@@ -63,7 +63,6 @@ hl.window_rule({
     float = true,
     size = "920 600",
     max_size = "1000 800",
-    stay_focused = true,
     animation = "popin 25%"
 })
 
@@ -87,3 +86,14 @@ hl.layer_rule({
     match = { namespace = "qs-basmati-canvas" },
     no_anim = true
 })
+
+-- Screenshot Editor
+hl.window_rule({
+    name  = "float-satty",
+    match = { class = "com.gabm.satty" },
+    float = true,
+    max_size = "1600 1000",
+    animation = "popin 25%"
+})
+hl.layer_rule({ name = "disable-hyprpicker-anim", match =  { namespace = "^hyprpicker$" }, no_anim = true })
+hl.layer_rule({ name = "disable-selection-anim", match =  { namespace = "^selection$" }, no_anim = true })

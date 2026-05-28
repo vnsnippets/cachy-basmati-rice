@@ -62,25 +62,45 @@ ColumnLayout {
     }
 
     // Current Active Status Section
-    ColumnLayout {
+    RowLayout {
         Layout.fillWidth: true
         spacing: Style.spacing
 
-        StyledText {
+        ColumnLayout {
             Layout.fillWidth: true
-            horizontalAlignment: Text.AlignLeft
-            text: "Current:"
-            color: textColor
-            font.bold: true
+            spacing: Style.spacing
+
+            StyledText {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignLeft
+                text: "Current:"
+                color: textColor
+                font.bold: true
+            }
+
+            StyledText {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignLeft
+                text: Pipewire.defaultAudioSource ? Pipewire.defaultAudioSource.description : "No Microphone Detected"
+                color: Style.colors.text
+                elide: Text.ElideRight
+                wrapMode: Text.WordWrap
+            }
         }
 
-        StyledText {
-            Layout.fillWidth: true
-            horizontalAlignment: Text.AlignLeft
-            text: Pipewire.defaultAudioSource ? Pipewire.defaultAudioSource.description : "No Microphone Detected"
-            color: Style.colors.text
-            elide: Text.ElideRight
-            wrapMode: Text.WordWrap
+        Clickable {
+            colors.background.idle: Qt.alpha(Style.colors.surface, 0.60)
+            colors.background.active: Style.colors.surface
+            borderWidth: 0
+
+            StyledText {
+                anchors.centerIn: parent
+                text: Pipewire.defaultAudioSource?.muted ? "" : ""
+                color: Style.colors.text
+                elide: Text.ElideRight
+                wrapMode: Text.WordWrap
+            }
+            onClicked: Pipewire.defaultAudioSource.muted = !Pipewire.defaultAudioSource?.muted ?? false
         }
     }
 }

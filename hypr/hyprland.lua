@@ -8,23 +8,10 @@ quickshell = "quickshell -p " .. home .. "/.config/quickshell/Shell.qml"
 
 require("modules.colors")
 
-hl.permission({ 
-    binary = "/usr/(bin|local/bin)/grim", 
-    type = "screencopy", 
-    mode = "allow" 
-})
-
-hl.permission({ 
-    binary = "/usr/(bin|local/bin)/hyprlock", 
-    type = "screencopy", 
-    mode = "allow" 
-})
-
-hl.permission({ 
-    binary = "/usr/(lib|libexec|lib64)/xdg-desktop-portal-hyprland", 
-    type = "screencopy", 
-    mode = "allow" 
-})
+hl.permission({ binary = "/usr/(bin|local/bin)/grim", type = "screencopy", mode = "allow" })
+hl.permission({ binary = "/usr/(bin|local/bin)/hyprpicker", type = "screencopy", mode = "allow" })
+hl.permission({ binary = "/usr/(bin|local/bin)/hyprlock", type = "screencopy", mode = "allow" })
+hl.permission({ binary = "/usr/(lib|libexec|lib64)/xdg-desktop-portal-hyprland", type = "screencopy", mode = "allow" })
 
 hl.env("ZDOTDIR", home .. "/.config/zsh")
 
@@ -42,7 +29,7 @@ hl.env("PATH", current_path .. ":/usr/bin/dotnet:/usr/bin/dotnet/tools")
 
 -- hl.env("QML_IMPORT_PATH", home .. "/.config/quickshell/Plugins")
 hl.env("EDITOR", "micro")
--- hl.env("HYPRSHOT_DIR", home .. "/Pictures/Screenshots")
+hl.env("HYPRSHOT_DIR", home .. "/Pictures/Screenshots")
 -- hl.env("GTK_USE_PORTAL", "1")
 
 -- Core environment parameters
