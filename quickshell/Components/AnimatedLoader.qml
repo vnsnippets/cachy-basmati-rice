@@ -14,7 +14,7 @@ Item {
     // Animated state for Loader
     property bool _managedActive: false
 
-    // clip: true
+    clip: true
 
     implicitWidth: loader.item ? loader.item.implicitWidth : 0
     implicitHeight: loader.height

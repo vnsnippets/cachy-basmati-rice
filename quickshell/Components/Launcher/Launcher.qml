@@ -212,12 +212,26 @@ ColumnLayout {
 
                     text: model.name
                 }
+
+                StyledText {
+                    visible: model.app.genericName != model.name
+                    Layout.fillWidth: false
+                    Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+
+                    horizontalAlignment: Text.AlignRight
+                    verticalAlignment: Text.AlignVCenter
+
+                    style.idle: appItem.isSelected ? Style.colors.subtext : Style.colors.overlay
+                    style.active: Style.colors.subtext
+                    active: appItem.containsMouse || appItem.isSelected
+
+                    text: model.app.genericName
+                }
             }
 
             onClicked: {
                 appListView.currentIndex = model.index;
                 model.app.execute();
-                            
                 root.dismiss();
             }
         }

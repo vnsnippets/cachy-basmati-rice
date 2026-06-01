@@ -104,13 +104,21 @@ ColumnLayout {
         }
     }
 
-    Repeater {
+    ListView {
         model: device.networks.values
-        
+
+        Layout.fillWidth: true
+        Layout.leftMargin: Style.padding
+        Layout.rightMargin: Style.padding
+
+        spacing: Style.spacing
+        implicitHeight: 300
+
+        clip: true
+
         delegate: Rectangle {
-            Layout.leftMargin: Style.padding
-            Layout.rightMargin: Style.padding
-            Layout.fillWidth: true
+            anchors.left: parent.left
+            anchors.right: parent.right
             readonly property Network network: modelData
 
             radius: Style.radius/2
