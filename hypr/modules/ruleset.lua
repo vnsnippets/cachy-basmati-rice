@@ -73,6 +73,18 @@ hl.window_rule({
     opacity = "1 override",
 })
 
+hl.window_rule({
+    name = "firefox-downloads-floating",
+    match = { 
+        class = "^(firefox)$",
+        title = "^(Library)$"
+    },
+    float = true,
+    size = "920 600",
+    max_size = "1000 800",
+    animation = "popin 25%"
+})
+
 -- Layer rules also return a handle.
 -- local overlayLayerRule = hl.layer_rule({
 --     name  = "no-anim-overlay",
