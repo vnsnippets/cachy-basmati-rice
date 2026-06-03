@@ -4,7 +4,6 @@ import QtQuick.Controls
 
 import Quickshell
 import Quickshell.Io
-import Quickshell.Hyprland
 import Quickshell.Wayland
 import Quickshell.Services.UPower
 
@@ -18,21 +17,21 @@ import qs.Components.Networks
 
 ShellRoot {
     id: shell
-    Component.onCompleted: Hyprland.refreshMonitors();
 
-    // Pre-initialize UPower service at startup so battery status is ready when CentralConsole is opened
     readonly property var _upowerDevice: UPower.displayDevice
+    property var activeMonitor: null
 
     IpcHandler {
         target: "cockpit"
         function run() {
-            Hyprland.refreshMonitors()
-            shell.monitor = (shell.monitor === Hyprland.focusedMonitor) ? null : Hyprland.focusedMonitor;
-            Debug.log("IPC :: ","Current Monitor:", Hyprland.focusedMonitor?.name, "\tRegistered Monitor: ", shell.monitor?.name);
+            if (shell.activeMonitor !== null) {
+                shell.activeMonitor = null;
+            } else {
+                shell.activeMonitor = Quickshell.focusedScreen ?? Quickshell.screens[0];
+            }
+            Debug.log("IPC :: ", "Registered Monitor: ", shell.activeMonitor?.name ?? "None");
         }
     }
-
-    property var monitor: null
 
     Variants {
         model: Quickshell.screens
@@ -47,23 +46,22 @@ ShellRoot {
                 exclusionMode: ExclusionMode.Ignore
                 
                 WlrLayershell.layer: WlrLayer.Top
-                WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+                WlrLayershell.keyboardFocus: panel.isTargeted ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
                 color: "transparent"
                 surfaceFormat.opaque: false
-                focusable: false
+                focusable: panel.isTargeted
 
                 mask: Region { item: (panel.isTargeted) ? content : null }
 
-                HyprlandFocusGrab {
-                    windows: [panel]
-                    active: panel.isTargeted
-                    onCleared: shell.monitor = null
-                }
-
-                readonly property bool isTargeted: shell.monitor?.name === screen.name ?? false
+                readonly property bool isTargeted: shell.activeMonitor === screen
                 readonly property int animationDuration: 300
-                
+
+                // This background area catches clicks outside the central console to close it
+                TapHandler {
+                    enabled: panel.isTargeted
+                    onTapped: shell.activeMonitor = null
+                }
 
                 AnimatedLoader {
                     id: content
@@ -74,6 +72,12 @@ ShellRoot {
                         ]
                     }
                     active: panel.isTargeted
+
+                    // Prevent clicks inside the console from closing it
+                    TapHandler {
+                        gesturePolicy: TapHandler.WithinBounds
+                        onTapped: (event) => event.accepted = true
+                    }
                 }
 
                 Component {

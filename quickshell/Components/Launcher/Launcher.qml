@@ -15,7 +15,8 @@ ColumnLayout {
 
     function dismiss() {
         panel.WlrLayershell.keyboardFocus = WlrKeyboardFocus.None;
-        shell.monitor = null;
+        shell.activeMonitor = null;
+    
     }
 
     function updateSearchResults() {
