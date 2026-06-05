@@ -21,21 +21,21 @@
     "brightColor": true
   },
   "modules": [
-    {
-      "type": "custom",
-      "keyColor": "red",
-      "key": " Device"
-    },
+    // {
+    //   "type": "custom",
+    //   "keyColor": "red",
+    //   "key": " Device"
+    // },
     {
       "type": "host",
       "key": " Host",
       "keyColor": "magenta"
     },
-    {
-      "type": "wm",
-      "keyColor": "magenta",
-      "key": " Session"
-    },
+    // {
+    //   "type": "wm",
+    //   "keyColor": "magenta",
+    //   "key": " Session"
+    // },
     {
       "type": "localip",
       "keyColor": "magenta",
@@ -65,11 +65,11 @@
       }
     },
     "break",
-    {
-      "type": "custom",
-      "keyColor": "red",
-      "key": " System"
-    },
+    // {
+    //   "type": "custom",
+    //   "keyColor": "red",
+    //   "key": " System"
+    // },
     {
       "type": "cpu",
       "keyColor": "yellow",
@@ -82,17 +82,17 @@
       "key": " Graphics",
       "format": "{name}"
     },
-    {
-      "type": "memory",
-      "keyColor": "yellow",
-      "key": "{icon} Memory"
-    },
+    // {
+    //   "type": "memory",
+    //   "keyColor": "yellow",
+    //   "key": "{icon} Memory"
+    // },
     "break",
-    {
-      "type": "custom",
-      "keyColor": "red",
-      "key": " Disk"
-    },
+    // {
+    //   "type": "custom",
+    //   "keyColor": "red",
+    //   "key": " Disk"
+    // },
     {
       "type": "disk",
       "key": " {name}",
@@ -100,11 +100,11 @@
       "format": "{size-used} / {size-total} ({size-percentage})"
     },
     "break",
-    {
-      "type": "custom",
-      "keyColor": "red",
-      "key": "󰍹 Display"
-    },
+    // {
+    //   "type": "custom",
+    //   "keyColor": "red",
+    //   "key": "󰍹 Display"
+    // },
     {
       "type": "display",
       "key": " {name}",

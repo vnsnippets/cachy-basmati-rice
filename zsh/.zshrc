@@ -68,9 +68,9 @@ for aliases_file in $HOME/.aliases.*.zsh(N); do
 done
 
 # Fast fetch on open
-# if command -v fastfetch &> /dev/null; then
-#     fastfetch
-# fi
+if command -v fastfetch &> /dev/null; then
+    fastfetch
+fi
 
 # --- ZSH Plugins Sourced Last ---
 # Load History Substring Search

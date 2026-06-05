@@ -1,0 +1,39 @@
+# ~/.config/walker/config.toml
+# https://benz.gitbook.io/walker/customization/general-config
+
+# Basic window behavior
+as_window = false
+close_when_open = true
+click_to_close = true
+force_keyboard_focus = true
+
+# [providers]
+# # Providers queried when you start typing
+# default = ["desktopapplications"]
+# 
+# # Providers shown when the launcher is opened with an empty search bar
+# empty = ["desktopapplications"]
+# 
+# # Limits the maximum results to keep the UI clean
+# max_results = 20
+# 
+# [providers.max_results_provider]
+# desktopapplications = 15
+# 
+# [placeholders]
+# "default" = { input = "Search...", list = "No Results" }
+# "desktopapplications" = { input = "Start Application...", list = "No Applications Found" }
+
+# Catppuccin Attempt
+
+# Activating the custom layout & style directory
+theme = "catppuccin"
+
+[providers]
+# Keep it minimal: only applications and custom menus are queryable
+default = ["desktopapplications", "menus"]
+empty = ["desktopapplications"]
+
+[placeholders]
+"default" = { input = "Search...", list = "No Results" }
+"desktopapplications" = { input = "Search apps...", list = "No Applications Found" }

@@ -1,0 +1,11 @@
+[Plymouth Theme]
+Name=cross-hud
+Description=display a HUD
+Comment=Created By Aditya Shakya
+ModuleName=script
+
+[script]
+HorizontalAlignment=.5
+VerticalAlignment=.5
+ImageDir=/usr/share/plymouth/themes/cross-hud
+ScriptFile=/usr/share/plymouth/themes/cross-hud/cross-hud.script
