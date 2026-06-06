@@ -16,7 +16,7 @@
 * {
   all: unset;
   transition: all 0.3s ease-in-out;
-  font-family: 'Noto Sans';
+  font-family: 'JetBrainsMono Nerd Font';
 }
 
 popover {

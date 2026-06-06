@@ -55,7 +55,7 @@ show_help() {
     echo "Flags:"
     echo "  --modules   Symlink specified folder(s) into $TARGET_DIR."
     echo "  --starship  Symlink files from ./starship/ directly into $TARGET_DIR."
-    echo "  --rofi      Symlink folder ./rofi as a module and customize launcher applications"
+    echo "  --apps      Customize which applications should be visible in launchers."
     echo "  --sddm      Install SDDM theme to system directory (requires sudo)."
     echo ""
     echo "Example: ./$SCRIPT_NAME --modules hypr kitty --starship --rofi --sddm"
@@ -70,11 +70,7 @@ mkdir -p "$TARGET_DIR"
 
 for param in "$@"; do
     case "$param" in
-        --rofi)
-            echo ""
-            echo "󰀻  Setting up rofi (System access will be required)"
-            symlink_module "rofi"
-
+        --apps)
             echo ""
             echo "󰀻  Scanning applications in /usr/share/applications..."
             sudo -v
@@ -133,7 +129,7 @@ for param in "$@"; do
                 done
             done
             sudo -k
-            echo "  Rofi setup complete."
+            echo "  Desktop apps setup complete."
             continue
             ;;
         --sddm)

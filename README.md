@@ -20,7 +20,7 @@ For some of my utilities, additional packages were required:
 | .NET Development | `dotnet-sdk` `aspnet-runtime` `dotnet-targeting-pack` `aspnet-targeting-pack` `netstandard-targeting-pack` |
 | Docker | `docker` `docker-compose` |
 | GTK Theme | `nwg-look` `catppuccin-gtk-theme-mocha` |
-| Fonts | `ttf-liberation-mono-nerd` |
+| Fonts | `ttf-jetbrains-mono-nerd` |
 | Keyring | `gnome-keyring` |
 | File Manager | `nautilus` |
 | Telegram | `telegram-desktop` with themes from https://github.com/catppuccin/telegram |
@@ -69,7 +69,7 @@ Importing passwords and bookmarks.
 - Setting custom font (with Nerd Symbols) required changing the preset font family.
   - `Ctrl + ,` to open settings
   - Navigate to **Text Editor** > **Font** > **Font Family**
-  - Set desired font (e.g. `'LiterationMono Nerd Font Propo', monospace`)
+  - Set desired font (e.g. `'JetBrainsMono Nerd Font', monospace`)
 
 - Extensions installed:
   - `Container Tools` for Docker utilities

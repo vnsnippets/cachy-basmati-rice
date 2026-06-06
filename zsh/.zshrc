@@ -1,10 +1,16 @@
 HISTFILE=$HOME/.config/zsh/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
+HISTDUP=erase
 
 # History sharing across terminal instances
-setopt share_history
-setopt histignorealldups
+setopt appendhistory
+setopt sharehistory
+setopt hist_ignore_space
+setopt hist_ignore_all_dups
+setopt hist_save_no_dups
+setopt hist_ignore_dups
+setopt hist_find_no_dups
 
 # Fix what zsh defines as a word
 autoload -Uz select-word-style
@@ -56,6 +62,22 @@ command_not_found_handler () {
 if [ -f $HOME/.config/zsh/auto-suggestion.zsh ]; then
     source $HOME/.config/zsh/auto-suggestion.zsh
 fi
+
+# Prompt Engineering Starship
+# Add space between commands (but avoid blank space at top)
+PROMPT_NEEDS_NEWLINE=false
+
+precmd() {
+  if [[ "$PROMPT_NEEDS_NEWLINE" == true ]]; then
+    echo
+  fi
+  PROMPT_NEEDS_NEWLINE=true
+}
+
+clear() {
+  PROMPT_NEEDS_NEWLINE=false
+  command clear
+}
 
 # Initialize Starship Prompt
 if command -v starship &> /dev/null; then
