@@ -31,7 +31,7 @@ popover {
 }
 
 .large-icons {
-  -gtk-icon-size: 16px;
+  -gtk-icon-size: 24px;
 }
 
 scrollbar {
