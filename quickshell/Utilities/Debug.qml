@@ -2,7 +2,6 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-// import Quickshell.Io
 
 Singleton {
     readonly property bool _DEBUG_MODE_: Quickshell.env("DEBUG") === "1"

@@ -5,8 +5,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Pipewire
 
-import qs.Utilities
-
 Singleton {
     id: root
     PwObjectTracker {
@@ -15,6 +13,28 @@ Singleton {
     
     readonly property PwNode defaultSink: Pipewire.defaultAudioSink    
     readonly property var audioSinks: Pipewire.nodes.values.filter((node) => node.isSink && !node.isStream);
+    readonly property var sortedAudioSinks: audioSinks.sort((a, b) => {
+        // Name/Description: Alphabetical order
+        const nameA = a.description ?? a.name ?? '';
+        const nameB = b.description ?? b.name ?? '';
+        const sortName = nameA.localeCompare(nameB);
+        if (sortName !== 0) return sortName;
+
+        // (Fallback) ID: Smaller ID comes first
+        return a.id - b.id;
+    })
+
+    readonly property var audioStreams: Pipewire.nodes.values.filter((node) => !node.isSink && node.isStream);
+    readonly property var sortedAudioStreams: audioSinks.sort((a, b) => {
+        // Name/Description: Alphabetical order
+        const nameA = a.description ?? a.name ?? '';
+        const nameB = b.description ?? b.name ?? '';
+        const sortName = nameA.localeCompare(nameB);
+        if (sortName !== 0) return sortName;
+
+        // (Fallback) ID: Smaller ID comes first
+        return a.id - b.id;
+    })
 
     readonly property var connectedMicrophones: Pipewire.nodes.values.filter(node => node.ready && !node.name.includes(".monitor") && node.properties["media.class"] === "Audio/Source").map((node) => {
         const enrichedNode = {

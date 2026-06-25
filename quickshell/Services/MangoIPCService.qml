@@ -1,0 +1,43 @@
+pragma ComponentBehavior: Bound
+pragma Singleton
+
+import QtQuick
+
+import Quickshell
+import Quickshell.Io
+
+import qs.Utilities
+
+Singleton {
+    id: root
+
+    function getcurrentmonitor(callback) {
+        if (!callback) return false;
+
+        Daemon.execute(["mmsg", "get", "last_open_surface"], (e) => {
+            // E.g. {"monitor":"eDP-1","last_open_surface":"quickshell"}
+            const result = JSON.parse(e?.output?.trim());
+            callback(result?.monitor ?? null);
+        });
+    }
+
+    // Socket {
+    //     id: sock
+    //     path: Quickshell.env("MANGO_INSTANCE_SIGNATURE")
+    //     connected: true
+
+    //     onConnectedChanged: {
+    //         Debug.log("[Mango IPC]", `(${Quickshell.env("MANGO_INSTANCE_SIGNATURE")})`, connected ? "Connected." : "Connection Dropped.");
+    //         // if (connected) {
+    //         //     this.write("watch focusing-client\n")
+    //         // }
+    //     }
+
+    //     parser: SplitParser {
+    //         splitMarker: "\n"
+    //         onRead: (msg) => {
+    //             Debug.log("[Mango IPC]", msg.trim());
+    //         }
+    //     }
+    // }
+}
