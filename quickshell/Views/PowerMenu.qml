@@ -40,17 +40,17 @@ RowLayout {
             },
             {
                 title: "Suspend",
-                desc: "Sleep to low power state",
+                desc: "Low power state",
                 icon: "sleep.svg",
                 accent: Styles.colors.mauve,
                 command: ["systemctl", "suspend"]
             },
             {
                 title: "Log Out",
-                desc: "End current session",
+                desc: "End session",
                 icon: "logout.svg",
                 accent: Styles.colors.sapphire,
-                command: ["mmsg", "-q"]
+                command: ["loginctl", "kill-session", Quickshell.env("XDG_SESSION_ID")]
             }
         ]
         

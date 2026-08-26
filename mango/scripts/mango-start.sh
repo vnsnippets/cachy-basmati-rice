@@ -7,7 +7,7 @@
 swaybg -i "$HOME/.config/mango/wallpaper.jpg" -m fill &
 
 # Launch Elephant and Walker service
-elephant &
-walker --gapplication-service &
+# elephant &
+# walker --gapplication-service &
 
 quickshell -p ~/.config/quickshell/Shell.qml &

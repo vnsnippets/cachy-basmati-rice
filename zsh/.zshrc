@@ -109,3 +109,7 @@ if [ -f '/home/vnsnippets/Downloads/google-cloud-cli-linux-x86_64/google-cloud-s
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/vnsnippets/Downloads/google-cloud-cli-linux-x86_64/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/vnsnippets/Downloads/google-cloud-cli-linux-x86_64/google-cloud-sdk/completion.zsh.inc'; fi
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
