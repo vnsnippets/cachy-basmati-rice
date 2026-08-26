@@ -24,7 +24,7 @@ truncation_symbol = "../"
 truncate_to_repo = true
 
 [directory.substitutions]
-"~" = ""
+"~" = " "
 # "~/Documents" = "󰈙 "
 # "~/Downloads" = " "
 # "~/Music" = "󰝚 "
