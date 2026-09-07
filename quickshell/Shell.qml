@@ -123,7 +123,7 @@ ShellRoot {
                     WlrLayershell.layer: WlrLayer.Top
                     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
-                    color: (expanded) ? Qt.alpha(Styles.colors.crust, 0.4) : Qt.alpha(Styles.colors.crust, 0)
+                    color: (expanded) ? Qt.alpha(Styles.colors.mantle, 0.6) : Qt.alpha(Styles.colors.crust, 0)
                     Behavior on color { ColorAnimation { duration: 200 } }
 
                     surfaceFormat.opaque: false
