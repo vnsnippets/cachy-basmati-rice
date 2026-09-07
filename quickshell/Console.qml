@@ -12,18 +12,16 @@ import qs.Utilities
 import qs.Components
 import qs.Views.Audio
 import qs.Views.Network
+import qs.Views.Displays
 import qs.Views.Bluetooth
 
 Rectangle {
     id: root
-    property Component defaultcontent: Applications {
-        maxheight: 400
-    }
+    property Component defaultcontent: Applications { maxheight: 400 }
 
     property Component activecontent: defaultcontent
 
     property int contentradius: Styles.radius
-    property color contentbackground: Qt.alpha(Styles.colors.surface, 0.4)
     property int contentpadding: Styles.padding * 3
     property int contentgap: Styles.spacing / 1.5
 
@@ -34,14 +32,20 @@ Rectangle {
     antialiasing: true
     clip: true
 
+    // Set implicit dimensions based on child layout preferences
+    implicitWidth: layout.implicitWidth
     implicitHeight: layout.implicitHeight
 
     ColumnLayout {
         id: layout
-        anchors.fill: parent
+        // DO NOT use anchors.fill: parent here when root.implicitHeight relies on layout.implicitHeight
+        width: parent.width
         spacing: contentgap * 2
 
         visible: root.opacity > 0.1
+        
+        // Use margins within Layout instead of bottomMargin anchor
+        Layout.bottomMargin: contentpadding
         
         // --- Header Row ---
         RowLayout {
@@ -107,7 +111,7 @@ Rectangle {
 
             ClickableWithIcon {
                 visible: Debug._DEBUG_MODE_
-                size: Styles.battery.pill.size
+                size: Styles.size - Styles.padding * 2
                 padding: Styles.padding / 1.5
                 radius: contentradius
                 iconname: "dismiss.svg"
@@ -120,6 +124,7 @@ Rectangle {
             }
         }
 
+        // --- Controls Row ---
         RowLayout {
             Layout.fillWidth: true
             Layout.leftMargin: contentpadding
@@ -131,7 +136,7 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 radius: contentradius
-                color: contentbackground
+                color: Styles.pill.background
 
                 onSettingsClicked: activecontent = (active) ? defaultcontent : audiosettings
 
@@ -142,11 +147,11 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 radius: contentradius
-                color: contentbackground
+                color: Styles.pill.background
             }
 
             KeepAwakeControl {
-                defaultbackground: contentbackground
+                defaultbackground: Styles.pill.background
                 radius: contentradius
             }
 
@@ -161,7 +166,7 @@ Rectangle {
                 iconstyle.idle: (isloaded) ? Styles.colors.base : Styles.colors.red
                 iconstyle.active: Styles.colors.base
                 enablebackground: true
-                backgroundstyle.idle: (isloaded) ? Styles.colors.red : contentbackground
+                backgroundstyle.idle: (isloaded) ? Styles.colors.red : Styles.pill.background
                 backgroundstyle.active: Styles.colors.red
                 onClicked: activecontent = (isloaded) ? defaultcontent : powermenu
 
@@ -169,14 +174,49 @@ Rectangle {
             }
         }
 
+        // --- Main Container ---
         Container {
             id: content
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.margins: contentpadding
-            Layout.topMargin: 0
+            Layout.leftMargin: contentpadding
+            Layout.rightMargin: contentpadding
             sourceComponent: activecontent
             active: true
+        }
+
+        // --- Bottom Controls Row ---
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.leftMargin: contentpadding
+            Layout.rightMargin: contentpadding
+            Layout.bottomMargin: contentpadding
+            spacing: contentgap
+
+            KeepAwakeControl {
+                defaultbackground: Styles.pill.background
+                radius: contentradius
+            }
+            
+            Item { Layout.fillWidth: true }
+
+            ClickableWithIcon {
+                id: managedisplays
+                readonly property bool isloaded: activecontent === displaymanager
+
+                size: Styles.size - Styles.padding * 2
+                padding: Styles.padding
+                radius: contentradius
+                iconname: "desktop.svg"
+                iconstyle.idle: (isloaded) ? Styles.colors.base : Styles.colors.text
+                iconstyle.active: Styles.colors.base
+                enablebackground: true
+                backgroundstyle.idle: (isloaded) ? Styles.colors.text : Styles.pill.background
+                backgroundstyle.active: Styles.colors.text
+                onClicked: activecontent = (isloaded) ? defaultcontent : displaymanager
+
+                Component { id: displaymanager; DisplayManagement { title: "Monitors" } }
+            }
         }
     }
 }

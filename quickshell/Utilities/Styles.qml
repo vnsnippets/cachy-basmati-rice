@@ -56,6 +56,11 @@ Singleton {
     // Default size (height in most cases, but width as well for icon buttons)
     readonly property int size: 40
 
+    readonly property QtObject pill: QtObject {
+        readonly property color background: Qt.alpha(Styles.colors.surface, 0.4)
+        readonly property color text: Styles.colors.text
+    }
+
     readonly property QtObject font: QtObject {
         readonly property int size: 14
         readonly property string family: "Noto Sans" // customFont.name

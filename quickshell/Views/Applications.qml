@@ -12,7 +12,7 @@ import qs.Components
 ColumnLayout {
     id: root
 
-    property int maxheight: 0
+    required property int maxheight
     readonly property int itemheight: Styles.applications.item.height + Styles.padding
     readonly property string defaultappicon: "application-x-executable"
 
