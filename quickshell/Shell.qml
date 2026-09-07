@@ -3,7 +3,6 @@ import QtQuick.Controls
 
 import Quickshell
 import Quickshell.Io
-import Quickshell.Hyprland
 import Quickshell.Wayland
 
 import qs
@@ -27,6 +26,11 @@ ShellRoot {
                 EventOrchestrator.consoleToggleEvent(targetscreen);
             });
         }
+    }
+
+    Connections {
+        target: Quickshell
+        function onScreensChanged() { EventOrchestrator.screensChangeEvent(); }
     }
 
     Variants {

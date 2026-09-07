@@ -1,13 +1,32 @@
 pragma ComponentBehavior: Bound
 pragma Singleton
 
+import QtQuick
+
 import Quickshell
 import Quickshell.Io
 
+import qs.Services
 import qs.Utilities
 
 Singleton {
     id: wlroots
+    property var screens: []
+
+    Connections {
+        target: EventOrchestrator
+        function onScreensChangeEvent() {
+            randr((e) => {
+                screens = e;
+                Debug.log("[Screens] Count:", e.length);
+            })
+        }
+    }
+
+    Component.onCompleted: randr((e) => {
+        screens = e;
+        Debug.log("[Screens] Count:", e.length);
+    })
 
     function randr(callback) {
         if (!callback) return;

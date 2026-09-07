@@ -27,21 +27,6 @@ Singleton {
         Daemon.execute(["mmsg", "get", "all-monitors"], (e) => {
             try {
                 const result = JSON.parse(e?.output?.trim() ?? "[]");
-                
-                // // If mmsg returns an array of monitor objects: [{"name": "eDP-1", ...}, ...]
-                // if (Array.isArray(result)) {
-                //     const monitorNames = result.map(m => typeof m === "string" ? m : m.name).filter(Boolean);
-                //     callback(monitorNames);
-                //     return;
-                // }
-
-                // // Fallback if result is an object with a monitors key
-                // if (result && Array.isArray(result.monitors)) {
-                //     const monitorNames = result.monitors.map(m => typeof m === "string" ? m : m.name).filter(Boolean);
-                //     callback(monitorNames);
-                //     return;
-                // }
-
                 callback(result ?? []);
             } catch (err) {
                 callback([]);
@@ -49,23 +34,23 @@ Singleton {
         });
     }
 
-    Socket {
-        id: monitorwatch
-        path: Quickshell.env("MANGO_INSTANCE_SIGNATURE")
-        connected: true
+    // Socket {
+    //     id: monitorwatch
+    //     path: Quickshell.env("MANGO_INSTANCE_SIGNATURE")
+    //     connected: true
 
-        onConnectedChanged: {
-            Debug.log("[Mango IPC]", `(${Quickshell.env("MANGO_INSTANCE_SIGNATURE")})`, connected ? "Connected." : "Connection Dropped.");
-            if (connected) {
-                this.write("watch all-monitors\n")
-            }
-        }
+    //     onConnectedChanged: {
+    //         Debug.log("[Mango IPC]", `(${Quickshell.env("MANGO_INSTANCE_SIGNATURE")})`, connected ? "Connected." : "Connection Dropped.");
+    //         if (connected) {
+    //             this.write("watch all-monitors\n")
+    //         }
+    //     }
 
-        parser: SplitParser {
-            splitMarker: "\n"
-            onRead: (msg) => {
-                // Parse and act
-            }
-        }
-    }
+    //     parser: SplitParser {
+    //         splitMarker: "\n"
+    //         onRead: (msg) => {
+    //             Debug.log("[Watch All Monitors] Triggered.")
+    //         }
+    //     }
+    // }
 }

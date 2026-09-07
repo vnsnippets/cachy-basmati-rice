@@ -12,7 +12,7 @@ import qs.Components
 ColumnLayout {
     id: root
     
-    property var _monitors: []
+    property var _monitors: ScreenService.screens
     required property string title
     property int animduration: 200
 
@@ -81,17 +81,9 @@ ColumnLayout {
                         style.active: Qt.alpha(textcolor, 1)
                     }
 
-                    onClicked: ScreenService.safeToggle(monitor, () => {
-                        ScreenService.randr((monitors) => {
-                            _monitors = monitors;
-                        });
-                    })
+                    onClicked: ScreenService.safeToggle(monitor)
                 }
             }
         }
-
-        Component.onCompleted: ScreenService.randr((monitors) => {
-            _monitors = monitors
-        })
     }
 }

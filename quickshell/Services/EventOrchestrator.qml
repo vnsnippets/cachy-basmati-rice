@@ -9,4 +9,6 @@ Singleton {
 
     signal osdCloseEvent(ShellScreen screen);
     signal osdTimeoutEvent(ShellScreen screen);
+
+    signal screensChangeEvent();
 }
