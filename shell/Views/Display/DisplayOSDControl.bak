@@ -1,0 +1,37 @@
+import QtQuick
+import QtQuick.Layouts
+
+import Quickshell
+
+import qs
+import qs.Services
+import "../../Components"
+
+Rectangle {
+    id: control
+    implicitHeight: Constants.size * 2
+
+    readonly property int _animationDuration: Constants.animation_duration
+
+    property list<ShellScreen> added: []
+    property list<ShellScreen> removed: []
+    property var monitor: null
+
+    StyledText {
+        id: name
+
+        Layout.alignment: Qt.AlignVCenter
+        text: `${control.added.length} ${control.removed.length}`
+        colors.idle: Constants.color_text
+        colors.active: Constants.color_text
+
+        Behavior on opacity { NumberAnimation { duration: control._animationDuration } }
+    }
+
+    Component.onCompleted: {
+        DisplayService.refresh((added, removed) => {
+            control.added = added;
+            control.removed = removed;
+        })
+    }
+}

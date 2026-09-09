@@ -8,10 +8,12 @@ import "../../Components"
 
 Rectangle {
     id: control
-    implicitHeight: Constants.size
+    implicitHeight: content.implicitHeight + (Constants.padding * 2) // Constants.size
     readonly property int _animationDuration: Constants.animation_duration
     
     RowLayout {
+        id: content
+
         spacing: Constants.spacing
         anchors.fill: parent
         anchors.leftMargin: Constants.padding
@@ -36,8 +38,8 @@ Rectangle {
                 return icons[safeIndex];
             }
             
-            colors.icon.idle: Constants.color_text
-            colors.icon.active: Constants.color_accent
+            styles.icon.color.idle: Constants.color_text
+            styles.icon.color.active: Constants.color_accent
 
             onClicked: PipewireService.defaultSink.audio.muted = !PipewireService.defaultSink?.audio.muted
         }

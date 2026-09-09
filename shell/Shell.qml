@@ -24,32 +24,17 @@ ShellRoot {
 
             property bool _osdActive: false
 
-            Connections {
-                target: PipewireService.defaultSink?.audio ?? null
-
-                function onVolumeChanged() { 
-                    EventOrchestrator.osdTriggerEvent(scope.screen, EventOrchestrator._AUDIO_OSD_EVENT_KEY)
-                }
-                function onMutedChanged() { 
-                    EventOrchestrator.osdTriggerEvent(scope.screen, EventOrchestrator._AUDIO_OSD_EVENT_KEY)
-                }
-            }
-
+            // OSD Overlay Lifecycle
             Connections {
                 target: EventOrchestrator
                 
-                function onOsdTriggerEvent(screen, key) {
-                    if (screen === scope.screen) {
-                        scope._osdActive = true
-                    }
+                function onOsdTriggerEvent(key) {
+                    scope._osdActive = true
                 }
 
-                function onOsdDismissEvent(screen) {
-                    if (screen === scope.screen) {
-                        Debug.log(screen.name, "[OSD]", "-", "Closed");
-                        scope._osdActive = false;
-                        gc();
-                    }
+                function onOsdDismissEvent() {
+                    scope._osdActive = false;
+                    gc();
                 }
             }
 
@@ -82,5 +67,31 @@ ShellRoot {
                 }
             }
         }
+    }
+
+    Scope {
+        Connections {
+            target: Quickshell
+            function onScreensChanged() {
+                DisplayService.diff((previous, current) => {
+                    EventOrchestrator.osdTriggerEvent(EventOrchestrator._SCREEN_OSD_EVENT_KEY, { previous, current });
+                });
+            }
+        }
+
+        // Audio change listeners
+        Connections {
+            target: PipewireService.defaultSink?.audio ?? null
+            
+            function onVolumeChanged() {
+                EventOrchestrator.osdTriggerEvent(EventOrchestrator._AUDIO_OSD_EVENT_KEY, null);
+            }
+
+            function onMutedChanged() {
+                EventOrchestrator.osdTriggerEvent(EventOrchestrator._AUDIO_OSD_EVENT_KEY, null);
+            }
+        }
+
+        Component.onCompleted: DisplayService.init();
     }
 }

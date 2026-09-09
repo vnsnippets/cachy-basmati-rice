@@ -13,13 +13,23 @@ Button {
     property bool active: false
     property int radius: 0
 
+    component CustomBorderStyle: QtObject {
+        property int width: 0
+        property color color: "transparent"
+    }
+
+    component CustomColorStyle: QtObject {
+        property Types.ClickableStyle color: Types.ClickableStyle {}
+    }
+
     component CustomStyles: QtObject {
-        property Types.ClickableStyle icon: Types.ClickableStyle {}
-        property Types.ClickableStyle background: Types.ClickableStyle {}
+        property CustomColorStyle icon: CustomColorStyle {}
+        property CustomColorStyle background: CustomColorStyle {}
+        property CustomBorderStyle border: CustomBorderStyle {}
     }
 
     readonly property int _animationDuration: Constants.animation_duration
-    property CustomStyles colors: CustomStyles {}
+    property CustomStyles styles: CustomStyles {}
 
     padding: 0
     antialiasing: true
@@ -30,9 +40,11 @@ Button {
 
     // Directly define the background item and toggle its visibility instead
     background: Rectangle {
-        visible: clickable.colors.background !== null
         radius: clickable.radius
-        color: (enabled && (clickable.hovered || clickable.active)) ? clickable.colors.background.active : clickable.colors.background.idle
+        color: (enabled && (clickable.hovered || clickable.active)) ? clickable.styles.background.color.active : clickable.styles.background.color.idle
+
+        border.width: clickable.styles.border.width
+        border.color: clickable.styles.border.color
 
         Behavior on radius { NumberAnimation { duration: clickable._animationDuration } }
         Behavior on color { ColorAnimation { duration: clickable._animationDuration } }
@@ -41,7 +53,7 @@ Button {
 
     icon.width: size
     icon.height: size
-    icon.color:  (enabled && (hovered || active)) ? clickable.colors.icon.active : clickable.colors.icon.idle
+    icon.color:  (enabled && (hovered || active)) ? styles.icon.color.active : styles.icon.color.idle
     icon.source: Qt.resolvedUrl("../Assets/" + iconname)
 
     HoverHandler {

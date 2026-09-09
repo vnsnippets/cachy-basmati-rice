@@ -4,14 +4,13 @@ pragma Singleton
 import QtQuick
 
 import Quickshell
-import Quickshell.Io
 
 import qs.Utilities
 
 Singleton {
     id: root
 
-    function getcurrentmonitor(callback) {
+    function getCurrentMonitorName(callback) {
         if (!callback) return false;
 
         Daemon.execute(["mmsg", "get", "last_open_surface"], (e) => {

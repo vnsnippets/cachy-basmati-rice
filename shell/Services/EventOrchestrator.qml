@@ -5,8 +5,9 @@ import QtQuick
 import Quickshell
 
 Singleton {
-    readonly property string _AUDIO_OSD_EVENT_KEY: "AUDIOOSD"
+    readonly property string _AUDIO_OSD_EVENT_KEY:  "AUDIOOSD"
+    readonly property string _SCREEN_OSD_EVENT_KEY: "SCREENOSD"
 
-    signal osdDismissEvent(ShellScreen screen);
-    signal osdTriggerEvent(ShellScreen screen, string key);
+    signal osdDismissEvent();
+    signal osdTriggerEvent(string key, var data);
 }

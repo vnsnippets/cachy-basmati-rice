@@ -1,200 +1,228 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
 
 import Quickshell
-import Quickshell.Widgets
 
 import qs
 import qs.Services
 import qs.Utilities
-import "../Views/Audio"
 import "../Components"
+import "../Views/Audio"
+import "../Views/Display"
 
-ColumnLayout {
-    id: container
+Item {
+    id: _Container
 
     required property ShellScreen screen
     readonly property int _animationDuration: Constants.animation_duration
 
-    implicitWidth: Constants.osd_width
-    spacing: 8
+    // Active state properties
+    property string activeKey: ""
+    property string pendingKey: ""
 
-    // Active toast tracking model
-    ListModel {
-        id: toastModel
-    }
+    // Payload properties
+    property var activePayload: null
+    property var pendingPayload: null
 
-    function removeToast(key) {
-        for (let i = 0; i < toastModel.count; i++) {
-            if (toastModel.get(i).key === key) {
-                toastModel.remove(i);
-                break;
-            }
-        }
+    property bool isDismissing: false
 
-        // Notify shell when all OSD toasts are cleared
-        if (toastModel.count === 0) {
-            EventOrchestrator.osdDismissEvent(container.screen);
-        }
-    }
+    implicitWidth: _ToastItem.implicitWidth
+    implicitHeight: _ToastItem.implicitHeight
 
     Connections {
         target: EventOrchestrator
-        function onOsdTriggerEvent(_screen, key) {
-            if (_screen === container.screen) {
-                for (let i = 0; i < toastModel.count; i++) {
-                    if (toastModel.get(i).key === key) {
-                        toastModel.setProperty(i, "timestamp", Date.now());
-                        return;
-                    }
-                }
+        function onOsdTriggerEvent(key, payload) {
+            // Guard: Only handle event if targeted at this screen
+            // if (targetScreen !== null && targetScreen !== _Container.screen) return;
 
-                toastModel.append({ key: key, timestamp: Date.now() });
-                Debug.log(container.screen.name, "[OSD]", "-", "Open", `(${key.toUpperCase()})`)
+            if (_ToastItem.state === "visible" && _Container.activeKey === key) {
+                // Same active toast: update payload and refresh timer
+                _Container.activePayload = payload;
+                _ToastTimeout.restart();
+                return;
+            }
+
+            // New key and payload incoming
+            _Container.pendingKey = key;
+            _Container.pendingPayload = payload;
+
+            if (_ToastItem.state === "visible") {
+                // Animate out existing toast first
+                _ToastTimeout.stop();
+                _ToastItem.state = "hidden";
+            } else if (_ToastItem.state === "hidden" && !_ExitTransition.running) {
+                // Display immediately if idle
+                _Container.showPendingToast();
             }
         }
     }
 
-    Repeater {
-        model: toastModel
+    function showPendingToast() {
+        if (!_Container.pendingKey) return;
 
-        delegate: Clickable {
-            id: item
-            
-            required property string key
-            required property real timestamp
-            property bool dismiss_ongoing: false
+        _Container.activeKey = _Container.pendingKey;
+        _Container.activePayload = _Container.pendingPayload;
 
-            Layout.preferredWidth: Constants.osd_width
-            Layout.preferredHeight: contentLoader.implicitHeight
+        _Container.pendingKey = "";
+        _Container.pendingPayload = null;
 
-            // Per-toast timer
-            Timer {
-                id: itemTimer
-                interval: Constants.osd_timeout
-                running: true
-                onTriggered: () => {
-                    dismiss_ongoing = true;
-                    item.state = "hidden";
-                }
-            }
+        _ToastComponentLoader.sourceComponent = _Container.getComponentForKey(_Container.activeKey);
+        _ToastItem.state = "visible";
+        _ToastTimeout.restart();
 
-            // Reset timer when trigger event fires again for this key
-            onTimestampChanged: {
-                if (dismiss_ongoing) return;
-                itemTimer.restart();
-            }
+        Debug.log(_Container.screen.name, "[OSD]", "-", "Open", `(${_Container.activeKey.toUpperCase()})`);
+    }
 
-            // Pause individual timer on mouse hover
-            onContainsMouseChanged: {
-                if (dismiss_ongoing) return;
-                if (containsMouse) itemTimer.stop();
-                else itemTimer.restart();
-            }
-
-            onClicked: {
-                if (dismiss_ongoing) return;
-                itemTimer.stop();
-                dismiss_ongoing = true;
-                item.state = "hidden";
-            }
-
-            // Load the appropriate self-contained OSD component based on key
-            Loader {
-                id: contentLoader
-                anchors.centerIn: parent
-
-                sourceComponent: {
-                    switch (item.key) {
-                        case EventOrchestrator._AUDIO_OSD_EVENT_KEY:
-                            return audio_osd_component;
-                        // case "brightness":
-                        //     return brightnessOsdComponent;
-                        default:
-                            return null;
-                    }
-                }
-            }
-
-            // --- Independent Animations ---
-            // Start item hidden by default
-            state: "hidden"
-
-            // Trigger entry transition as soon as item is mounted
-            Component.onCompleted: state = "visible"
-
-            transform: Translate { id: offset; y: Constants.osd_offset_y }
-
-            states: [
-                State {
-                    name: "visible"
-                    PropertyChanges { item.opacity: 1 }
-                    PropertyChanges { offset.y: 0 }
-                },
-                State {
-                    name: "hidden"
-                    PropertyChanges { item.opacity: 0 }
-                    PropertyChanges { offset.y: Constants.osd_offset_y }
-                }
-            ]
-
-            transitions: [
-                Transition {
-                    from: "hidden"
-                    to: "visible"
-                    ParallelAnimation {
-                        NumberAnimation {
-                            target: item
-                            property: "opacity"
-                            duration: container._animationDuration
-                            easing.type: Easing.OutCubic
-                        }
-                        NumberAnimation {
-                            target: offset
-                            property: "y"
-                            duration: container._animationDuration
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-                },
-                Transition {
-                    from: "visible"
-                    to: "hidden"
-                    ParallelAnimation {
-                        NumberAnimation {
-                            target: item
-                            property: "opacity"
-                            duration: container._animationDuration
-                            easing.type: Easing.InCubic
-                        }
-                        NumberAnimation {
-                            target: offset
-                            property: "y"
-                            duration: container._animationDuration
-                            easing.type: Easing.InCubic
-                        }
-                    }
-                    onRunningChanged: {
-                        if (!running && item.state === "hidden") {
-                            container.removeToast(item.key);
-                        }
-                    }
-                }
-            ]
+    function getComponentForKey(key) {
+        switch (key) {
+            case EventOrchestrator._AUDIO_OSD_EVENT_KEY:
+                return _AudioOSD;
+            case EventOrchestrator._SCREEN_OSD_EVENT_KEY:
+                return _DisplayOSD;
+            default:
+                return null;
         }
     }
 
-    // Component templates for keys
+    Timer {
+        id: _ToastTimeout
+        interval: Constants.osd_timeout
+        onTriggered: {
+            _ToastItem.state = "hidden";
+        }
+    }
+
+    Clickable {
+        id: _ToastItem
+
+        implicitWidth: _ToastComponentLoader.implicitWidth
+        implicitHeight: _ToastComponentLoader.implicitHeight
+
+        anchors.fill: parent
+        opacity: 0
+
+        onContainsMouseChanged: {
+            if (_ToastItem.state !== "visible") return;
+            if (containsMouse) _ToastTimeout.stop();
+            else _ToastTimeout.restart();
+        }
+
+        onClicked: {
+            _ToastTimeout.stop();
+            _ToastItem.state = "hidden";
+        }
+
+        Loader {
+            id: _ToastComponentLoader
+            anchors.centerIn: parent
+            // Removed active: _ToastTimeout.running
+        }
+
+        transform: Translate { id: _ToastOffset; y: Constants.osd_offset_y }
+
+        state: "hidden"
+
+        states: [
+            State {
+                name: "visible"
+                PropertyChanges { _ToastItem.opacity: 1 }
+                PropertyChanges { _ToastOffset.y: 0 }
+            },
+            State {
+                name: "hidden"
+                PropertyChanges { _ToastItem.opacity: 0 }
+                PropertyChanges { _ToastOffset.y: Constants.osd_offset_y }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                from: "hidden"
+                to: "visible"
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: _ToastItem
+                        property: "opacity"
+                        duration: _Container._animationDuration
+                        easing.type: Easing.OutCubic
+                    }
+                    NumberAnimation {
+                        target: _ToastOffset
+                        property: "y"
+                        duration: _Container._animationDuration
+                        easing.type: Easing.OutCubic
+                    }
+                }
+            },
+            Transition {
+                id: _ExitTransition
+                from: "visible"
+                to: "hidden"
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: _ToastItem
+                        property: "opacity"
+                        duration: _Container._animationDuration
+                        easing.type: Easing.InCubic
+                    }
+                    NumberAnimation {
+                        target: _ToastOffset
+                        property: "y"
+                        duration: _Container._animationDuration
+                        easing.type: Easing.InCubic
+                    }
+                }
+                onRunningChanged: {
+                    if (!running && _ToastItem.state === "hidden") {
+                        _Container.activeKey = "";
+                        _Container.activePayload = null;
+                        
+                        if (_Container.pendingKey !== "") {
+                            // Immediately animate in the newly queued toast
+                            _Container.showPendingToast();
+                        } else {
+                            // Safely unload component AFTER the exit animation completes
+                            _ToastComponentLoader.sourceComponent = null;
+
+                            // Signal completion when completely cleared
+                            EventOrchestrator.osdDismissEvent();
+                            Debug.log(_Container.screen.name, "[OSD]", "-", "Closed");
+                        }
+                    }
+                }
+            }
+        ]
+    }
+
     Component {
-        id: audio_osd_component
+        id: _AudioOSD
 
         AudioVolumeControl {
             color: Constants.color_base
             radius: Constants.radius
             border.width: 1
             border.color: Constants.color_overlay
+
+            implicitWidth: Constants.osd_width
+        }
+    }
+
+    Component {
+        id: _DisplayOSD
+
+        DisplayOSDControl {
+            id: _DisplayControl
+            border.width: 1
+            border.color: Constants.color_overlay
+            color: Constants.color_base
+            radius: Constants.radius
+
+            Binding {
+                target: _DisplayControl
+                property: "payload"
+                value: _Container.activePayload
+            }
         }
     }
 }
