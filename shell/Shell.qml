@@ -23,6 +23,7 @@ ShellRoot {
             readonly property ShellScreen screen: modelData
 
             property bool _osdActive: false
+            on_OsdActiveChanged: Debug.log(scope.screen.name, "[OSD] ::", _osdActive)
 
             // OSD Overlay Lifecycle
             Connections {
@@ -38,32 +39,29 @@ ShellRoot {
                 }
             }
 
-            Loader {
-                active: scope._osdActive
+            PanelWindow {
+                screen: scope.screen
+                visible: scope._osdActive
 
-                PanelWindow {
+                anchors.bottom: true
+                anchors.left: true
+                anchors.right: true
+
+                exclusionMode: ExclusionMode.Ignore
+
+                WlrLayershell.namespace: Constants.namespace
+                WlrLayershell.layer: WlrLayer.Overlay
+                WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+
+                focusable: false
+                color: "transparent"
+
+                mask: Region { item: osd }
+
+                ToastContainer {
+                    id: osd
                     screen: scope.screen
-                    
-                    anchors.bottom: true
-                    anchors.left: true
-                    anchors.right: true
-
-                    exclusionMode: ExclusionMode.Ignore
-
-                    WlrLayershell.namespace: Constants.namespace
-                    WlrLayershell.layer: WlrLayer.Overlay
-                    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-
-                    focusable: false
-                    color: "transparent"
-
-                    mask: Region { item: osd }
-
-                    ToastContainer {
-                        id: osd
-                        screen: scope.screen
-                        anchors.centerIn: parent
-                    }
+                    anchors.centerIn: parent
                 }
             }
         }
