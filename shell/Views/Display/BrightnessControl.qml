@@ -3,7 +3,6 @@ import QtQuick.Layouts
 
 import qs
 import qs.Services
-import qs.Utilities
 import "../../Components"
 
 Rectangle {
@@ -42,7 +41,7 @@ Rectangle {
             value: BacklightService.brightness ?? 0
             onValueChanged: {
                 if (BacklightService.brightness !== value) {
-                    BacklightService.brightness = value;
+                    BacklightService.set(value);
                 }
             }
         }
