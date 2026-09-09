@@ -22,55 +22,31 @@ Rectangle {
     implicitWidth: mainLayout.implicitWidth + (Constants.padding * 2)
 
     onPayloadChanged: {
-        var events = [];
+        if (!payload) return;
 
-        const knownScreens = control.payload.previous;
-        const currentScreens = control.payload.current
+        const known = payload.previous || [];
+        const current = payload.current || [];
+        const getKey = s => s.description || s.name;
 
-        Debug.json(knownScreens.map(s => `${s.description}: ${s.enabled}`));
-        Debug.json(currentScreens.map(s => `${s.description}: ${s.enabled}`));
+        const knownMap = new Map(known.map(s => [getKey(s), s]));
+        const currentKeys = new Set(current.map(getKey));
+        const events = [];
 
-        // Map previous screens by unique description (or fallback to name)
-        const knownMap = new Map(knownScreens.map(s => [s.description || s.name, s]));
-        const currentKeys = new Set(currentScreens.map(s => s.description || s.name));
+        // Process current screens directly into the event array
+        for (const scr of current) {
+            const prev = knownMap.get(getKey(scr));
 
-        const connected = [];
-        const disconnected = [];
-
-        for (const current of currentScreens) {
-            const key = current.description || current.name;
-            const previous = knownMap.get(key);
-
-            if (current.enabled) {
-                // Connected: went from false -> true, OR newly added as enabled
-                if (!previous || !previous.enabled) {
-                    connected.push(current);
-                }
-            } else {
-                // Disconnected: went from true -> false, OR newly added as disabled
-                if (!previous || previous.enabled) {
-                    disconnected.push(current);
-                }
+            if (scr.enabled && (!prev || !prev.enabled)) {
+                events.push({ screen: scr, connected: true });
+            } else if (!scr.enabled && (!prev || prev.enabled)) {
+                events.push({ screen: scr, connected: false });
             }
         }
 
-        // Edge case: screen was previously enabled but is now completely missing
-        for (const prev of knownScreens) {
-            const key = prev.description || prev.name;
-            if (prev.enabled && !currentKeys.has(key)) {
-                disconnected.push(prev);
-            }
-        }
-
-        if (connected && connected.length > 0) {
-            for (var i = 0; i < connected.length; i++) {
-                events.push({ screen: connected[i], type: "connected" });
-            }
-        }
-
-        if (disconnected && disconnected.length > 0) {
-            for (var j = 0; j < disconnected.length; j++) {
-                events.push({ screen: disconnected[j], type: "disconnected" });
+        // Missing screens that were previously enabled
+        for (const prev of known) {
+            if (prev.enabled && !currentKeys.has(getKey(prev))) {
+                events.push({ screen: prev, connected: false });
             }
         }
 
@@ -94,8 +70,8 @@ Rectangle {
                 // Static icon using ClickableWithIcon
                 ClickableWithIcon {
                     size: Constants.size - Constants.padding * 2
-                    iconname: item.modelData.type === "connected" ? "desktop-on.svg" : "desktop-off.svg"
-                    styles.icon.color.idle: item.modelData.type === "connected" ? Constants.color_accent : Constants.color_muted
+                    iconname: item.modelData.connected ? "desktop-on.svg" : "desktop-off.svg"
+                    styles.icon.color.idle: item.modelData.connected ? Constants.color_accent : Constants.color_muted
                 }
 
                 StyledText {
