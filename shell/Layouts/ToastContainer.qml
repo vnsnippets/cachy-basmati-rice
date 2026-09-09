@@ -80,6 +80,8 @@ Item {
                 return _AudioOSD;
             case EventOrchestrator._SCREEN_OSD_EVENT_KEY:
                 return _DisplayOSD;
+            case EventOrchestrator._BACKLIGHT_OSD_EVENT_KEY:
+                return _BrightnessOSD;
             default:
                 return null;
         }
@@ -223,6 +225,19 @@ Item {
                 property: "payload"
                 value: _Container.activePayload
             }
+        }
+    }
+
+    Component {
+        id: _BrightnessOSD
+
+        BrightnessControl {
+            color: Constants.color_base
+            radius: Constants.radius
+            border.width: 1
+            border.color: Constants.color_overlay
+
+            implicitWidth: Constants.osd_width
         }
     }
 }

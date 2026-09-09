@@ -92,6 +92,14 @@ ShellRoot {
             }
         }
 
+        Connections {
+            target: BacklightService
+
+            function onBrightnessChanged() {
+                EventOrchestrator.osdTriggerEvent(EventOrchestrator._BACKLIGHT_OSD_EVENT_KEY, null);
+            }
+        }
+
         Component.onCompleted: DisplayService.init();
     }
 }
