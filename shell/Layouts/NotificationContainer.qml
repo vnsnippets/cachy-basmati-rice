@@ -21,7 +21,10 @@ PanelWindow {
     focusable: false
     color: "transparent"
 
-    visible: _NotificationModel.count > 0
+    // Use a JS Array instead of ListModel to preserve C++ QObjects and their methods
+    property var notificationList: []
+
+    visible: notificationList.length > 0
 
     mask: Region { item: _NotificationColumn }
 
@@ -36,8 +39,6 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
-    ListModel { id: _NotificationModel; }
-
     Column {
         id: _NotificationColumn
 
@@ -48,14 +49,18 @@ PanelWindow {
         spacing: Constants.padding
 
         Repeater {
-            model: _NotificationModel
+            model: _Container.notificationList
 
             delegate: Clickable {
                 id: _DelegateItem
 
-                required property var notification
-                required property int timestamp
+                required property var modelData
                 required property int index
+
+                readonly property var notifObj: _DelegateItem.modelData.notification
+                readonly property int timestamp: _DelegateItem.modelData.timestamp
+
+                Component.onCompleted: Debug.json(notifObj);
 
                 width: Constants.osd_width
                 implicitWidth: Constants.osd_width
@@ -70,8 +75,10 @@ PanelWindow {
 
                 function dismiss() {
                     _DismissTimer.stop();
-                    if (index >= 0 && index < _NotificationModel.count) {
-                        _NotificationModel.remove(index);
+                    if (index >= 0 && index < _Container.notificationList.length) {
+                        var list = _Container.notificationList.slice();
+                        list.splice(index, 1);
+                        _Container.notificationList = list;
                     }
                 }
 
@@ -114,23 +121,80 @@ PanelWindow {
                             }
 
                             StyledText {
-                                readonly property string appName: _DelegateItem.notification.appName.trim()
-                                Layout.fillWidth: true
+                                readonly property string appName: _DelegateItem.notifObj.appName
                                 visible: appName !== "notify-send" && appName.length > 0
                                 text: appName
                                 color: Constants.color_muted
                                 font.pixelSize: Constants.font_size
                                 horizontalAlignment: Text.AlignLeft
                             }
+
+                            Item { Layout.fillWidth: true }
+
+                            ClickableWithIcon {
+                                size: 16
+                                iconname: "dismiss.svg"
+                                styles.icon.color.idle: Constants.color_muted
+                                styles.icon.color.active: Constants.color_red
+                                onClicked: _DelegateItem.dismiss()
+                            }
+                        }
+
+                        StyledText {
+                            id: _SummaryText
+                            Layout.fillWidth: true
+
+                            readonly property string summary: _DelegateItem.notifObj.summary.trim()
+                            visible: summary.length > 0
+                            text: summary
+                            color: Constants.color_muted
+                            wrapMode: Text.Wrap
+                            horizontalAlignment: Text.AlignLeft
                         }
 
                         StyledText {
                             id: _BodyText
                             Layout.fillWidth: true
-                            text: _DelegateItem.notification.body
+                            text: _DelegateItem.notifObj.body
                             color: Constants.color_text
                             wrapMode: Text.Wrap
                             horizontalAlignment: Text.AlignLeft
+                        }
+
+                        // Notification Actions
+                        RowLayout {
+                            id: _ActionsRow
+                            Layout.fillWidth: true
+                            Layout.topMargin: Constants.spacing / 2
+
+                            visible: _DelegateItem.notifObj.actions.length > 0
+                            spacing: Constants.spacing
+
+                            Repeater {
+                                model: _DelegateItem.notifObj.actions ?? []
+
+                                delegate: Clickable {
+                                    id: _ActionButton
+                                    required property var modelData
+
+                                    implicitHeight: _ActionText.implicitHeight + Constants.padding
+
+                                    StyledText {
+                                        id: _ActionText
+                                        anchors.centerIn: parent
+                                        text: _ActionButton.modelData.text
+                                        colors.idle: Constants.color_muted
+                                        colors.active: Constants.color_text
+                                        font.pixelSize: Constants.font_size
+                                        active: _ActionButton.containsMouse
+                                    }
+
+                                    onClicked: {
+                                        _ActionButton.modelData.invoke();
+                                        _DelegateItem.dismiss();
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -148,19 +212,14 @@ PanelWindow {
             imageSupported: true
 
             onNotification: (notification) => {
-                _NotificationModel.append({
+                var list = _Container.notificationList.slice();
+                list.push({
                     timestamp: Date.now(),
-                    notification: {
-                        appName: notification.appName,
-                        body: notification.body,
-                        summary: notification.summary,
-                        urgency: notification.urgency,
-                        obj: notification
-                    }
+                    notification: notification
                 });
-                
+                _Container.notificationList = list;
+
                 Debug.log(_Container.screen.name, "[Notification]", "Received:", notification.appName, notification.body);
-                Debug.json(notification);
             }
         }
     }

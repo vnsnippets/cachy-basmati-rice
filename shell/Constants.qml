@@ -47,6 +47,6 @@ Singleton {
     readonly property int animation_duration: 250
     
     readonly property int osd_width: 320
-    readonly property int osd_timeout: 20000
+    readonly property int osd_timeout: 2000
     readonly property int osd_offset: 48
 }
