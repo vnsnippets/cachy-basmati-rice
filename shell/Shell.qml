@@ -58,6 +58,8 @@ ShellRoot {
                     EventOrchestrator.osdTriggerEvent(EventOrchestrator._SCREEN_OSD_EVENT_KEY, { previous, current });
                 });
             }
+
+            Component.onCompleted: DisplayService.init();
         }
 
         // Audio change listeners
@@ -80,7 +82,14 @@ ShellRoot {
                 EventOrchestrator.osdTriggerEvent(EventOrchestrator._BACKLIGHT_OSD_EVENT_KEY, null);
             }
         }
+        
+        NotificationServer {
+            bodySupported: true
+            bodyMarkupSupported: true
+            actionsSupported: true
+            imageSupported: true
 
-        Component.onCompleted: DisplayService.init();
+            onNotification: (e) => NotificationService.push(e);
+        }
     }
 }

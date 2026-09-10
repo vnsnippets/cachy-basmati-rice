@@ -9,7 +9,6 @@ import Quickshell.Services.Notifications
 
 import qs
 import qs.Services
-import qs.Utilities
 import "../Components"
 
 PanelWindow {
@@ -21,10 +20,7 @@ PanelWindow {
     focusable: false
     color: "transparent"
 
-    // Use a JS Array instead of ListModel to preserve C++ QObjects and their methods
-    property var notificationList: []
-
-    visible: notificationList.length > 0
+    visible: NotificationService.items.count > 0
 
     mask: Region { item: _NotificationColumn }
 
@@ -49,18 +45,13 @@ PanelWindow {
         spacing: Constants.padding
 
         Repeater {
-            model: _Container.notificationList
+            model: NotificationService.items
 
             delegate: Clickable {
                 id: _DelegateItem
 
                 required property var modelData
                 required property int index
-
-                readonly property var notifObj: _DelegateItem.modelData.notification
-                readonly property int timestamp: _DelegateItem.modelData.timestamp
-
-                Component.onCompleted: Debug.json(notifObj);
 
                 width: Constants.osd_width
                 implicitWidth: Constants.osd_width
@@ -71,15 +62,17 @@ PanelWindow {
                     else _DismissTimer.restart();
                 }
 
-                onClicked: _DelegateItem.dismiss();
+                onClicked: {
+                    var actions = _DelegateItem.modelData ? _DelegateItem.modelData.actions : null;
+                    var defaultAction = actions ? actions.find(a => (a.identifier || a.id) === "default") : null;
+                    if (defaultAction) {
+                        defaultAction.invoke(); // Fully preserved!
+                    }
+                }
 
                 function dismiss() {
                     _DismissTimer.stop();
-                    if (index >= 0 && index < _Container.notificationList.length) {
-                        var list = _Container.notificationList.slice();
-                        list.splice(index, 1);
-                        _Container.notificationList = list;
-                    }
+                    NotificationService.remove(_DelegateItem.modelData)
                 }
 
                 Timer {
@@ -113,15 +106,40 @@ PanelWindow {
                             id: _HeadingText
                             spacing: Constants.spacing
 
+                            // Application Icon (Left of timestamp)
+                            Image {
+                                id: _AppIcon
+
+                                readonly property string rawIcon: _DelegateItem.modelData.notification.appIcon ?? ""
+
+                                Layout.preferredWidth: 16
+                                Layout.preferredHeight: 16
+                                Layout.alignment: Qt.AlignVCenter
+
+                                // Hide if no icon is supplied or if icon fails to resolve
+                                visible: rawIcon.length > 0 && status === Image.Ready
+
+                                source: {
+                                    if (!rawIcon) return "";
+                                    if (rawIcon.startsWith("/") || rawIcon.startsWith("file://")) {
+                                        return rawIcon;
+                                    }
+                                    return "image://icon/" + rawIcon;
+                                }
+
+                                fillMode: Image.PreserveAspectFit
+                                asynchronous: true
+                            }
+
                             StyledText {
-                                text: Qt.formatDateTime(new Date(_DelegateItem.timestamp), "hh:mm AP")
+                                text: Qt.formatDateTime(_DelegateItem.modelData.createdAt, "HH:mm")
                                 color: Constants.color_muted
                                 font.pixelSize: Constants.font_size
                                 horizontalAlignment: Text.AlignLeft
                             }
 
                             StyledText {
-                                readonly property string appName: _DelegateItem.notifObj.appName
+                                readonly property string appName: _DelegateItem.modelData.notification?.appName ?? ""
                                 visible: appName !== "notify-send" && appName.length > 0
                                 text: appName
                                 color: Constants.color_muted
@@ -144,7 +162,7 @@ PanelWindow {
                             id: _SummaryText
                             Layout.fillWidth: true
 
-                            readonly property string summary: _DelegateItem.notifObj.summary.trim()
+                            readonly property string summary: _DelegateItem.modelData.notification?.summary.trim() ?? ""
                             visible: summary.length > 0
                             text: summary
                             color: Constants.color_muted
@@ -155,7 +173,7 @@ PanelWindow {
                         StyledText {
                             id: _BodyText
                             Layout.fillWidth: true
-                            text: _DelegateItem.notifObj.body
+                            text: _DelegateItem.modelData.notification.body
                             color: Constants.color_text
                             wrapMode: Text.Wrap
                             horizontalAlignment: Text.AlignLeft
@@ -167,11 +185,11 @@ PanelWindow {
                             Layout.fillWidth: true
                             Layout.topMargin: Constants.spacing / 2
 
-                            visible: _DelegateItem.notifObj.actions.length > 0
+                            visible: _DelegateItem.modelData.notification.actions.length > 0
                             spacing: Constants.spacing
 
                             Repeater {
-                                model: _DelegateItem.notifObj.actions ?? []
+                                model: _DelegateItem.modelData.notification.actions.filter((a => (a.identifier || a.id) !== "default")) ?? []
 
                                 delegate: Clickable {
                                     id: _ActionButton
@@ -198,28 +216,6 @@ PanelWindow {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    Scope {
-        NotificationServer {
-            id: _NotificationServer
-
-            bodySupported: true
-            bodyMarkupSupported: true
-            actionsSupported: true
-            imageSupported: true
-
-            onNotification: (notification) => {
-                var list = _Container.notificationList.slice();
-                list.push({
-                    timestamp: Date.now(),
-                    notification: notification
-                });
-                _Container.notificationList = list;
-
-                Debug.log(_Container.screen.name, "[Notification]", "Received:", notification.appName, notification.body);
             }
         }
     }
