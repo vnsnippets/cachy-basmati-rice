@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 
 import Quickshell
+import Quickshell.Wayland
 
 import qs
 import qs.Services
@@ -11,11 +12,20 @@ import "../Components"
 import "../Views/Audio"
 import "../Views/Display"
 
-Item {
+PanelWindow {
     id: _Container
 
-    required property ShellScreen screen
+    anchors.bottom: true
+    anchors.left: true
+    anchors.right: true
+
+    focusable: false
+    color: "transparent"
+
+    mask: Region { item: _ToastItem }
+
     readonly property int _animationDuration: Constants.animation_duration
+    readonly property int _padding: Constants.padding * 5
 
     // Active state properties
     property string activeKey: ""
@@ -28,7 +38,13 @@ Item {
     property bool isDismissing: false
 
     implicitWidth: _ToastItem.implicitWidth
-    implicitHeight: _ToastItem.implicitHeight
+    implicitHeight: _ToastItem.implicitHeight + _padding
+
+    exclusionMode: ExclusionMode.Ignore
+
+    WlrLayershell.namespace: Constants.namespace
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
     Connections {
         target: EventOrchestrator
@@ -101,7 +117,8 @@ Item {
         implicitWidth: _ToastComponentLoader.implicitWidth
         implicitHeight: _ToastComponentLoader.implicitHeight
 
-        anchors.fill: parent
+        anchors.centerIn: parent
+        anchors.bottomMargin: _Container._padding
         opacity: 0
 
         onContainsMouseChanged: {
@@ -118,10 +135,9 @@ Item {
         Loader {
             id: _ToastComponentLoader
             anchors.centerIn: parent
-            // Removed active: _ToastTimeout.running
         }
 
-        transform: Translate { id: _ToastOffset; y: Constants.osd_offset_y }
+        transform: Translate { id: _ToastOffset; y: Constants.osd_offset }
 
         state: "hidden"
 
@@ -134,7 +150,7 @@ Item {
             State {
                 name: "hidden"
                 PropertyChanges { _ToastItem.opacity: 0 }
-                PropertyChanges { _ToastOffset.y: Constants.osd_offset_y }
+                PropertyChanges { _ToastOffset.y: Constants.osd_offset }
             }
         ]
 

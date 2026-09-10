@@ -4,7 +4,7 @@ import QtQuick
 import QtQuick.Controls
 
 import Quickshell
-import Quickshell.Wayland
+import Quickshell.Services.Notifications
 
 import qs
 import qs.Layouts
@@ -18,51 +18,34 @@ ShellRoot {
     Variants {
         model: Quickshell.screens
         delegate: Scope {
-            id: scope
+            id: _Scope
             required property ShellScreen modelData
             readonly property ShellScreen screen: modelData
 
-            property bool _osdActive: false
-            on_OsdActiveChanged: Debug.log(scope.screen.name, "[OSD] ::", _osdActive)
+            property bool osdActive: false
+            onOsdActiveChanged: Debug.log(_Scope.screen.name, "[OSD] ::", osdActive)
 
             // OSD Overlay Lifecycle
             Connections {
                 target: EventOrchestrator
                 
                 function onOsdTriggerEvent(key) {
-                    scope._osdActive = true
+                    _Scope.osdActive = true
                 }
 
                 function onOsdDismissEvent() {
-                    scope._osdActive = false;
+                    _Scope.osdActive = false;
                     gc();
                 }
             }
 
-            PanelWindow {
-                screen: scope.screen
-                visible: scope._osdActive
+            OnScreenDisplayContainer {
+                screen: _Scope.screen
+                visible: _Scope.osdActive
+            }
 
-                anchors.bottom: true
-                anchors.left: true
-                anchors.right: true
-
-                exclusionMode: ExclusionMode.Ignore
-
-                WlrLayershell.namespace: Constants.namespace
-                WlrLayershell.layer: WlrLayer.Overlay
-                WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-
-                focusable: false
-                color: "transparent"
-
-                mask: Region { item: osd }
-
-                ToastContainer {
-                    id: osd
-                    screen: scope.screen
-                    anchors.centerIn: parent
-                }
+            NotificationContainer {
+                screen: _Scope.screen
             }
         }
     }

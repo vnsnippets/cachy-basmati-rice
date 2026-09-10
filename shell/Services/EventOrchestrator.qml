@@ -11,4 +11,6 @@ Singleton {
 
     signal osdDismissEvent();
     signal osdTriggerEvent(string key, var data);
+    
+    signal notificationEvent(int timestamp, var data)
 }
