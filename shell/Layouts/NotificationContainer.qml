@@ -342,7 +342,7 @@ PanelWindow {
                     }
                     onRunningChanged: {
                         if (!running && _DelegateItem.state === "hidden") {
-                            _DelegateItem.modelData.expire();
+                            _DelegateItem.modelData?.expire?.();
                         }
                     }
                 }
