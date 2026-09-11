@@ -5,7 +5,6 @@ import QtQuick.Layouts
 
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Services.Notifications
 
 import qs
 import qs.Services
@@ -20,7 +19,8 @@ PanelWindow {
     focusable: false
     color: "transparent"
 
-    visible: NotificationService.items.count > 0
+    // Use count or values.length for visibility without resetting model delegates
+    visible: NotificationService.notifications.values.length > 0
 
     mask: Region { item: _NotificationColumn }
 
@@ -45,13 +45,16 @@ PanelWindow {
         spacing: Constants.padding
 
         Repeater {
-            model: NotificationService.items
+            // Bind directly to the model to preserve existing delegate instances and timers
+            model: NotificationService.notifications
 
             delegate: Clickable {
                 id: _DelegateItem
 
+                // Capture timestamp at delegate creation so clock doesn't tick forward on re-render
+                readonly property date createdAt: new Date()
+
                 required property var modelData
-                required property int index
 
                 width: Constants.osd_width
                 implicitWidth: Constants.osd_width
@@ -63,24 +66,20 @@ PanelWindow {
                 }
 
                 onClicked: {
-                    var actions = _DelegateItem.modelData ? _DelegateItem.modelData.actions : null;
-                    var defaultAction = actions ? actions.find(a => (a.identifier || a.id) === "default") : null;
+                    const defaultAction = modelData.actions.find(a => a && (a.identifier === "default" || a.id === "default"));
                     if (defaultAction) {
-                        defaultAction.invoke(); // Fully preserved!
+                        defaultAction.invoke();
+                        _DismissTimer.stop();
+                        modelData.dismiss();
                     }
-                }
-
-                function dismiss() {
-                    _DismissTimer.stop();
-                    NotificationService.remove(_DelegateItem.modelData)
                 }
 
                 Timer {
                     id: _DismissTimer
-                    interval: Constants.osd_timeout
+                    interval: Constants.notification_timeout
                     running: true
                     repeat: false
-                    onTriggered: _DelegateItem.dismiss();
+                    onTriggered: _DelegateItem.modelData.dismiss();
                 }
 
                 Rectangle {
@@ -106,17 +105,15 @@ PanelWindow {
                             id: _HeadingText
                             spacing: Constants.spacing
 
-                            // Application Icon (Left of timestamp)
                             Image {
                                 id: _AppIcon
 
-                                readonly property string rawIcon: _DelegateItem.modelData.notification.appIcon ?? ""
+                                readonly property string rawIcon: _DelegateItem.modelData.appIcon ?? ""
 
                                 Layout.preferredWidth: 16
                                 Layout.preferredHeight: 16
                                 Layout.alignment: Qt.AlignVCenter
 
-                                // Hide if no icon is supplied or if icon fails to resolve
                                 visible: rawIcon.length > 0 && status === Image.Ready
 
                                 source: {
@@ -132,14 +129,14 @@ PanelWindow {
                             }
 
                             StyledText {
-                                text: Qt.formatDateTime(_DelegateItem.modelData.createdAt, "HH:mm")
+                                text: _DelegateItem.createdAt.toLocaleTimeString(Qt.locale(), "HH:mm")
                                 color: Constants.color_muted
                                 font.pixelSize: Constants.font_size
                                 horizontalAlignment: Text.AlignLeft
                             }
 
                             StyledText {
-                                readonly property string appName: _DelegateItem.modelData.notification?.appName ?? ""
+                                readonly property string appName: _DelegateItem.modelData?.appName ?? ""
                                 visible: appName !== "notify-send" && appName.length > 0
                                 text: appName
                                 color: Constants.color_muted
@@ -154,7 +151,10 @@ PanelWindow {
                                 iconname: "dismiss.svg"
                                 styles.icon.color.idle: Constants.color_muted
                                 styles.icon.color.active: Constants.color_red
-                                onClicked: _DelegateItem.dismiss()
+                                onClicked: {
+                                    _DismissTimer.stop();
+                                    _DelegateItem.modelData.dismiss();
+                                }
                             }
                         }
 
@@ -162,7 +162,7 @@ PanelWindow {
                             id: _SummaryText
                             Layout.fillWidth: true
 
-                            readonly property string summary: _DelegateItem.modelData.notification?.summary.trim() ?? ""
+                            readonly property string summary: _DelegateItem.modelData.summary.trim() ?? ""
                             visible: summary.length > 0
                             text: summary
                             color: Constants.color_muted
@@ -173,23 +173,22 @@ PanelWindow {
                         StyledText {
                             id: _BodyText
                             Layout.fillWidth: true
-                            text: _DelegateItem.modelData.notification.body
+                            text: _DelegateItem.modelData.body
                             color: Constants.color_text
                             wrapMode: Text.Wrap
                             horizontalAlignment: Text.AlignLeft
                         }
 
-                        // Notification Actions
                         RowLayout {
                             id: _ActionsRow
                             Layout.fillWidth: true
                             Layout.topMargin: Constants.spacing / 2
 
-                            visible: _DelegateItem.modelData.notification.actions.length > 0
+                            visible: _DelegateItem.modelData.actions.length > 0
                             spacing: Constants.spacing
 
                             Repeater {
-                                model: _DelegateItem.modelData.notification.actions.filter((a => (a.identifier || a.id) !== "default")) ?? []
+                                model: [ ..._DelegateItem.modelData.actions].filter((a => (a.identifier || a.id) !== "default")) ?? []
 
                                 delegate: Clickable {
                                     id: _ActionButton
@@ -208,8 +207,9 @@ PanelWindow {
                                     }
 
                                     onClicked: {
+                                        _DismissTimer.stop();
                                         _ActionButton.modelData.invoke();
-                                        _DelegateItem.dismiss();
+                                        _DelegateItem.modelData.dismiss();
                                     }
                                 }
                             }

@@ -82,14 +82,5 @@ ShellRoot {
                 EventOrchestrator.osdTriggerEvent(EventOrchestrator._BACKLIGHT_OSD_EVENT_KEY, null);
             }
         }
-        
-        NotificationServer {
-            bodySupported: true
-            bodyMarkupSupported: true
-            actionsSupported: true
-            imageSupported: true
-
-            onNotification: (e) => NotificationService.push(e);
-        }
     }
 }
