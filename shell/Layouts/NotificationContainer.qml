@@ -240,7 +240,8 @@ PanelWindow {
                     StyledText {
                         id: _BodyText
                         Layout.fillWidth: true
-                        text: _DelegateItem.modelData.body
+                        textFormat: Text.StyledText
+                        text: (_DelegateItem.modelData.body || "").replace(/\r?\n/g, "<br>")
                         color: Constants.color_text
                         wrapMode: Text.Wrap
                         maximumLineCount: 2
