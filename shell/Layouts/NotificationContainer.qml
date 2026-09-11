@@ -86,12 +86,28 @@ PanelWindow {
             implicitHeight: _CardBackground.implicitHeight
 
             onClicked: {
+                _DismissTimer.stop();
                 const defaultAction = modelData.actions.find(a => a && (a.identifier === "default" || a.id === "default"));
+                Debug.log(_Container.screen.name, "[Notification]", _DelegateItem.modelData.appName, "", "Default Action");
+                
                 if (defaultAction) {
-                    defaultAction.invoke();
-                    _DismissTimer.stop();
-                    modelData.dismiss();
+                    MangoIPCService.clients((clients) => {
+                        try {
+                            const target = NotificationService.target(clients, _DelegateItem.modelData);
+                            if (target && target.id) {
+                                Daemon.execute(["mmsg", "dispatch", "focusid", `client, ${target.id}`]);
+                                defaultAction.invoke();
+                            } else {
+                                Debug.log("Could not match notification to an active Mango client");
+                            }
+                        } catch (err) {
+                            Debug.log("Failed open target client:", err);
+                        }
+                    });
+                    return;
                 }
+
+                _DismissTimer.restart();
             }
 
             Timer {
@@ -174,30 +190,38 @@ PanelWindow {
 
                         Item { Layout.fillWidth: true }
 
-                        RowLayout {
-                            spacing: Constants.spacing
+                        ArcControl {
+                            id: _ArcControl
+                            Layout.preferredWidth: 16
+                            Layout.preferredHeight: 16
+                            Layout.alignment: Qt.AlignVCenter
 
-                            ArcControl {
-                                Layout.preferredWidth: 16
-                                Layout.preferredHeight: 16
-                                Layout.alignment: Qt.AlignVCenter
+                            ratio: _DelegateItem.dismissProgress
+                            stroke: 2
+                            arcColor: Constants.color_muted
+                            trackColor: Constants.color_overlay
 
-                                ratio: _DelegateItem.dismissProgress
-                                stroke: 2
-                                arcColor: Constants.color_muted
-                                trackColor: Constants.color_overlay
+                            visible: opacity > 0
+                            opacity: (_DelegateItem.containsMouse) ? 0 : 1
+
+                            Behavior on opacity { NumberAnimation { duration: _Container._animationDuration / 2 } }
+                        }
+
+                        ClickableWithIcon {
+                            size: 16
+                            iconname: "dismiss.svg"
+                            styles.icon.color.idle: Constants.color_muted
+                            styles.icon.color.active: Constants.color_red
+                            
+                            visible: _ArcControl.opacity === 0
+                            opacity: (_ArcControl.opacity === 0) ? 1 : 0
+
+                            onClicked: {
+                                _DismissTimer.stop();
+                                _DelegateItem.modelData.dismiss();
                             }
 
-                            ClickableWithIcon {
-                                size: 16
-                                iconname: "dismiss.svg"
-                                styles.icon.color.idle: Constants.color_muted
-                                styles.icon.color.active: Constants.color_red
-                                onClicked: {
-                                    _DismissTimer.stop();
-                                    _DelegateItem.modelData.dismiss();
-                                }
-                            }
+                            Behavior on opacity { NumberAnimation { duration: _Container._animationDuration / 2 } }
                         }
                     }
 
@@ -325,7 +349,7 @@ PanelWindow {
             ]
 
             Component.onCompleted: {
-                Debug.log(_DelegateItem.modelData.id, "Rendered")
+                Debug.log(_Container.screen.name, "[Notification]", _DelegateItem.modelData.appName, "| ID:", _DelegateItem.modelData.id);
                 state = "visible"
             }
         }

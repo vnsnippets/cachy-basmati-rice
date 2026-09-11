@@ -20,7 +20,6 @@ ShellRoot {
             readonly property ShellScreen screen: modelData
 
             property bool osdActive: false
-            onOsdActiveChanged: Debug.log(_Scope.screen.name, "[OSD] ::", osdActive)
 
             // OSD Overlay Lifecycle
             Connections {

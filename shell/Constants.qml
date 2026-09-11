@@ -50,5 +50,5 @@ Singleton {
     readonly property int osd_timeout: 2000
     readonly property int osd_offset: 48
 
-    readonly property int notification_timeout: 10000
+    readonly property int notification_timeout: 15000
 }

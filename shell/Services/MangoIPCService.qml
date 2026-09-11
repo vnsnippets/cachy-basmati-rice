@@ -10,27 +10,40 @@ import qs.Utilities
 Singleton {
     id: root
 
-    function getCurrentMonitorName(callback) {
-        if (!callback) return false;
+    function clients(callback, error) {
+        if (!callback) return;
 
-        Daemon.execute(["mmsg", "get", "last_open_surface"], (e) => {
-            // E.g. {"monitor":"eDP-1","last_open_surface":"quickshell"}
-            const result = JSON.parse(e?.output?.trim());
-            callback(result?.monitor ?? null);
+        Daemon.execute(["mmsg", "get", "all-clients"], (e) => {
+            const results = JSON.parse(e?.output?.trim() || "{}");
+            const clients = results.clients || [];
+            callback(clients);
         });
     }
 
-    function getconnectedmonitors(callback) {
-        if (!callback) return false;
+    QtObject {
+        id: monitors
+        function current(callback) {
+            if (!callback) return false;
 
-        Daemon.execute(["mmsg", "get", "all-monitors"], (e) => {
-            try {
-                const result = JSON.parse(e?.output?.trim() ?? "[]");
-                callback(result ?? []);
-            } catch (err) {
-                callback([]);
-            }
-        });
+            Daemon.execute(["mmsg", "get", "last_open_surface"], (e) => {
+                // E.g. {"monitor":"eDP-1","last_open_surface":"quickshell"}
+                const result = JSON.parse(e?.output?.trim());
+                callback(result ?? null);
+            });
+        }
+
+        function all(callback) {
+            if (!callback) return false;
+
+            Daemon.execute(["mmsg", "get", "all-monitors"], (e) => {
+                try {
+                    const result = JSON.parse(e?.output?.trim() ?? "[]");
+                    callback(result ?? []);
+                } catch (err) {
+                    callback([]);
+                }
+            });
+        }
     }
 
     // Socket {
