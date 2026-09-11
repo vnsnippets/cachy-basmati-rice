@@ -55,6 +55,15 @@ PanelWindow {
         HoverHandler { id: _ListViewHoverHandler }
         property alias hovered: _ListViewHoverHandler.hovered
 
+        // Smoothly animate remaining items when one is removed from the model
+        displaced: Transition {
+            NumberAnimation {
+                properties: "y"
+                duration: _Container._animationDuration
+                easing.type: Easing.OutCubic
+            }
+        }
+        
         delegate: Clickable {
             id: _DelegateItem
 
