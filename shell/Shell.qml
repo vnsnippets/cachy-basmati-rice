@@ -1,12 +1,9 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls
 
 import Quickshell
-import Quickshell.Services.Notifications
 
-import qs
 import qs.Layouts
 import qs.Services
 import qs.Utilities

@@ -6,8 +6,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
 
-import qs.Utilities
-
 Singleton {
     id: _Service
 
@@ -23,7 +21,6 @@ Singleton {
 
         onNotification: (e) => {
             e.tracked = true;
-            Debug.json(e);
         }
     }
 }
