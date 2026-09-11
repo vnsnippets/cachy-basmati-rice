@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
-# Define default mode
+# Define default settings
 MODE="region"
+SAVE_DIRECTLY=false
 
 # Parse arguments
-PARSED_ARGS=$(getopt -o rf --long region,full -n "$0" -- "$@")
+PARSED_ARGS=$(getopt -o rfs --long region,full,save -n "$0" -- "$@")
 if [ $? -ne 0 ]; then
-    echo "Usage: $0 [--region|-r] [--full|-f]"
+    echo "Usage: $0 [--region|-r] [--full|-f] [--save|-s]"
     exit 1
 fi
 
@@ -22,6 +23,10 @@ while true; do
             MODE="full"
             shift
             ;;
+        -s|--save)
+            SAVE_DIRECTLY=true
+            shift
+            ;;
         --)
             shift
             break
@@ -32,18 +37,20 @@ while true; do
     esac
 done
 
-# Define the temporary folder as the saving location (cleared on reboot)
+# Define directories
 TEMP_DIR="/tmp/screenshots"
-mkdir -p "$TEMP_DIR"
-
-# Define persistent screenshot saving location
 SAVE_DIR="$HOME/Pictures/Screenshots"
-mkdir -p "$SAVE_DIR"
+
+mkdir -p "$TEMP_DIR" "$SAVE_DIR"
 
 # Dynamic filename using date and time format
 FILENAME="Screenshot-$(date '+%Y%m%d-%H%M%S-%3N').png"
-TEMP_PATH="$TEMP_DIR/$FILENAME"
-SAVE_PATH="$SAVE_DIR/$FILENAME"
+
+if [ "$SAVE_DIRECTLY" = true ]; then
+    TARGET_PATH="$SAVE_DIR/$FILENAME"
+else
+    TARGET_PATH="$TEMP_DIR/$FILENAME"
+fi
 
 # Determine capture geometry/mode
 if [ "$MODE" = "region" ]; then
@@ -52,16 +59,16 @@ if [ "$MODE" = "region" ]; then
     if [ -z "$GEOMETRY" ]; then
         exit 0
     fi
-    grim -g "$GEOMETRY" -t png "$TEMP_PATH"
+    grim -g "$GEOMETRY" -t png "$TARGET_PATH"
 else
     # Capture full screen
-    grim -t png "$TEMP_PATH"
+    grim -t png "$TARGET_PATH"
 fi
 
-# Instantly copy the /tmp file to clipboard
-if [ -f "$TEMP_PATH" ]; then
-    wl-copy < "$TEMP_PATH"
+# Instantly copy the captured file to clipboard
+if [ -f "$TARGET_PATH" ]; then
+    wl-copy < "$TARGET_PATH"
 fi
 
-# Launch Satty in the background using the temporary file
-satty --filename "$TEMP_PATH" --output-filename "$SAVE_PATH" &
+SAVE_PATH="$SAVE_DIR/$FILENAME"
+satty --filename "$TARGET_PATH" --output-filename "$SAVE_PATH" &
