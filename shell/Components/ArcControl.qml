@@ -6,7 +6,7 @@ import QtQuick.Shapes
 import qs
 
 Item {
-    id: root
+    id: control
 
     // External target ratio (0.0 to 1.0)
     property real ratio: 1.0
@@ -27,15 +27,15 @@ Item {
     // Initial render animation from 0.0 to starting ratio
     NumberAnimation {
         id: _EntryAnim
-        target: root
+        target: control
         property: "animatedRatio"
         from: 0.0
-        to: root.ratio
+        to: control.ratio
         duration: 300
         easing.type: Easing.OutCubic
         onFinished: {
             // Bind directly to ratio prop once initial render animation completes
-            root.animatedRatio = Qt.binding(() => root.ratio)
+            control.animatedRatio = Qt.binding(() => control.ratio)
         }
     }
 
@@ -49,14 +49,14 @@ Item {
         // Track Background
         ShapePath {
             fillColor: "transparent"
-            strokeColor: root.trackColor
-            strokeWidth: root.stroke
+            strokeColor: control.trackColor
+            strokeWidth: control.stroke
 
             PathAngleArc {
-                centerX: root.center
-                centerY: root.center
-                radiusX: root.center - root.stroke
-                radiusY: root.center - root.stroke
+                centerX: control.center
+                centerY: control.center
+                radiusX: control.center - control.stroke
+                radiusY: control.center - control.stroke
                 startAngle: 0
                 sweepAngle: 360
             }
@@ -65,17 +65,17 @@ Item {
         // Active Arc
         ShapePath {
             fillColor: "transparent"
-            strokeColor: root.arcColor
-            strokeWidth: root.stroke
+            strokeColor: control.arcColor
+            strokeWidth: control.stroke
             capStyle: ShapePath.RoundCap
 
             PathAngleArc {
-                centerX: root.center
-                centerY: root.center
-                radiusX: root.center - root.stroke
-                radiusY: root.center - root.stroke
+                centerX: control.center
+                centerY: control.center
+                radiusX: control.center - control.stroke
+                radiusY: control.center - control.stroke
                 startAngle: -90
-                sweepAngle: 360 * Math.max(0, Math.min(1, root.animatedRatio))
+                sweepAngle: 360 * Math.max(0, Math.min(1, control.animatedRatio))
             }
         }
     }

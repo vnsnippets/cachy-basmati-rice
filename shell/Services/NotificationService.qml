@@ -28,7 +28,7 @@ Singleton {
     }
 
     function target(clients, notification) {
-        Debug.json("-------: ", notification);
+        Debug.log("-------: ", notification);
         Debug.log("---", "Discovered", clients.length, "clients");
 
         if (!notification || !Array.isArray(clients) || clients.length === 0) return null;

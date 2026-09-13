@@ -6,11 +6,9 @@ import Quickshell
 
 import qs.Layouts
 import qs.Services
-import qs.Utilities
 
 ShellRoot {
     id: shell
-    readonly property bool _DEBUG_MODE_: Quickshell.env("DEBUG") === "1"
 
     Variants {
         model: Quickshell.screens
