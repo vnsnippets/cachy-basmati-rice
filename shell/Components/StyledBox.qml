@@ -1,12 +1,21 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 
 import qs
 
 Rectangle {
-    color: Constants.color_base
-    border.color: Constants.color_overlay
+    component ColorStyles: QtObject {
+        property color background: "#313244"
+        property color border: "#a6adc8"
+    }
+    
+    property ColorStyles colors: ColorStyles {}
+
+    color: colors.background
+    border.color: colors.border
     border.width: 1
-    radius: Constants.radius
+    radius: 0
     antialiasing: true
     clip: true
 }

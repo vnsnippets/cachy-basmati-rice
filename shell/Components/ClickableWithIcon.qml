@@ -1,8 +1,9 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 
 import qs
-import "../Types" as Types
 
 Button {
     id: clickable
@@ -19,7 +20,7 @@ Button {
     }
 
     component CustomColorStyle: QtObject {
-        property Types.ClickableStyle color: Types.ClickableStyle {}
+        property list<color> color: [ "transparent", "transparent" ]
     }
 
     component CustomStyles: QtObject {
@@ -41,7 +42,7 @@ Button {
     // Directly define the background item and toggle its visibility instead
     background: Rectangle {
         radius: clickable.radius
-        color: (enabled && (clickable.hovered || clickable.active)) ? clickable.styles.background.color.active : clickable.styles.background.color.idle
+        color: (enabled && (clickable.hovered || clickable.active)) ? clickable.styles.background.color[1] : clickable.styles.background.color[0]
 
         border.width: clickable.styles.border.width
         border.color: clickable.styles.border.color
@@ -53,7 +54,7 @@ Button {
 
     icon.width: size
     icon.height: size
-    icon.color:  (enabled && (hovered || active)) ? styles.icon.color.active : styles.icon.color.idle
+    icon.color:  (enabled && (hovered || active)) ? styles.icon.color[1] : styles.icon.color[0]
     icon.source: Qt.resolvedUrl("../Assets/" + iconname)
 
     HoverHandler {

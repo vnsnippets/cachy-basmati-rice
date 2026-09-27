@@ -1,16 +1,29 @@
+// pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 
 import qs
 import qs.Services
-import qs.Utilities
-import "../../Components"
+import qs.Components
 
 Rectangle {
     id: control
-    implicitHeight: content.implicitHeight + (Constants.padding * 2) // Constants.size
+    implicitHeight: content.implicitHeight + (Constants.padding * 2)
     readonly property int _animationDuration: Constants.animation_duration
+
+    component ColorStyles: QtObject {
+        property color border: "transparent"
+        property color background: "transparent"
+        property color track: "transparent"
+        property color accent: "transparent"
+    }
     
+    property ColorStyles colors: ColorStyles {}
+
+    color: colors.background
+    border.color:  colors.border
+
     RowLayout {
         id: content
 
@@ -18,6 +31,7 @@ Rectangle {
         anchors.fill: parent
         anchors.leftMargin: Constants.padding
         anchors.rightMargin: Constants.padding
+        anchors.verticalCenter: parent.verticalCenter
 
         Timer { id: changeCooldown; running: false; interval: 1000 }
 
@@ -38,9 +52,7 @@ Rectangle {
                 return icons[safeIndex];
             }
             
-            styles.icon.color.idle: Constants.color_text
-            styles.icon.color.active: Constants.color_accent
-
+            styles.icon.color: [ Constants.color_text, Constants.color_accent ]
             onClicked: PipewireService.defaultSink.audio.muted = !PipewireService.defaultSink?.audio.muted
         }
         
@@ -54,8 +66,8 @@ Rectangle {
             from: 0; to: 100;
             stepSize: 5
 
-            colors.track: Constants.color_muted
-            colors.accent: Constants.color_accent
+            colors.track: control.colors.track
+            colors.accent: control.colors.accent
             size: 12
 
             value: PipewireService.defaultSink?.audio?.volume * 100 ?? 0
@@ -73,25 +85,9 @@ Rectangle {
 
             Layout.alignment: Qt.AlignVCenter
             text: Math.round((PipewireService.defaultSink?.audio.volume * 100) / 5) * 5 + "%"
-            colors.idle: Constants.color_text
-            colors.active: Constants.color_text
+            color: Constants.color_text
 
             Behavior on opacity { NumberAnimation { duration: control._animationDuration } }
         }
-
-        // ClickableWithIcon {
-        //     opacity: (label.visible) ? 0 : 1
-        //     visible: opacity > 0
-        //     size: Constants.size - Constants.padding * 2
-        //     iconname: "settings.svg"
-        //     colors.icon.idle: Constants.color_text
-        //     colors.icon.active: Constants.color_accent
-
-        //     onClicked: control.settingsClicked();
-
-        //     Behavior on opacity {
-        //         NumberAnimation { duration: root.animduration }
-        //     }
-        // }
     }
 }

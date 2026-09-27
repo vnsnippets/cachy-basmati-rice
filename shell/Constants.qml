@@ -30,15 +30,22 @@ Singleton {
     readonly property color color_sapphire: "#74c7ec"
     readonly property color color_blue: "#89b4fa"
     readonly property color color_lavender: "#b4befe"
-    
+
     readonly property color color_text: "#cdd6f4"
-    readonly property color color_subtext: "#a6adc8"
+    // readonly property color color_subtext1: "#bac2de"
+    // readonly property color color_subtext0: "#a6adc8"
+    readonly property color color_subtext: "#9399b2"
+    // readonly property color color_overlay2: "#9399b2"
+    // readonly property color color_overlay1: "#7f849c"
+    readonly property color color_overlay: "#6c7086"
+    // readonly property color color_surface2: "#585b70"
+    // readonly property color color_surface1: "#45475a"
+    readonly property color color_surface: "#313244"
+    readonly property color color_base: "#1e1e2e"
+    readonly property color color_mantle: "#181825"
+    readonly property color color_crust: "#11111b"
+
     readonly property color color_accent: color_yellow
-    readonly property color color_text_accent: color_base
-    readonly property color color_muted: "#6c7086"
-    readonly property color color_overlay: "#313244"
-    readonly property color color_surface: "#181825"
-    readonly property color color_base: "#11111b"
 
     readonly property real roundness: 0.5
     readonly property int radius: roundness * 24
@@ -52,20 +59,58 @@ Singleton {
     // in Clickable Icon Buttons
     readonly property int size: 40
     readonly property int animation_duration: 250
-    
+
+    // On Screen Displays    
     readonly property int osd_width: 320
     readonly property int osd_timeout: 2000
     readonly property int osd_offset: 48
+    readonly property color osd_color_background: color_mantle
+    readonly property color osd_color_border: color_surface
 
+    // Notifications
+    readonly property int notification_width: 320
+    readonly property int notification_offset: 16
     readonly property int notification_timeout: 15000
+    readonly property color notification_color_background: color_mantle
+    readonly property color notification_color_border: color_surface
+    readonly property color notification_color_border_active: color_overlay
+    readonly property color notification_color_text: color_text
+    readonly property color notification_color_subtext: color_subtext
+    readonly property color notification_color_ticker_background: color_mantle
+    readonly property color notification_color_ticker_foreground: color_surface
 
+    //  Center Console
     readonly property int console_width: 720
+    readonly property color console_color_backdrop: color_crust
+    readonly property color console_color_background: color_crust
+    readonly property color console_color_border: color_surface
 
     // Applications
     readonly property string spotlight_search_text: "Search..."
     readonly property string spotlight_search_icon: "search.svg"
+    readonly property color spotlight_search_color_background: color_surface
+    readonly property color spotlight_search_color_border: color_overlay
+    readonly property color spotlight_search_color_active: color_accent
+    readonly property color spotlight_search_color_text: color_text
 
-    // System
-    readonly property int battery_warning_threshold: 40
-    readonly property int battery_critical_threshold: 20
+    readonly property color spotlight_app_color_background: color_transparent
+    readonly property color spotlight_app_color_text: color_subtext
+    readonly property color spotlight_app_color_border_active: color_surface
+    readonly property color spotlight_app_color_background_active: color_base
+    readonly property color spotlight_app_color_text_active: color_text
+
+    // System : Clock
+    readonly property color clock_color_text: color_text
+    readonly property color clock_color_subtext: color_overlay
+
+    // System : Battery
+    readonly property real battery_threshold_warning: 0.4
+    readonly property real battery_threshold_critical: 0.2
+    readonly property color battery_color_background: color_base
+    readonly property color battery_color_text_active: color_base
+    readonly property color battery_color_default: color_text
+    readonly property color battery_color_warning: color_peach
+    readonly property color battery_color_critical: color_red
+    readonly property color battery_color_charging: color_yellow
+
 }

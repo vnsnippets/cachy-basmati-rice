@@ -13,11 +13,14 @@ Item {
 
     // Internal property driven during initial load and live updates
     property real animatedRatio: 0.0
-
     property real stroke: 2
+
+    component ColorStyles: QtObject {
+        property color arc: "#a6adc8"
+        property color track: "#313244"
+    }
     
-    property color arcColor: Constants.color_text
-    property color trackColor: Constants.color_overlay
+    property ColorStyles colors: ColorStyles {}
 
     implicitWidth: 16
     implicitHeight: 16
@@ -49,7 +52,7 @@ Item {
         // Track Background
         ShapePath {
             fillColor: "transparent"
-            strokeColor: control.trackColor
+            strokeColor: control.colors.track
             strokeWidth: control.stroke
 
             PathAngleArc {
@@ -65,7 +68,7 @@ Item {
         // Active Arc
         ShapePath {
             fillColor: "transparent"
-            strokeColor: control.arcColor
+            strokeColor: control.colors.arc
             strokeWidth: control.stroke
             capStyle: ShapePath.RoundCap
 

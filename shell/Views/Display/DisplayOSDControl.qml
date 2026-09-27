@@ -5,7 +5,7 @@ import QtQuick.Layouts
 
 import qs
 import qs.Utilities
-import "../../Components"
+import qs.Components
 
 Rectangle {
     id: control

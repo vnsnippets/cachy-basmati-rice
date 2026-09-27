@@ -1,17 +1,18 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 
 import qs
-import "../Types" as Types
 
 Text {
     id: control
 
-    property Types.ClickableStyle colors: Types.ClickableStyle {}
+    property list<color> colors: [ "#505050", "#000000" ]
     property bool active: false
 
     readonly property int _animationDuration: Constants.animation_duration
 
-    color: (active) ? colors.active : colors.idle
+    color: (active) ? colors[1] : colors[0]
     font.pixelSize: Constants.font_size
     font.family: Constants.font_family
 

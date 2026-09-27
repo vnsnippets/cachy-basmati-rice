@@ -1,13 +1,18 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 
 import qs
 import qs.Components
-import "../Views/System"
+import qs.Views.System
 
 StyledBox {
     id: root
     readonly property int _gap: Constants.spacing / 1.5
+
+    colors.background: Constants.console_color_background
+    colors.border: Constants.console_color_border
 
     radius: Constants.radius * 2
     
@@ -27,12 +32,11 @@ StyledBox {
         RowLayout {
             Layout.fillWidth: true
             Layout.margins: Constants.padding * 2
-            Layout.alignment: Qt.AlignVCenter
             spacing: root._gap
 
-            ClockControl {}
+            ClockControl { Layout.alignment: Qt.AlignTop; }
             Item { Layout.fillWidth: true; }
-            BatteryControl {}
+            BatteryControl { Layout.alignment: Qt.AlignTop; }
         }
     }
 }

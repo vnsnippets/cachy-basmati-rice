@@ -8,7 +8,7 @@ import Quickshell.Wayland
 import qs
 import qs.Services
 import qs.Utilities
-import "../Views"
+import qs.Views
 
 PanelWindow {
     id: container
@@ -33,7 +33,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Top
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
-    color: (expanded) ? Qt.alpha(Constants.color_base, 0.6) : Qt.alpha(Constants.color_surface, 0)
+    color: (expanded) ? Qt.alpha(Constants.console_color_backdrop, 0.6) : Qt.alpha(Constants.console_color_backdrop, 0)
     Behavior on color { ColorAnimation { duration: 200 } }
 
     surfaceFormat.opaque: false

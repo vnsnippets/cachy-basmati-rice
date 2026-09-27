@@ -9,10 +9,10 @@ import Quickshell.Wayland
 import qs
 import qs.Services
 import qs.Utilities
-import "../Components"
+import qs.Components
 
 PanelWindow {
-    id: _Container
+    id: container
 
     anchors.bottom: true
     anchors.top: true
@@ -25,10 +25,10 @@ PanelWindow {
 
     mask: Region { item: _NotificationList }
 
-    readonly property int _padding: Constants.padding * 2
+    readonly property int _padding: Constants.notification_offset
     readonly property int _animationDuration: Constants.animation_duration
 
-    implicitWidth: Constants.osd_width + (_padding * 2)
+    implicitWidth: Constants.notification_width + (_padding * 2)
 
     exclusionMode: ExclusionMode.Ignore
 
@@ -42,10 +42,10 @@ PanelWindow {
 
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        anchors.margins: _Container._padding
+        anchors.margins: container._padding
 
-        width: Constants.osd_width
-        implicitWidth: Constants.osd_width
+        width: Constants.notification_width
+        implicitWidth: Constants.notification_width
         implicitHeight: contentHeight
         
         spacing: Constants.padding
@@ -59,7 +59,7 @@ PanelWindow {
         displaced: Transition {
             NumberAnimation {
                 properties: "y"
-                duration: _Container._animationDuration
+                duration: container._animationDuration
                 easing.type: Easing.OutCubic
             }
         }
@@ -81,14 +81,14 @@ PanelWindow {
 
             readonly property bool appNameIsSummary: modelData?.appName.toLowerCase().trim() === modelData?.summary.toLowerCase().trim()
 
-            width: Constants.osd_width
-            implicitWidth: Constants.osd_width
+            width: Constants.notification_width
+            implicitWidth: Constants.notification_width
             implicitHeight: _CardBackground.implicitHeight
 
             onClicked: {
                 _DismissTimer.stop();
                 const defaultAction = modelData.actions.find(a => a && (a.identifier === "default" || a.id === "default"));
-                Debug.log(_Container.screen.name, "[Notification]", _DelegateItem.modelData.appName, "", "Default Action");
+                Debug.log(container.screen.name, "[Notification]", _DelegateItem.modelData.appName, "", "Default Action");
                 
                 if (defaultAction) {
                     MangoIPCService.clients((clients) => {
@@ -129,13 +129,13 @@ PanelWindow {
 
                 readonly property int item_padding: Constants.padding * 3
 
-                width: Constants.osd_width
+                width: Constants.notification_width
                 implicitHeight: _ContentColumn.implicitHeight + item_padding
 
-                color: Constants.color_base
+                color: Constants.notification_color_background
                 radius: Constants.radius
                 border.width: 1
-                border.color: _DelegateItem.containsMouse ? Qt.alpha(Constants.color_muted, 0.5) : Qt.alpha(Constants.color_muted, 0.25)
+                border.color: _DelegateItem.containsMouse ? Constants.notification_color_border_active : Constants.notification_color_border
 
                 Behavior on border.color { ColorAnimation { duration: Constants.animation_duration } }
 
@@ -174,7 +174,7 @@ PanelWindow {
 
                         StyledText {
                             text: _DelegateItem.createdAt.toLocaleTimeString(Qt.locale(), "HH:mm")
-                            color: Constants.color_muted
+                            color: Constants.notification_color_subtext
                             font.pixelSize: Constants.font_size
                             horizontalAlignment: Text.AlignLeft
                         }
@@ -183,7 +183,7 @@ PanelWindow {
                             readonly property string appName: (_DelegateItem.appNameIsSummary) ? _DelegateItem.modelData?.summary : _DelegateItem.modelData?.appName
                             visible: appName !== "notify-send" && appName.length > 0
                             text: appName
-                            color: Constants.color_muted
+                            color: Constants.notification_color_subtext
                             font.pixelSize: Constants.font_size
                             horizontalAlignment: Text.AlignLeft
                         }
@@ -198,20 +198,19 @@ PanelWindow {
 
                             ratio: _DelegateItem.dismissProgress
                             stroke: 2
-                            arcColor: Constants.color_muted
-                            trackColor: Constants.color_overlay
+                            colors.arc: Constants.notification_color_ticker_foreground
+                            colors.track: Constants.notification_color_ticker_background
 
                             visible: opacity > 0
                             opacity: (_DelegateItem.containsMouse) ? 0 : 1
 
-                            Behavior on opacity { NumberAnimation { duration: _Container._animationDuration / 2 } }
+                            Behavior on opacity { NumberAnimation { duration: container._animationDuration / 2 } }
                         }
 
                         ClickableWithIcon {
                             size: 16
                             iconname: "dismiss.svg"
-                            styles.icon.color.idle: Constants.color_muted
-                            styles.icon.color.active: Constants.color_red
+                            styles.icon.color: [ Constants.notification_color_subtext, Constants.color_red ]
                             
                             visible: _ArcControl.opacity === 0
                             opacity: (_ArcControl.opacity === 0) ? 1 : 0
@@ -221,7 +220,7 @@ PanelWindow {
                                 _DelegateItem.modelData.dismiss();
                             }
 
-                            Behavior on opacity { NumberAnimation { duration: _Container._animationDuration / 2 } }
+                            Behavior on opacity { NumberAnimation { duration: container._animationDuration / 2 } }
                         }
                     }
 
@@ -232,7 +231,7 @@ PanelWindow {
                         readonly property string summary: _DelegateItem.modelData.summary.trim() ?? ""
                         visible: summary.length > 0 && !_DelegateItem.appNameIsSummary
                         text: summary
-                        color: Constants.color_muted
+                        color: Constants.notification_color_subtext
                         wrapMode: Text.Wrap
                         horizontalAlignment: Text.AlignLeft
                     }
@@ -242,7 +241,7 @@ PanelWindow {
                         Layout.fillWidth: true
                         textFormat: Text.StyledText
                         text: (_DelegateItem.modelData.body || "").replace(/\r?\n/g, "<br>")
-                        color: Constants.color_text
+                        color: Constants.notification_color_text
                         wrapMode: Text.Wrap
                         maximumLineCount: 2
                         elide: Text.ElideRight
@@ -270,8 +269,7 @@ PanelWindow {
                                     id: _ActionText
                                     anchors.centerIn: parent
                                     text: _ActionButton.modelData.text
-                                    colors.idle: Constants.color_muted
-                                    colors.active: Constants.color_text
+                                    colors: [ Constants.notification_color_subtext, Constants.notification_color_text ]
                                     font.pixelSize: Constants.font_size
                                     active: _ActionButton.containsMouse
                                 }
@@ -287,7 +285,7 @@ PanelWindow {
                 }
             }
 
-            transform: Translate { id: _DelegateOffset; x: Constants.osd_offset }
+            transform: Translate { id: _DelegateOffset; x: Constants.notification_width / 4 }
 
             state: "hidden"
 
@@ -300,7 +298,7 @@ PanelWindow {
                 State {
                     name: "hidden"
                     PropertyChanges { _DelegateItem.opacity: 0 }
-                    PropertyChanges { _DelegateOffset.x: Constants.osd_offset }
+                    PropertyChanges { _DelegateOffset.x: Constants.notification_width / 4 }
                 }
             ]
 
@@ -312,13 +310,13 @@ PanelWindow {
                         NumberAnimation {
                             target: _DelegateItem
                             property: "opacity"
-                            duration: _Container._animationDuration
+                            duration: container._animationDuration
                             easing.type: Easing.OutCubic
                         }
                         NumberAnimation {
                             target: _DelegateOffset
                             property: "x"
-                            duration: _Container._animationDuration
+                            duration: container._animationDuration
                             easing.type: Easing.OutCubic
                         }
                     }
@@ -331,13 +329,13 @@ PanelWindow {
                         NumberAnimation {
                             target: _DelegateItem
                             property: "opacity"
-                            duration: _Container._animationDuration
+                            duration: container._animationDuration
                             easing.type: Easing.InCubic
                         }
                         NumberAnimation {
                             target: _DelegateOffset
                             property: "x"
-                            duration: _Container._animationDuration
+                            duration: container._animationDuration
                             easing.type: Easing.InCubic
                         }
                     }
@@ -350,7 +348,7 @@ PanelWindow {
             ]
 
             Component.onCompleted: {
-                Debug.log(_Container.screen.name, "[Notification]", _DelegateItem.modelData.appName, "| ID:", _DelegateItem.modelData.id);
+                Debug.log(container.screen.name, "[Notification]", _DelegateItem.modelData.appName, "| ID:", _DelegateItem.modelData.id);
                 state = "visible"
             }
         }

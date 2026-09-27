@@ -3,18 +3,10 @@ import QtQuick
 import Quickshell.Services.UPower
 
 import qs
-import qs.Types
 import qs.Components
 
 ClickableWithIcon {
     id: root
-
-    readonly property color color_background: Constants.color_surface
-
-    readonly property color color_charging: Constants.color_yellow
-    readonly property color color_warning: Constants.color_peach
-    readonly property color color_critical: Constants.color_red
-    readonly property color color_default: Constants.color_text
     
     readonly property var device: UPower.displayDevice
     readonly property bool charging: root.device.state === UPowerDeviceState.Charging || root.device.state === UPowerDeviceState.PendingCharge
@@ -25,8 +17,6 @@ ClickableWithIcon {
     property var datamap: {
         if (root.charging) return {
             icon:           "battery-charge.svg",
-            highlighted:    true,
-            accent:         root.color_charging
         };
 
         const icons = [ "battery-empty.svg", "battery-low.svg", "battery-medium.svg", "battery-high.svg", "battery-full.svg" ];
@@ -36,10 +26,9 @@ ClickableWithIcon {
 
         return {
             icon:           icons[safeIndex],
-            highlighted:    (root.batterypercentage <= root.color_warning),
-            accent:         (root.batterypercentage <= Constants.battery_critical_threshold) ? root.color_critical :
-                                (root.batterypercentage <= Constants.battery_warning_threshold) ? root.color_warning :
-                                    root.color_default
+            accent:         (root.batterypercentage <= Constants.battery_threshold_critical) ? Constants.battery_color_critical :
+                                (root.batterypercentage <= Constants.battery_threshold_warning) ? Constants.battery_color_warning :
+                                    Constants.battery_color_default
         };
     }
 
@@ -49,16 +38,10 @@ ClickableWithIcon {
     rightPadding: Constants.padding
     iconname: datamap.icon
 
-    styles.background.color.idle: (active) ? datamap.accent : root.color_background
-    styles.background.color.active: datamap.accent
+    styles.background.color: [ Constants.battery_color_background, datamap.accent ]
+    styles.icon.color: [ datamap.accent, Constants.battery_color_text_active ]
 
-    styles.icon.color.idle: datamap.accent
-    styles.icon.color.active: Constants.color_text_accent
-
-    // styles.border.color: (hovered || active) ? datamap.accent: Constants.color_overlay
-    // styles.border.width: 1
-
-    palette.buttonText: (hovered || active) ? Constants.color_text_accent : datamap.accent
+    palette.buttonText: (hovered || active) ? Constants.battery_color_text_active : datamap.accent
 
     font.family: Constants.font_family
     font.pixelSize: Constants.font_size
