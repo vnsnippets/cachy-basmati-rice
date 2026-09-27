@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 
 import Quickshell.Services.UPower
@@ -11,8 +13,6 @@ ClickableWithIcon {
     readonly property var device: UPower.displayDevice
     readonly property bool charging: root.device.state === UPowerDeviceState.Charging || root.device.state === UPowerDeviceState.PendingCharge
     readonly property real batterypercentage: root.device.percentage
-
-    radius: Constants.radius
 
     property var datamap: {
         if (root.charging) return {

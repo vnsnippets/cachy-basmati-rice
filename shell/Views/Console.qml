@@ -7,6 +7,7 @@ import qs
 import qs.Components
 import qs.Views.System
 import qs.Views.Network
+import qs.Views.Bluetooth
 
 StyledBox {
     id: root
@@ -35,10 +36,24 @@ StyledBox {
             Layout.margins: Constants.padding * 2
             spacing: root._gap
 
-            ClockControl { Layout.alignment: Qt.AlignTop; }
+            ClockWidget { Layout.alignment: Qt.AlignTop; }
+
             Item { Layout.fillWidth: true; }
 
-            NetworkControl {
+            BluetoothWidget {
+                radius: Constants.radius
+                Layout.maximumWidth: Constants.bluetooth_pill_max_width
+                // active: activecontent === bluetoothmanager
+                // onClicked: activecontent = (active) ? defaultcontent : bluetoothmanager
+
+                // Component {
+                //     id: bluetoothmanager
+                //     BluetoothDevices {}
+                // }
+            }
+
+            NetworkWidget {
+                radius: Constants.radius
                 Layout.maximumWidth: Constants.network_pill_max_width
                 // active: activecontent === networkmanagement
                 // onClicked: activecontent = (active) ? defaultcontent : networkmanagement
@@ -49,7 +64,8 @@ StyledBox {
                 // }
             }
 
-            BatteryControl {
+            BatteryWidget {
+                radius: Constants.radius
                 // active: activecontent === powerprofiles
                 // onClicked: activecontent = (active) ? defaultcontent : powerprofiles
 

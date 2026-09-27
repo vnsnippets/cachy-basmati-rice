@@ -10,7 +10,6 @@ import qs.Components
 
 ClickableWithIcon {
     id: root
-    radius: Constants.radius
 
     property var datamap: switch (NetworkService.activeNetwork?.device.type) {
         case (DeviceType.Wired): return {
