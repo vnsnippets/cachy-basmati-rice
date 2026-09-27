@@ -20,6 +20,16 @@ Singleton {
         });
     }
 
+    function current_monitor(callback) {
+        if (!callback) return false;
+
+        Daemon.execute(["mmsg", "get", "last_open_surface"], (e) => {
+            // E.g. {"monitor":"eDP-1","last_open_surface":"quickshell"}
+            const result = JSON.parse(e?.output?.trim());
+            callback(result ?? null);
+        });
+    }
+
     QtObject {
         id: monitors
         function current(callback) {

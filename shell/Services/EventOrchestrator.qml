@@ -13,4 +13,8 @@ Singleton {
     signal osdTriggerEvent(string key, var data);
     
     signal notificationEvent(int timestamp, var data)
+    
+    signal consoleToggleEvent(ShellScreen screen);
+    signal consoleCloseEvent(ShellScreen screen);
+    signal consoleCloseCompleted(ShellScreen screen);
 }

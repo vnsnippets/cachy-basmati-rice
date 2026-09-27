@@ -7,8 +7,14 @@ import Quickshell
 Singleton {
     readonly property string namespace: "basmati-shell"
 
+    readonly property SystemClock clock: SystemClock {
+        precision: SystemClock.Minutes
+    }
+
     readonly property int font_size: 14
     readonly property string font_family: "Noto Sans"
+
+    readonly property color color_transparent: "transparent"
 
     readonly property color color_rosewater: "#f5e0dc"
     readonly property color color_flamingo: "#f2cdcd"
@@ -28,6 +34,7 @@ Singleton {
     readonly property color color_text: "#cdd6f4"
     readonly property color color_subtext: "#a6adc8"
     readonly property color color_accent: color_yellow
+    readonly property color color_text_accent: color_base
     readonly property color color_muted: "#6c7086"
     readonly property color color_overlay: "#313244"
     readonly property color color_surface: "#181825"
@@ -51,4 +58,14 @@ Singleton {
     readonly property int osd_offset: 48
 
     readonly property int notification_timeout: 15000
+
+    readonly property int console_width: 720
+
+    // Applications
+    readonly property string spotlight_search_text: "Search..."
+    readonly property string spotlight_search_icon: "search.svg"
+
+    // System
+    readonly property int battery_warning_threshold: 40
+    readonly property int battery_critical_threshold: 20
 }
