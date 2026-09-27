@@ -45,10 +45,12 @@ ClickableWithIcon {
     styles.background.color: [ Constants.bluetooth_color_background, datamap.accent ]
     styles.icon.color: [ datamap.accent, Constants.bluetooth_color_text_active ]
 
+    // styles.border.width: 1
+    styles.border.color: Constants.bluetooth_color_border
+
     palette.buttonText: (hovered || active) ? Constants.bluetooth_color_text_active : datamap.accent
 
     font.family: Constants.font_family
-    font.pixelSize: Constants.font_size
     // text: datamap.label
 
     onClicked: Bluetooth.defaultAdapter.enabled = !Bluetooth.defaultAdapter.enabled ?? false

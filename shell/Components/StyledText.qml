@@ -15,6 +15,7 @@ Text {
     color: (active) ? colors[1] : colors[0]
     font.pixelSize: Constants.font_size
     font.family: Constants.font_family
+    font.letterSpacing: Constants.font_spacing
 
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter

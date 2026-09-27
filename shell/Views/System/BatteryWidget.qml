@@ -41,9 +41,11 @@ ClickableWithIcon {
     styles.background.color: [ Constants.battery_color_background, datamap.accent ]
     styles.icon.color: [ datamap.accent, Constants.battery_color_text_active ]
 
+    // styles.border.width: 1
+    styles.border.color: Constants.battery_color_border
+
     palette.buttonText: (hovered || active) ? Constants.battery_color_text_active : datamap.accent
 
     font.family: Constants.font_family
-    font.pixelSize: Constants.font_size
     text: Math.floor(root.batterypercentage * 100) + "%"
 }

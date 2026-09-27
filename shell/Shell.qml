@@ -28,7 +28,7 @@ ShellRoot {
         model: Quickshell.screens
 
         delegate: Scope {
-            id: _Scope
+            id: scope
 
             required property ShellScreen modelData
             readonly property ShellScreen screen: modelData
@@ -40,40 +40,41 @@ ShellRoot {
             Connections {
                 target: EventOrchestrator
                 
-                function onOsdTriggerEvent(key) { _Scope.osd_active = true; }
-                function onOsdDismissEvent() { _Scope.osd_active = false; gc(); }
+                function onOsdTriggerEvent(key) { scope.osd_active = true; }
+                function onOsdDismissEvent() { scope.osd_active = false; gc(); }
 
                 // --- Console Events ---
                 function onConsoleToggleEvent(targetscreen) {
-                    if (_Scope.console_open) {
-                        Debug.log(`[${targetscreen.name}] -> [${_Scope.screen.name}]`, "Scope ::", "Console Toggle Event : Closing");
-                        EventOrchestrator.consoleCloseEvent(_Scope.screen);
+                    if (scope.console_open) {
+                        Debug.log(`[${targetscreen.name}] -> [${scope.screen.name}]`, "Scope ::", "Console Toggle Event : Closing");
+                        EventOrchestrator.consoleCloseEvent(scope.screen);
                         return;
                     }
 
-                    if (targetscreen === _Scope.screen) {
-                        Debug.log(`[${targetscreen.name}] -> [${_Scope.screen.name}]`, "Scope ::", "Console Toggle Event : Opening");
-                        _Scope.console_open = true;
+                    if (targetscreen === scope.screen) {
+                        Debug.log(`[${targetscreen.name}] -> [${scope.screen.name}]`, "Scope ::", "Console Toggle Event : Opening");
+                        scope.console_open = true;
                     }
                 }
 
                 function onConsoleCloseCompleted(targetscreen) {
-                    if (targetscreen === _Scope.screen) {
-                        Debug.log(`[${targetscreen.name}] -> [${_Scope.screen.name}]`, "Scope ::", "Console Toggle Event : Closed");
-                        _Scope.console_open = false;
+                    if (targetscreen === scope.screen) {
+                        Debug.log(`[${targetscreen.name}] -> [${scope.screen.name}]`, "Scope ::", "Console Toggle Event : Closed");
+                        scope.console_open = false;
                         gc();
                     }
                 }
             }
 
-            OnScreenDisplayContainer { screen: _Scope.screen; visible: _Scope.osd_active; }
-            NotificationContainer { screen: _Scope.screen; }
+            OnScreenDisplayContainer { screen: scope.screen; visible: scope.osd_active; }
+            NotificationContainer { screen: scope.screen; }
+            // PolkitControl { screen: scope.screen; }
 
             // --- Central Console Loader ---
             LazyLoader {
-                activeAsync: _Scope.console_open
+                activeAsync: scope.console_open
                 ConsoleContainer {
-                    screen: _Scope.modelData
+                    screen: scope.modelData
                 }
             }
         }
@@ -111,5 +112,14 @@ ShellRoot {
                 EventOrchestrator.osdTriggerEvent(EventOrchestrator._BACKLIGHT_OSD_EVENT_KEY, null);
             }
         }
+
+        // Native Quickshell Polkit Agent backend
+        // PolkitAgent {
+        //     id: agent
+        //     onIsActiveChanged: {
+        //         if (agent.isActive)
+        //             EventOrchestrator.polkitRequestEvent(agent);
+        //     }
+        // }
     }
 }

@@ -51,9 +51,11 @@ ClickableWithIcon {
     styles.background.color: [ Constants.network_color_background, datamap.accent ]
     styles.icon.color: [ datamap.accent, Constants.network_color_text_active ]
 
+    // styles.border.width: 1
+    styles.border.color: Constants.network_color_border
+
     palette.buttonText: (hovered || active) ? Constants.network_color_text_active : datamap.accent
 
     font.family: Constants.font_family
-    font.pixelSize: Constants.font_size
     text: datamap.label
 }

@@ -11,8 +11,16 @@ Singleton {
         precision: SystemClock.Minutes
     }
 
+    FontLoader {
+        id: custom_font
+        // source: "./Assets/Fonts/UbuntuMono-Regular.ttf"
+        source: "./Assets/Fonts/Lato-Regular.ttf"
+    }
+
     readonly property int font_size: 14
-    readonly property string font_family: "Noto Sans"
+    readonly property real font_spacing: 0.5
+    readonly property string font_family: custom_font.name
+
 
     readonly property color color_transparent: "transparent"
 
@@ -83,9 +91,10 @@ Singleton {
 
     //  Center Console
     readonly property int console_width: 720
-    readonly property color console_color_backdrop: color_crust
-    readonly property color console_color_background: color_crust
+    readonly property color console_color_backdrop: color_base
+    readonly property color console_color_background: color_mantle
     readonly property color console_color_border: color_surface
+    readonly property bool console_show_widget_borders: false
 
     // Applications
     readonly property string spotlight_search_text: "Search..."
@@ -103,12 +112,13 @@ Singleton {
 
     // System : Clock
     readonly property color clock_color_text: color_text
-    readonly property color clock_color_subtext: color_overlay
+    readonly property color clock_color_subtext: color_subtext
 
     // System : Battery
     readonly property real battery_threshold_warning: 0.40
     readonly property real battery_threshold_critical: 0.20
     readonly property color battery_color_background: color_base
+    readonly property color battery_color_border: color_surface
     readonly property color battery_color_text_active: color_base
     readonly property color battery_color_default: color_text
     readonly property color battery_color_warning: color_yellow
@@ -121,6 +131,7 @@ Singleton {
     readonly property real network_threshold_critical: 0.25
     readonly property real network_pill_max_width: 160
     readonly property color network_color_background: color_base
+    readonly property color network_color_border: color_surface
     readonly property color network_color_text_active: color_base
     readonly property color network_color_default: color_green
     readonly property color network_color_warning: color_yellow
@@ -129,6 +140,7 @@ Singleton {
     // Bluetooth
     readonly property real bluetooth_pill_max_width: 160
     readonly property color bluetooth_color_background: color_base
+    readonly property color bluetooth_color_border: color_surface
     readonly property color bluetooth_color_text_active: color_base
     readonly property color bluetooth_color_enabled: color_sapphire
     readonly property color bluetooth_color_disabled: color_overlay

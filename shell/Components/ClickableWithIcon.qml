@@ -65,6 +65,10 @@ Button {
 
     onPressed: scale = 0.94
     onReleased: scale = 1.00
+    
+    font.pixelSize: Constants.font_size
+    font.family: Constants.font_family
+    font.letterSpacing: Constants.font_spacing
 
     Behavior on scale { NumberAnimation { duration: clickable._animationDuration } }
     Behavior on icon.color { ColorAnimation { duration: clickable._animationDuration } }
