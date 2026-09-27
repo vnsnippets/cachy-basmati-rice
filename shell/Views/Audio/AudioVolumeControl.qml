@@ -37,7 +37,7 @@ Rectangle {
 
         ClickableWithIcon {
             id: mutetoggle
-            size: Constants.size - Constants.padding * 2
+            size: Constants.osd_icon_size
             iconname: {
                 if (PipewireService.defaultSink?.audio.muted) return "volume-muted.svg";
 

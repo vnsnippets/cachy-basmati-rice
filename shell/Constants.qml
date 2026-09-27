@@ -58,12 +58,14 @@ Singleton {
     // Height in most cases, but also used for width
     // in Clickable Icon Buttons
     readonly property int size: 40
+    readonly property int icon_size: 20
     readonly property int animation_duration: 250
 
     // On Screen Displays    
     readonly property int osd_width: 320
     readonly property int osd_timeout: 2000
     readonly property int osd_offset: 48
+    readonly property int osd_icon_size: 20
     readonly property color osd_color_background: color_mantle
     readonly property color osd_color_border: color_surface
 
@@ -104,13 +106,24 @@ Singleton {
     readonly property color clock_color_subtext: color_overlay
 
     // System : Battery
-    readonly property real battery_threshold_warning: 0.4
-    readonly property real battery_threshold_critical: 0.2
+    readonly property real battery_threshold_warning: 0.40
+    readonly property real battery_threshold_critical: 0.20
     readonly property color battery_color_background: color_base
     readonly property color battery_color_text_active: color_base
     readonly property color battery_color_default: color_text
     readonly property color battery_color_warning: color_peach
     readonly property color battery_color_critical: color_red
     readonly property color battery_color_charging: color_yellow
+
+
+    // System : Battery
+    readonly property real network_threshold_warning: 0.50
+    readonly property real network_threshold_critical: 0.25
+    readonly property real network_pill_max_width: 160
+    readonly property color network_color_background: color_base
+    readonly property color network_color_text_active: color_base
+    readonly property color network_color_default: color_green
+    readonly property color network_color_warning: color_peach
+    readonly property color network_color_critical: color_red
 
 }

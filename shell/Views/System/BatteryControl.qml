@@ -32,7 +32,7 @@ ClickableWithIcon {
         };
     }
 
-    size: Constants.size / 2
+    size: Constants.icon_size
     padding: Constants.padding / 1.5
     leftPadding: Constants.padding
     rightPadding: Constants.padding

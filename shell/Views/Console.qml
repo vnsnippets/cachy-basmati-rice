@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import qs
 import qs.Components
 import qs.Views.System
+import qs.Views.Network
 
 StyledBox {
     id: root
@@ -36,7 +37,27 @@ StyledBox {
 
             ClockControl { Layout.alignment: Qt.AlignTop; }
             Item { Layout.fillWidth: true; }
-            BatteryControl { Layout.alignment: Qt.AlignTop; }
+
+            NetworkControl {
+                Layout.maximumWidth: Constants.network_pill_max_width
+                // active: activecontent === networkmanagement
+                // onClicked: activecontent = (active) ? defaultcontent : networkmanagement
+
+                // Component {
+                //     id: networkmanagement
+                //     NetworkDevices {}
+                // }
+            }
+
+            BatteryControl {
+                // active: activecontent === powerprofiles
+                // onClicked: activecontent = (active) ? defaultcontent : powerprofiles
+
+                // Component {
+                //     id: powerprofiles
+                //     PowerProfiles { itemheight: 200; }
+                // }
+            }
         }
     }
 }

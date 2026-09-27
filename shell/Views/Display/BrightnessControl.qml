@@ -37,7 +37,7 @@ Rectangle {
 
         ClickableWithIcon {
             id: brightnessIcon
-            size: Constants.size - Constants.padding * 2
+            size: Constants.osd_icon_size
             iconname: "brightness.svg"
             styles.icon.color: [ Constants.color_text, Constants.color_text ]
         }
