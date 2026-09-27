@@ -5,7 +5,7 @@ import QtQuick
 import Quickshell
 
 Singleton {
-    readonly property string namespace: "basmati-shell"
+    readonly property string namespace: "shell.basmati.rice"
 
     readonly property SystemClock clock: SystemClock {
         precision: SystemClock.Minutes

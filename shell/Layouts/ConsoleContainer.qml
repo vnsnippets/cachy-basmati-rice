@@ -10,6 +10,7 @@ import qs.Services
 import qs.Utilities
 import qs.Views
 
+// qmllint disable
 PanelWindow {
     id: container
 

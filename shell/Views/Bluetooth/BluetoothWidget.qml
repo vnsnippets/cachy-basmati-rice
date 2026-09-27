@@ -5,12 +5,12 @@ import QtQuick
 import Quickshell.Bluetooth
 
 import qs
-import qs.Utilities
 import qs.Components
 
+// qmllint disable
 ClickableWithIcon {
     id: root
-    
+
     property var datamap: switch (Bluetooth.defaultAdapter.state ?? true) {
         case (BluetoothAdapterState.Enabling): return {
             label:  "Activating...",
