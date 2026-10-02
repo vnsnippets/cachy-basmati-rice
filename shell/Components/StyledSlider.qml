@@ -9,13 +9,13 @@ Slider {
     id: control            
     property alias progressWidth: progress.width
 
-    component CustomColors: QtObject {
-        property color track: "#FAFAFA"
-        property color accent: "#0A0A0A"
+    component Styles: QtObject {
+        property color track_color: "#FAFAFA"
+        property color accent_color: "#0A0A0A"
     }
 
     property int size: 16
-    property CustomColors colors: CustomColors {}
+    property Styles styles: Styles {}
 
     readonly property int _trackYPosition: control.topPadding + control.availableHeight / 2 - height / 2
     readonly property int _animationDuration: Constants.animation_duration
@@ -30,7 +30,7 @@ Slider {
 
         radius: control.availableHeight/4
         border.width: 0
-        color: control.colors.accent
+        color: control.styles.accent_color
         scale: control.pressed ? 0.8 : 1
 
         Behavior on scale { NumberAnimation { duration: 100; easing: Easing.InOutQuad; } }
@@ -47,7 +47,7 @@ Slider {
         height: control.availableHeight
 
         radius: control.availableHeight/4
-        color: control.colors.track
+        color: control.styles.track_color
 
         Rectangle {
             id: progress
@@ -56,7 +56,7 @@ Slider {
             
             width: targetWidth
             height: parent.height
-            color: control.colors.accent
+            color: control.styles.accent_color
             radius: parent.radius
 
             Behavior on width {

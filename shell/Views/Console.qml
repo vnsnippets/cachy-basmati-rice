@@ -21,7 +21,7 @@ StyledBox {
     id: root
     readonly property int _gap: Constants.spacing / 1.5
     readonly property int _padding: Constants.padding * 2
-    readonly property Component default_content: ApplicationSpotlight { max_height: 160 }
+    readonly property Component default_content: ApplicationSpotlight { max_height: 400 }
     property Component active_content: default_content
 
     colors.background: Constants.console_color_background
@@ -90,9 +90,9 @@ StyledBox {
                 Layout.fillWidth: true
                 radius: Constants.radius
 
-                colors.background: Constants.audio_control_color_background
-                colors.track: Constants.color_surface
-                colors.accent: Constants.color_accent
+                styles.background_color: Constants.audio_control_color_background
+                styles.track_color: Constants.audio_control_color_track
+                styles.accent_color: Constants.default_color_accent
             }
 
             BrightnessControl {
@@ -100,9 +100,9 @@ StyledBox {
                 radius: Constants.radius
                 border.width: 1
 
-                colors.background: Constants.brightness_control_color_background
-                colors.track: Constants.color_surface
-                colors.accent: Constants.color_accent
+                styles.background_color: Constants.display_control_color_background
+                styles.track_color: Constants.display_control_color_track
+                styles.accent_color: Constants.default_color_accent
             }
 
             KeepAwakeControl {

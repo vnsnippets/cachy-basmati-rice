@@ -19,11 +19,8 @@ PanelWindow {
 
     Connections {
         target: EventOrchestrator
-        function onConsoleCloseEvent(targetscreen) {
-            if (targetscreen === container.screen) {
-                Debug.log(`[${targetscreen.name}] -> [${container.screen.name}]`, "PanelWindow ::", "Console Toggle Event : Closing");
-                container.dismiss();
-            }
+        function onConsoleCloseEvent() {
+            container.dismiss();
         }
     }
 

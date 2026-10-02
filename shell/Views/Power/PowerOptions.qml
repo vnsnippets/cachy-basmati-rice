@@ -22,28 +22,28 @@ RowLayout {
                 title: "Shutdown",
                 desc: "Turn computer off",
                 vector: "power.svg",
-                accent: Constants.color_red,
+                accent: Constants.power_option_color_shutdown,
                 command: ["systemctl", "poweroff"]
             },
             {
                 title: "Reboot",
                 desc: "Restart the machine",
                 vector: "reboot.svg",
-                accent: Constants.color_peach,
+                accent: Constants.power_option_color_reboot,
                 command: ["systemctl", "reboot"]
             },
             {
                 title: "Suspend",
                 desc: "Low power state",
                 vector: "sleep.svg",
-                accent: Constants.color_mauve,
+                accent: Constants.power_option_color_suspend,
                 command: ["systemctl", "suspend"]
             },
             {
                 title: "Log Out",
                 desc: "End session",
                 vector: "logout.svg",
-                accent: Constants.color_sapphire,
+                accent: Constants.power_option_color_logout,
                 command: ["loginctl", "kill-session", Quickshell.env("XDG_SESSION_ID")]
             }
         ]
@@ -61,19 +61,15 @@ RowLayout {
             required property int command
 
             readonly property bool active: containsMouse
-            readonly property color background_color_idle: Qt.alpha(Constants.color_surface, 0.40)
-            readonly property color background_color_active: Qt.alpha(Constants.color_surface, 0.65)
-            readonly property color color_idle: Qt.alpha(Constants.color_surface, 0.40)
-            readonly property color color_active: item.accent
 
             Rectangle {
                 implicitHeight: Math.max(160, root.max_height)
 
                 radius: Constants.radius
-                color: (enabled && item.active) ? item.background_color_active : item.background_color_idle
+                color: (enabled && item.active) ? Constants.power_option_color_background_active : Constants.power_option_color_background
 
                 border.width: 1
-                border.color: (enabled && item.active) ? item.color_active : item.color_idle
+                border.color: (enabled && item.active) ? item.accent : Constants.power_option_color_border
 
                 Behavior on radius { NumberAnimation { duration: Constants.animation_duration } }
                 Behavior on color { ColorAnimation { duration: Constants.animation_duration } }
@@ -94,11 +90,26 @@ RowLayout {
                         iconname: item.vector
                         enabled: false
                         active: item.active
-                        styles.icon_color_idle: Constants.color_subtext
+                        styles.icon_color_idle: Constants.power_option_color_text
                         styles.icon_color_active: item.accent
                     }
 
+                    // Profile Title Text
                     StyledText {
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                        font.bold: Constants.power_option_show_description
+                        font.pixelSize: Constants.power_option_show_description ? 16 : 14
+                        horizontalAlignment: Text.AlignHCenter
+                        text: item.title
+                        styles.color_idle: Constants.power_option_color_text
+                        styles.color_active: item.accent
+                        active: item.active
+                    }
+
+                    // Descriptive Subtext
+                    StyledText {
+                        visible: Constants.power_option_show_description
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         font.pixelSize: 14
@@ -106,9 +117,9 @@ RowLayout {
                         wrapMode: Text.WordWrap
                         elide: Text.ElideRight
                         maximumLineCount: 2
-                        text: item.title
-                        styles.color_idle: Constants.color_overlay
-                        styles.color_active: Constants.color_text
+                        text: item.desc
+                        styles.color_idle: Constants.power_option_color_subtext
+                        styles.color_active: Constants.power_option_color_subtext_active
                         active: item.active
                     }
                 }

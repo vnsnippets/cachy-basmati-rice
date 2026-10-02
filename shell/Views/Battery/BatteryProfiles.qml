@@ -20,21 +20,21 @@ RowLayout {
                 title: "Power Saver",
                 desc: "Optimal Battery",
                 vector: "leaf.svg",
-                accent: Constants.color_green,
+                accent: Constants.battery_profile_color_powersaver,
                 profile: PowerProfile.PowerSaver
             },
             {
                 title: "Balanced",
                 desc: "Default Profile",
                 vector: "balance.svg",
-                accent: Constants.color_blue,
+                accent: Constants.battery_profile_color_balanced,
                 profile: PowerProfile.Balanced
             },
             {
                 title: "Performance",
                 desc: "Full Throttle",
                 vector: "fire.svg",
-                accent: Constants.color_red,
+                accent: Constants.battery_profile_color_performance,
                 profile: PowerProfile.Performance
             }
         ]
@@ -52,19 +52,15 @@ RowLayout {
             required property int profile
 
             readonly property bool active: PowerProfiles.profile === item.profile || containsMouse
-            readonly property color background_color_idle: Qt.alpha(Constants.color_surface, 0.40)
-            readonly property color background_color_active: Qt.alpha(Constants.color_surface, 0.65)
-            readonly property color color_idle: Qt.alpha(Constants.color_surface, 0.40)
-            readonly property color color_active: item.accent
 
             Rectangle {
                 implicitHeight: Math.max(200, root.max_height)
 
                 radius: Constants.radius
-                color: (enabled && item.active) ? item.background_color_active : item.background_color_idle
+                color: (enabled && item.active) ? Constants.battery_profile_color_background_active : Constants.battery_profile_color_background
 
                 border.width: 1
-                border.color: (enabled && item.active) ? item.color_active : item.color_idle
+                border.color: (enabled && item.active) ? item.accent : Constants.battery_profile_color_border
 
                 Behavior on radius { NumberAnimation { duration: Constants.animation_duration } }
                 Behavior on color { ColorAnimation { duration: Constants.animation_duration } }
@@ -85,7 +81,7 @@ RowLayout {
                         iconname: item.vector
                         enabled: false
                         active: item.active
-                        styles.icon_color_idle: Constants.color_subtext
+                        styles.icon_color_idle: Constants.battery_profile_color_text
                         styles.icon_color_active: item.accent
                     }
 
@@ -97,7 +93,7 @@ RowLayout {
                         font.pixelSize: 16
                         horizontalAlignment: Text.AlignHCenter
                         text: item.title
-                        styles.color_idle: Constants.color_subtext
+                        styles.color_idle: Constants.battery_profile_color_text
                         styles.color_active: item.accent
                         active: item.active
                     }
@@ -112,8 +108,8 @@ RowLayout {
                         elide: Text.ElideRight
                         maximumLineCount: 2
                         text: item.desc
-                        styles.color_idle: Constants.color_overlay
-                        styles.color_active: Constants.color_subtext
+                        styles.color_idle: Constants.battery_profile_color_subtext
+                        styles.color_active: Constants.battery_profile_color_subtext_active
                         active: item.active
                     }
                 }

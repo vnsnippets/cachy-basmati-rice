@@ -12,17 +12,17 @@ Rectangle {
     implicitHeight: content.implicitHeight + (Constants.padding * 2)
     readonly property int _animationDuration: Constants.animation_duration
 
-    component ColorStyles: QtObject {
-        property color border: "transparent"
-        property color background: "transparent"
-        property color track: "transparent"
-        property color accent: "transparent"
+    component Styles: QtObject {
+        property color border_color: "transparent"
+        property color background_color: "transparent"
+        property color track_color: "transparent"
+        property color accent_color: "transparent"
     }
     
-    property ColorStyles colors: ColorStyles {}
+    property Styles styles: Styles {}
 
-    color: colors.background
-    border.color:  colors.border
+    color: styles.background_color
+    border.color:  styles.border_color
 
     RowLayout {
         id: content
@@ -39,8 +39,8 @@ Rectangle {
             id: brightnessIcon
             size: Constants.osd_icon_size
             iconname: "brightness.svg"
-            styles.icon_color_idle: Constants.color_text
-            styles.icon_color_active: Constants.color_text
+            styles.icon_color_idle: Constants.display_control_color_icon
+            styles.icon_color_active: Constants.display_control_color_icon_active
         }
         
         StyledSlider {
@@ -51,8 +51,8 @@ Rectangle {
             from: 0; to: 100;
             stepSize: 5
 
-            colors.track: control.colors.track
-            colors.accent: control.colors.accent
+            styles.track_color: control.styles.track_color
+            styles.accent_color: control.styles.accent_color
             size: 12
 
             value: BacklightService.brightness ?? 0
@@ -68,7 +68,7 @@ Rectangle {
             visible: opacity > 0
             Layout.alignment: Qt.AlignVCenter
             text: Math.round(BacklightService.brightness ?? 0) + "%"
-            color: Constants.color_text
+            color: Constants.display_control_color_text
             Behavior on opacity { NumberAnimation { duration: control._animationDuration } }
         }
     }

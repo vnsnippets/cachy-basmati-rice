@@ -17,7 +17,7 @@ Singleton {
     signal notificationEvent(int timestamp, var data)
     
     signal consoleToggleEvent(ShellScreen screen);
-    signal consoleCloseEvent(ShellScreen screen);
+    signal consoleCloseEvent();
     signal consoleCloseCompleted(ShellScreen screen);
 
     signal polkitRequestEvent(PolkitAgent agent);

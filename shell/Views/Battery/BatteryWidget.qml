@@ -26,9 +26,9 @@ ClickableWithIcon {
 
         return {
             icon:           icons[safeIndex],
-            accent:         (root.batterypercentage <= Constants.battery_threshold_critical) ? Constants.battery_color_critical :
-                                (root.batterypercentage <= Constants.battery_threshold_warning) ? Constants.battery_color_warning :
-                                    Constants.battery_color_default
+            accent:         (root.batterypercentage <= Constants.battery_threshold_critical) ? Constants.battery_control_color_critical :
+                                (root.batterypercentage <= Constants.battery_threshold_warning) ? Constants.battery_control_color_warning :
+                                    Constants.battery_control_color_default
         };
     }
 
@@ -39,15 +39,15 @@ ClickableWithIcon {
     iconname: datamap.icon
     radius: Constants.radius
 
-    styles.background_color_idle: Constants.battery_color_background
+    styles.background_color_idle: Constants.battery_control_color_background
     styles.background_color_active: datamap.accent
     styles.icon_color_idle: datamap.accent
-    styles.icon_color_active: Constants.battery_color_text_active
+    styles.icon_color_active: Constants.battery_control_color_text_active
 
     // styles.border.width: 1
-    styles.border_color_idle: Constants.battery_color_border
+    styles.border_color_idle: Constants.battery_control_color_border
 
-    palette.buttonText: (hovered || active) ? Constants.battery_color_text_active : datamap.accent
+    palette.buttonText: (hovered || active) ? Constants.battery_control_color_text_active : datamap.accent
 
     font.family: Constants.font_family
     text: Math.floor(root.batterypercentage * 100) + "%"

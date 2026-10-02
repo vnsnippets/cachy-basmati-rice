@@ -211,7 +211,7 @@ PanelWindow {
                             size: 16
                             iconname: "dismiss.svg"
                             styles.icon_color_idle: Constants.notification_color_subtext
-                            styles.icon_color_active: Constants.color_red
+                            styles.icon_color_active: Constants.notification_color_dismiss
                             
                             visible: _ArcControl.opacity === 0
                             opacity: (_ArcControl.opacity === 0) ? 1 : 0

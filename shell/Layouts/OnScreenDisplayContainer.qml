@@ -209,10 +209,10 @@ PanelWindow {
             radius: Constants.radius
             border.width: 1
 
-            colors.background: Constants.osd_color_background
-            colors.border: Constants.osd_color_border
-            colors.track: Constants.color_surface
-            colors.accent: Constants.color_accent
+            styles.background_color: Constants.osd_color_background
+            styles.border_color: Constants.osd_color_border
+            styles.track_color: Constants.audio_control_color_track
+            styles.accent_color: Constants.default_color_accent
             
             implicitWidth: Constants.osd_width
         }
@@ -225,10 +225,10 @@ PanelWindow {
             radius: Constants.radius
             border.width: 1
 
-            colors.background: Constants.osd_color_background
-            colors.border: Constants.osd_color_border
-            colors.track: Constants.color_surface
-            colors.accent: Constants.color_accent
+            styles.background_color: Constants.osd_color_background
+            styles.border_color: Constants.osd_color_border
+            styles.track_color: Constants.display_control_color_track
+            styles.accent_color: Constants.default_color_accent
             
             implicitWidth: Constants.osd_width
         }
@@ -240,8 +240,8 @@ PanelWindow {
         DisplayOSDControl {
             id: display_osd
             border.width: 1
-            border.color: Constants.color_overlay
-            color: Constants.color_base
+            border.color: Constants.osd_color_border
+            color: Constants.osd_color_background
             radius: Constants.radius
 
             Binding {
@@ -252,16 +252,3 @@ PanelWindow {
         }
     }
 }
-
-    // Component {
-    //     id: _BrightnessOSD
-
-    //     BrightnessControl {
-    //         color: Constants.color_base
-    //         radius: Constants.radius
-    //         border.width: 1
-    //         border.color: Constants.color_overlay
-
-    //         implicitWidth: Constants.osd_width
-    //     }
-    // }
