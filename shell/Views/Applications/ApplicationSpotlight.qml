@@ -10,11 +10,14 @@ import Quickshell.Widgets
 import qs
 import qs.Services
 import qs.Components
+import qs.Utilities
 
 ColumnLayout {
     id: spotlight
 
-    required property int max_height
+    required property int page_size
+
+    readonly property int max_height: (Constants.spotlight_app_height * page_size) + (Constants.padding * page_size-1)
     readonly property string default_app_icon: "application-x-executable"
 
     spacing: Constants.spacing
@@ -39,6 +42,7 @@ ColumnLayout {
         list_filtered_apps.clear();
         for (const app of matches) {
             list_filtered_apps.append({
+                id: app.id,
                 name: app.name,
                 icon: app.icon ? app.icon : spotlight.default_app_icon,
                 app: app
@@ -133,6 +137,7 @@ ColumnLayout {
             implicitHeight: Constants.spotlight_app_height
 
             required property int index
+            required property string id
             required property string name
             required property string icon
             required property var app
@@ -163,13 +168,14 @@ ColumnLayout {
                     spacing: Constants.padding
 
                     IconImage {
-                        implicitSize: Constants.spotlight_app_height - Constants.padding * 1.5
+                        implicitSize: Constants.spotlight_app_height - Constants.padding * 2
                         source: "image://icon/" + item.icon
                         mipmap: true
                     }
 
                     StyledText {
                         Layout.fillWidth: true
+                        Layout.fillHeight: true
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
 
                         horizontalAlignment: Text.AlignLeft
@@ -184,19 +190,21 @@ ColumnLayout {
                     }
 
                     StyledText {
-                        visible: item.app.genericName != item.name
-                        Layout.fillWidth: false
+                        Layout.fillHeight: true
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
 
-                        horizontalAlignment: Text.AlignRight
+                        horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
 
                         styles.color_idle: Constants.spotlight_app_color_text
                         styles.color_active: Constants.spotlight_app_color_text_active
 
                         active: item.active
+                        opacity: (active) ? 0.70 : 0.50
 
-                        text: item.app.genericName ? item.app.genericName : ""
+                        text: (Constants.spotlight_app_show_appid) ? item.id : item.app.genericName ? item.app.genericName : ""
+
+                        Behavior on opacity { NumberAnimation { duration: Constants.animation_duration } }
                     }
                 }
             }

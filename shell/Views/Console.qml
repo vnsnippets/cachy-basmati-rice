@@ -20,8 +20,10 @@ import qs.Views.Applications
 StyledBox {
     id: root
     readonly property int _gap: Constants.spacing / 1.5
-    readonly property int _padding: Constants.padding * 2
-    readonly property Component default_content: ApplicationSpotlight { max_height: 400 }
+    readonly property int _padding: Constants.padding * 3
+    readonly property Component default_content: ApplicationSpotlight {
+        page_size: 8
+    }
     property Component active_content: default_content
 
     colors.background: Constants.console_color_background
@@ -113,7 +115,6 @@ StyledBox {
         // --- Main Container ---
         ContentContainer {
             Layout.fillWidth: true
-            // Remove Layout.fillHeight so layout calculates preferred implicitHeight automatically
             Layout.preferredHeight: implicitHeight
             Layout.leftMargin: root._padding
             Layout.rightMargin: root._padding

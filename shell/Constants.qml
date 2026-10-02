@@ -200,4 +200,5 @@ Singleton {
     readonly property color  spotlight_app_border_color_active: Qt.alpha(Constants.color_surface, 0.75)
     readonly property color  spotlight_app_color_text: color_subtext
     readonly property color  spotlight_app_color_text_active: color_text
+    readonly property bool   spotlight_app_show_appid: true
 }
