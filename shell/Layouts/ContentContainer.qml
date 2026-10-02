@@ -11,9 +11,8 @@ Item {
     property Component content: null
     implicitHeight: (content) ? loader.implicitHeight ?? 0 : 0
 
-    // Behavior on implicitHeight { NumberAnimation { duration: Constants.animation_duration; easing.type: Easing.Linear } }
-
     property alias _active_source: loader.sourceComponent
+    clip: true
 
     Loader {
         id: loader
@@ -25,13 +24,18 @@ Item {
         states: [
             State {
                 name: "VISIBLE"
-                when: container._active_source === container.content
+                when: container.content !== null && container._active_source === container.content
                 PropertyChanges { loader.opacity: 1; loader.scale: 1.0; }
             },
             State {
                 name: "HIDDEN"
-                when: container._active_source !== container.content
-                PropertyChanges { loader.opacity: 0.5; loader.scale: 0.99; }
+                when: container.content !== null && container._active_source !== container.content
+                PropertyChanges { loader.opacity: 0; loader.scale: 0.99; }
+            },
+            State {
+                name: "DISMISSED"
+                when: container.content === null
+                PropertyChanges { loader.opacity: 0; loader.scale: 0.95; }
             }
         ]
 
@@ -55,10 +59,21 @@ Item {
                         easing.type: Easing.InCubic 
                     }
                     ScriptAction { 
-                        script: {
-                            if (container.content) container._active_source = container.content;
-                            else EventOrchestrator.consoleCloseEvent()
-                        }
+                        script: { container._active_source = container.content; }
+                    }
+                }
+            },
+            Transition {
+                from: "*"
+                to: "DISMISSED"
+                SequentialAnimation {
+                    NumberAnimation { 
+                        properties: "opacity,scale"
+                        duration: Constants.animation_duration / 2
+                        easing.type: Easing.Linear 
+                    }
+                    ScriptAction { 
+                        script: { EventOrchestrator.consoleCloseEvent(); }
                     }
                 }
             }
