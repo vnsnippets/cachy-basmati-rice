@@ -66,14 +66,14 @@ ShellRoot {
                 }
             }
 
-            OnScreenDisplayContainer { screen: scope.screen; visible: scope.osd_active; }
-            NotificationContainer { screen: scope.screen; }
+            ToastPanelWindow { screen: scope.screen; visible: scope.osd_active; }
+            NotificationPanelWindow { screen: scope.screen; }
             // PolkitControl { screen: scope.screen; }
 
             // --- Central Console Loader ---
             LazyLoader {
                 activeAsync: scope.console_open
-                ConsoleContainer {
+                ControlPanelWindow {
                     screen: scope.modelData
                 }
             }

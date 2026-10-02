@@ -64,7 +64,7 @@ PanelWindow {
         }
         
         delegate: Clickable {
-            id: _DelegateItem
+            id: delegate_item
 
             readonly property date createdAt: new Date()
             required property var modelData
@@ -74,8 +74,8 @@ PanelWindow {
             NumberAnimation on dismissProgress {
                 from: 1.0
                 to: 0.0
-                duration: _DismissTimer.interval
-                running: _DismissTimer.running
+                duration: dismiss_timeout.interval
+                running: dismiss_timeout.running
             }
 
             readonly property bool appNameIsSummary: modelData?.appName.toLowerCase().trim() === modelData?.summary.toLowerCase().trim()
@@ -85,14 +85,14 @@ PanelWindow {
             implicitHeight: _CardBackground.implicitHeight
 
             onClicked: {
-                _DismissTimer.stop();
+                dismiss_timeout.stop();
                 const defaultAction = modelData.actions.find(a => a && (a.identifier === "default" || a.id === "default"));
-                Debug.log(container.screen.name, "[Notification]", _DelegateItem.modelData.appName, "", "Default Action");
+                Debug.log(container.screen.name, "[Notification]", delegate_item.modelData.appName, "", "Default Action");
                 
                 if (defaultAction) {
                     MangoIPCService.clients((clients) => {
                         try {
-                            const target = NotificationService.target(clients, _DelegateItem.modelData);
+                            const target = NotificationService.target(clients, delegate_item.modelData);
                             if (target && target.id) {
                                 Daemon.execute(["mmsg", "dispatch", "focusid", `client, ${target.id}`]);
                                 defaultAction.invoke();
@@ -106,21 +106,21 @@ PanelWindow {
                     return;
                 }
 
-                _DismissTimer.restart();
+                dismiss_timeout.restart();
             }
 
             Timer {
-                id: _DismissTimer
+                id: dismiss_timeout
                 interval: Constants.notification_timeout
                 running: !_NotificationList.hovered
                 repeat: false
                 onRunningChanged: {
-                    if (!_NotificationList.hovered && _DelegateItem.state !== "hidden") {
-                        _DismissTimer.interval = Constants.notification_timeout / 2 * (_DelegateItem.index + 1)
-                        _DelegateItem.dismissProgress = 1.0;
+                    if (!_NotificationList.hovered && delegate_item.state !== "hidden") {
+                        dismiss_timeout.interval = Constants.notification_timeout / 2 * (delegate_item.index + 1)
+                        delegate_item.dismissProgress = 1.0;
                     }
                 }
-                onTriggered: _DelegateItem.state = "hidden"
+                onTriggered: delegate_item.state = "hidden"
             }
 
             Rectangle {
@@ -134,7 +134,7 @@ PanelWindow {
                 color: Constants.notification_color_background
                 radius: Constants.radius
                 border.width: 1
-                border.color: _DelegateItem.containsMouse ? Constants.notification_color_border_active : Constants.notification_color_border
+                border.color: delegate_item.containsMouse ? Constants.notification_color_border_active : Constants.notification_color_border
 
                 Behavior on border.color { ColorAnimation { duration: Constants.animation_duration } }
 
@@ -151,7 +151,7 @@ PanelWindow {
                         Image {
                             id: _AppIcon
 
-                            readonly property string rawIcon: _DelegateItem.modelData.appIcon ?? ""
+                            readonly property string rawIcon: delegate_item.modelData.appIcon ?? ""
 
                             Layout.preferredWidth: 16
                             Layout.preferredHeight: 16
@@ -172,14 +172,14 @@ PanelWindow {
                         }
 
                         StyledText {
-                            text: _DelegateItem.createdAt.toLocaleTimeString(Qt.locale(), "HH:mm")
+                            text: delegate_item.createdAt.toLocaleTimeString(Qt.locale(), "HH:mm")
                             color: Constants.notification_color_subtext
                             font.pixelSize: Constants.font_size
                             horizontalAlignment: Text.AlignLeft
                         }
 
                         StyledText {
-                            readonly property string appName: (_DelegateItem.appNameIsSummary) ? _DelegateItem.modelData?.summary : _DelegateItem.modelData?.appName
+                            readonly property string appName: (delegate_item.appNameIsSummary) ? delegate_item.modelData?.summary : delegate_item.modelData?.appName
                             visible: appName !== "notify-send" && appName.length > 0
                             text: appName
                             color: Constants.notification_color_subtext
@@ -195,13 +195,13 @@ PanelWindow {
                             Layout.preferredHeight: 16
                             Layout.alignment: Qt.AlignVCenter
 
-                            ratio: _DelegateItem.dismissProgress
+                            ratio: delegate_item.dismissProgress
                             stroke: 2
                             colors.arc: Constants.notification_color_ticker_foreground
                             colors.track: Constants.notification_color_ticker_background
 
                             visible: opacity > 0
-                            opacity: (_DelegateItem.containsMouse) ? 0 : 1
+                            opacity: (delegate_item.containsMouse) ? 0 : 1
 
                             Behavior on opacity { NumberAnimation { duration: container._animationDuration / 2 } }
                         }
@@ -216,8 +216,8 @@ PanelWindow {
                             opacity: (_ArcControl.opacity === 0) ? 1 : 0
 
                             onClicked: {
-                                _DismissTimer.stop();
-                                _DelegateItem.modelData.dismiss();
+                                dismiss_timeout.stop();
+                                delegate_item.modelData.dismiss();
                             }
 
                             Behavior on opacity { NumberAnimation { duration: container._animationDuration / 2 } }
@@ -228,8 +228,8 @@ PanelWindow {
                         id: _SummaryText
                         Layout.fillWidth: true
 
-                        readonly property string summary: _DelegateItem.modelData.summary.trim() ?? ""
-                        visible: summary.length > 0 && !_DelegateItem.appNameIsSummary
+                        readonly property string summary: delegate_item.modelData.summary.trim() ?? ""
+                        visible: summary.length > 0 && !delegate_item.appNameIsSummary
                         text: summary
                         color: Constants.notification_color_subtext
                         wrapMode: Text.Wrap
@@ -240,7 +240,7 @@ PanelWindow {
                         id: _BodyText
                         Layout.fillWidth: true
                         textFormat: Text.StyledText
-                        text: (_DelegateItem.modelData.body || "").replace(/\r?\n/g, "<br>")
+                        text: (delegate_item.modelData.body || "").replace(/\r?\n/g, "<br>")
                         color: Constants.notification_color_text
                         wrapMode: Text.Wrap
                         maximumLineCount: 2
@@ -253,11 +253,11 @@ PanelWindow {
                         Layout.fillWidth: true
                         Layout.topMargin: Constants.spacing / 2
 
-                        visible: _DelegateItem.modelData.actions.length > 0
+                        visible: delegate_item.modelData.actions.length > 0
                         spacing: Constants.spacing
 
                         Repeater {
-                            model: [ ..._DelegateItem.modelData.actions].filter((a => (a.identifier || a.id) !== "default")) ?? []
+                            model: [ ...delegate_item.modelData.actions].filter((a => (a.identifier || a.id) !== "default")) ?? []
 
                             delegate: Clickable {
                                 id: _ActionButton
@@ -276,9 +276,9 @@ PanelWindow {
                                 }
 
                                 onClicked: {
-                                    _DismissTimer.stop();
+                                    dismiss_timeout.stop();
                                     _ActionButton.modelData.invoke();
-                                    _DelegateItem.modelData.dismiss();
+                                    delegate_item.modelData.dismiss();
                                 }
                             }
                         }
@@ -293,12 +293,12 @@ PanelWindow {
             states: [
                 State {
                     name: "visible"
-                    PropertyChanges { _DelegateItem.opacity: 1 }
+                    PropertyChanges { delegate_item.opacity: 1 }
                     PropertyChanges { _DelegateOffset.x: 0 }
                 },
                 State {
                     name: "hidden"
-                    PropertyChanges { _DelegateItem.opacity: 0 }
+                    PropertyChanges { delegate_item.opacity: 0 }
                     PropertyChanges { _DelegateOffset.x: Constants.notification_width / 4 }
                 }
             ]
@@ -309,7 +309,7 @@ PanelWindow {
                     to: "visible"
                     ParallelAnimation {
                         NumberAnimation {
-                            target: _DelegateItem
+                            target: delegate_item
                             property: "opacity"
                             duration: container._animationDuration
                             easing.type: Easing.OutCubic
@@ -328,7 +328,7 @@ PanelWindow {
                     to: "hidden"
                     ParallelAnimation {
                         NumberAnimation {
-                            target: _DelegateItem
+                            target: delegate_item
                             property: "opacity"
                             duration: container._animationDuration
                             easing.type: Easing.InCubic
@@ -341,15 +341,15 @@ PanelWindow {
                         }
                     }
                     onRunningChanged: {
-                        if (!running && _DelegateItem.state === "hidden") {
-                            _DelegateItem.modelData?.expire?.();
+                        if (!running && delegate_item.state === "hidden") {
+                            delegate_item.modelData?.expire?.();
                         }
                     }
                 }
             ]
 
             Component.onCompleted: {
-                Debug.log(container.screen.name, "[Notification]", _DelegateItem.modelData.appName, "| ID:", _DelegateItem.modelData.id);
+                Debug.log(container.screen.name, "[Notification]", delegate_item.modelData.appName, "| ID:", delegate_item.modelData.id);
                 state = "visible"
             }
         }

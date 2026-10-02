@@ -65,6 +65,9 @@ StyledBox {
 
             NetworkControl {
                 Layout.maximumWidth: Constants.network_control_max_width
+                active: root.active_content === component_network_devices
+                onClicked: root.active_content = (active) ? root.default_content : component_network_devices
+                Component { id: component_network_devices; NetworkDevices { } }
             }
 
             BatteryControl {
