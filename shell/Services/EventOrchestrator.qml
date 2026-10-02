@@ -19,6 +19,7 @@ Singleton {
     signal consoleToggleEvent(ShellScreen screen);
     signal consoleCloseEvent();
     signal consoleCloseCompleted(ShellScreen screen);
+    signal consoleDismissContentEvent();
 
     signal polkitRequestEvent(PolkitAgent agent);
 }

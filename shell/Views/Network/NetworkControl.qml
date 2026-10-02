@@ -54,8 +54,9 @@ ClickableWithIcon {
     styles.icon_color_idle: datamap.accent
     styles.icon_color_active: Constants.network_color_text_active
 
-    // styles.border.width: 1
-    // styles.border_color_idle: Constants.network_color_border
+    styles.border_width: 1
+    styles.border_color_idle: Constants.network_color_border
+    styles.border_color_active: datamap.accent
 
     palette.buttonText: (hovered || active) ? Constants.network_color_text_active : datamap.accent
 

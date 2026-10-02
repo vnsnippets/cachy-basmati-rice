@@ -54,6 +54,8 @@ Singleton {
     readonly property color  color_crust: "#11111b"
 
     readonly property color  default_color_accent: color_yellow
+    readonly property color  default_background: color_base
+    readonly property color  default_border: color_surface
 
     readonly property real   roundness: 0.25
     readonly property int    radius: roundness * 24
@@ -74,28 +76,29 @@ Singleton {
     readonly property int    osd_timeout: 2000
     readonly property int    osd_offset: 48
     readonly property int    osd_icon_size: 20
-    readonly property color  osd_color_background: color_mantle
-    readonly property color  osd_color_border: color_surface
+    readonly property color  osd_color_background: default_background
+    readonly property color  osd_color_border: default_border
 
     // Notifications
     readonly property int    notification_width: 320
     readonly property int    notification_offset: 16
     readonly property int    notification_timeout: 15000
-    readonly property color  notification_color_background: color_mantle
-    readonly property color  notification_color_border: color_surface
+    readonly property color  notification_color_background: default_background
+    readonly property color  notification_color_border: default_border
     readonly property color  notification_color_border_active: color_overlay
     readonly property color  notification_color_text: color_text
     readonly property color  notification_color_subtext: color_subtext
-    readonly property color  notification_color_ticker_background: color_mantle
+    readonly property color  notification_color_ticker_background: default_background
     readonly property color  notification_color_ticker_foreground: color_surface
     readonly property color  notification_color_dismiss: color_red
 
     //  Center Console
     readonly property int    console_width: 720
-    readonly property color  console_color_backdrop: color_base
+    readonly property color  console_color_backdrop_active: Qt.alpha(color_crust, 0.6)
+    readonly property color  console_color_backdrop_inactive: Qt.alpha(color_crust, 0)
     readonly property color  console_color_background: color_mantle
-    readonly property color  console_color_border: color_surface
-    readonly property bool   console_show_widget_borders: false
+    readonly property color  console_color_border: default_border
+    readonly property bool   console_backdrop_enabled: true
 
     // System : Clock
     readonly property color  clock_color_text: color_text
@@ -104,16 +107,18 @@ Singleton {
     // System : Battery
     readonly property real   battery_threshold_warning: 0.40
     readonly property real   battery_threshold_critical: 0.20
-    readonly property color  battery_control_color_background: color_base
-    readonly property color  battery_control_color_border: color_surface
+
+    readonly property color  battery_control_color_background: default_background
+    readonly property color  battery_control_color_border: default_border
     readonly property color  battery_control_color_text_active: color_base
     readonly property color  battery_control_color_default: color_text
     readonly property color  battery_control_color_warning: color_yellow
     readonly property color  battery_control_color_critical: color_red
     readonly property color  battery_control_color_charging: color_yellow
+
+    readonly property color  battery_profile_color_border: Qt.alpha(Constants.color_surface, 0.60)
     readonly property color  battery_profile_color_background: Qt.alpha(Constants.color_surface, 0.25)
     readonly property color  battery_profile_color_background_active: Qt.alpha(Constants.color_surface, 0.50)
-    readonly property color  battery_profile_color_border: Qt.alpha(Constants.color_surface, 0.60)
     readonly property color  battery_profile_color_text: color_subtext
     readonly property color  battery_profile_color_subtext: color_overlay
     readonly property color  battery_profile_color_subtext_active: color_text
@@ -122,10 +127,12 @@ Singleton {
     readonly property color  battery_profile_color_performance: color_red
 
     // System : Power Button
-    readonly property color  power_control_color_background: color_base
+    readonly property color  power_control_color_background: default_background
+    readonly property color  power_control_color_border: default_border
     readonly property color  power_control_color_text: color_red
     readonly property color  power_control_color_background_active: color_red
     readonly property color  power_control_color_text_active: color_base
+
     readonly property color  power_option_color_shutdown: color_red
     readonly property color  power_option_color_reboot: color_peach
     readonly property color  power_option_color_suspend: color_mauve
@@ -139,20 +146,23 @@ Singleton {
     readonly property bool   power_option_show_description: false
 
     // System : Keep Awake Control
-    readonly property color  keep_awake_control_color_background: color_base
+    readonly property color  keep_awake_control_color_background: default_background
+    readonly property color  keep_awake_color_border: default_border
     readonly property color  keep_awake_control_color_background_active: color_peach
     readonly property color  keep_awake_control_color_text: color_text
     readonly property color  keep_awake_control_color_text_active: color_base
 
     // Widgets : Audio
-    readonly property color  audio_control_color_background: color_base
+    readonly property color  audio_control_color_background: default_background
+    readonly property color  audio_control_color_border: default_border
     readonly property color  audio_control_color_track: color_surface
     readonly property color  audio_control_color_text: color_text
     readonly property color  audio_control_color_icon: color_text
     readonly property color  audio_control_color_icon_active: default_color_accent
 
     // Widgets: Brightness
-    readonly property color  display_control_color_background: color_base
+    readonly property color  display_control_color_background: default_background
+    readonly property color  display_control_color_border: default_border
     readonly property color  display_control_color_track: color_surface
     readonly property color  display_control_color_text: color_text
     readonly property color  display_control_color_icon: color_text
@@ -162,18 +172,18 @@ Singleton {
     // Network
     readonly property real   network_threshold_warning: 0.50
     readonly property real   network_threshold_critical: 0.25
-    readonly property real   network_pill_max_width: 160
-    readonly property color  network_color_background: color_base
-    readonly property color  network_color_border: color_surface
+    readonly property real   network_control_max_width: 160
+    readonly property color  network_color_background: default_background
+    readonly property color  network_color_border: default_border
     readonly property color  network_color_text_active: color_base
     readonly property color  network_color_default: color_green
     readonly property color  network_color_warning: color_yellow
     readonly property color  network_color_critical: color_red
 
     // Bluetooth
-    readonly property real   bluetooth_pill_max_width: 160
-    readonly property color  bluetooth_color_background: color_base
-    readonly property color  bluetooth_color_border: color_surface
+    readonly property real   bluetooth_control_max_width: 160
+    readonly property color  bluetooth_color_background: default_background
+    readonly property color  bluetooth_color_border: default_border
     readonly property color  bluetooth_color_text_active: color_base
     readonly property color  bluetooth_color_enabled: color_sapphire
     readonly property color  bluetooth_color_disabled: color_overlay
@@ -186,8 +196,8 @@ Singleton {
     readonly property string spotlight_search_icon: "search.svg"
     readonly property int    spotlight_search_height: 40 + padding
 
-    readonly property color  spotlight_search_color_background: Qt.alpha(color_surface, 0.10)
-    readonly property color  spotlight_search_color_background_active: Qt.alpha(color_surface, 0.25)
+    readonly property color  spotlight_search_color_background: Qt.alpha(color_base, 0.10)
+    readonly property color  spotlight_search_color_background_active: Qt.alpha(color_base, 0.25)
     readonly property color  spotlight_search_color_border: Qt.alpha(color_subtext, 0.10)
     readonly property color  spotlight_search_color_border_active: Qt.alpha(color_subtext, 0.25)
     readonly property color  spotlight_search_color_icon: Qt.alpha(color_subtext, 0.40)

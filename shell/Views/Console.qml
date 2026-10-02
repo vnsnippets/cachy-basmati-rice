@@ -61,11 +61,11 @@ StyledBox {
             Item { Layout.fillWidth: true; }
 
             BluetoothControl {
-                Layout.maximumWidth: Constants.bluetooth_pill_max_width
+                Layout.maximumWidth: Constants.bluetooth_control_max_width
             }
 
             NetworkControl {
-                Layout.maximumWidth: Constants.network_pill_max_width
+                Layout.maximumWidth: Constants.network_control_max_width
             }
 
             BatteryControl {
@@ -77,7 +77,7 @@ StyledBox {
             PowerControl {
                 active: root.active_content === component_power_menu
                 onClicked: root.active_content = (active) ? root.default_content : component_power_menu
-                Component { id: component_power_menu; PowerOptions { max_height: 160 } }
+                Component { id: component_power_menu; PowerOptions { max_height: 160; } }
             }
         }
 
@@ -95,16 +95,21 @@ StyledBox {
                 styles.background_color: Constants.audio_control_color_background
                 styles.track_color: Constants.audio_control_color_track
                 styles.accent_color: Constants.default_color_accent
+
+                border.width: 1
+                styles.border_color: Constants.audio_control_color_border
             }
 
             BrightnessControl {
                 Layout.fillWidth: true
                 radius: Constants.radius
-                border.width: 1
 
                 styles.background_color: Constants.display_control_color_background
                 styles.track_color: Constants.display_control_color_track
                 styles.accent_color: Constants.default_color_accent
+
+                border.width: 1
+                styles.border_color: Constants.display_control_color_border
             }
 
             KeepAwakeControl {
@@ -119,6 +124,7 @@ StyledBox {
             Layout.leftMargin: root._padding
             Layout.rightMargin: root._padding
             Layout.bottomMargin: root._padding
+            Layout.topMargin: root._padding / 2
             content: root.active_content
         }
     }

@@ -47,7 +47,7 @@ ShellRoot {
                 function onConsoleToggleEvent(targetscreen) {
                     if (scope.console_open) {
                         Debug.log(`[${targetscreen.name}] -> [${scope.screen.name}]`, "Scope ::", "Console Toggle Event : Closing");
-                        EventOrchestrator.consoleCloseEvent();
+                        EventOrchestrator.consoleDismissContentEvent();
                         return;
                     }
 

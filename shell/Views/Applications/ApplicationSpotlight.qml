@@ -87,12 +87,12 @@ ColumnLayout {
             radius: Constants.radius
         }
 
-        Keys.onEscapePressed: EventOrchestrator.consoleCloseEvent()
+        Keys.onEscapePressed: EventOrchestrator.consoleDismissContentEvent()
 
         Keys.onReturnPressed: {
             if (list_filtered_apps.count > 0 && app_list_view.currentIndex >= 0) {
                 list_filtered_apps.get(app_list_view.currentIndex).app.execute();
-                EventOrchestrator.consoleCloseEvent();
+                EventOrchestrator.consoleDismissContentEvent();
             }
         }
 
@@ -212,7 +212,7 @@ ColumnLayout {
             onClicked: {
                 app_list_view.currentIndex = item.index;
                 item.app.execute();
-                EventOrchestrator.consoleCloseEvent();
+                EventOrchestrator.consoleDismissContentEvent();
             }
         }
 

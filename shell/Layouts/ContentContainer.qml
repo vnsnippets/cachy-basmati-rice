@@ -1,23 +1,18 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
 
 import qs
-import qs.Utilities
+import qs.Services
 
 Item {
     id: container
 
-    // Public API
     property Component content: null
+    implicitHeight: (content) ? loader.implicitHeight ?? 0 : 0
 
-    // Pass through implicit dimensions from the loaded item to the outer container
-    implicitWidth: loader.item ? loader.implicitWidth : 0
-    implicitHeight: loader.implicitHeight ?? 0
+    // Behavior on implicitHeight { NumberAnimation { duration: Constants.animation_duration; easing.type: Easing.Linear } }
 
-    // Internal state tracking
-    // property Component _next_content: content
     property alias _active_source: loader.sourceComponent
 
     Loader {
@@ -31,12 +26,12 @@ Item {
             State {
                 name: "VISIBLE"
                 when: container._active_source === container.content
-                PropertyChanges { loader.opacity: 1; loader.scale: 1.0 }
+                PropertyChanges { loader.opacity: 1; loader.scale: 1.0; }
             },
             State {
                 name: "HIDDEN"
                 when: container._active_source !== container.content
-                PropertyChanges { loader.opacity: 0; loader.scale: 0.99 }
+                PropertyChanges { loader.opacity: 0.5; loader.scale: 0.99; }
             }
         ]
 
@@ -59,7 +54,12 @@ Item {
                         duration: Constants.animation_duration
                         easing.type: Easing.InCubic 
                     }
-                    ScriptAction { script: container._active_source = container.content; }
+                    ScriptAction { 
+                        script: {
+                            if (container.content) container._active_source = container.content;
+                            else EventOrchestrator.consoleCloseEvent()
+                        }
+                    }
                 }
             }
         ]
@@ -70,6 +70,13 @@ Item {
     onContentChanged: {
         if (container._active_source === null) {
             container._active_source = content;
+        }
+    }
+
+    Connections {
+        target: EventOrchestrator
+        function onConsoleDismissContentEvent() {
+            container.content = null;
         }
     }
 }
