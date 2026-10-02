@@ -15,8 +15,8 @@ Button {
     property int radius: 0
 
     // Grouped color definitions eliminate array out-of-bounds risks
-    readonly property color background_color: (hovered || active) ? styles.background_color_active : styles.background_color_idle
-    readonly property color icon_color: (hovered || active) ? styles.icon_color_active : styles.icon_color_idle
+    property color background_color: (hovered || active) ? styles.background_color_active : styles.background_color_idle
+    property color icon_color: (hovered || active) ? styles.icon_color_active : styles.icon_color_idle
 
     // Simple custom style container
     component Styles: QtObject {

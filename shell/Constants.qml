@@ -55,7 +55,7 @@ Singleton {
 
     readonly property color color_accent: color_yellow
 
-    readonly property real roundness: 0.5
+    readonly property real roundness: 0.25
     readonly property int radius: roundness * 24
     readonly property int padding: 10
 
@@ -130,6 +130,18 @@ Singleton {
     readonly property color power_control_color_text: color_red
     readonly property color power_control_color_background_active: color_red
     readonly property color power_control_color_text_active: color_base
+
+    // System : Keep Awake Control
+    readonly property color keep_awake_control_color_background: color_base
+    readonly property color keep_awake_control_color_background_active: color_peach
+    readonly property color keep_awake_control_color_text: color_text
+    readonly property color keep_awake_control_color_text_active: color_base
+
+    // Widgets : Audio
+    readonly property color audio_control_color_background: color_base
+
+    // Widgets: Brightness
+    readonly property color brightness_control_color_background: color_base
 
 
     // Network
