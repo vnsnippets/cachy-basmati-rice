@@ -39,8 +39,9 @@ ClickableWithIcon {
     }
 
     size: Constants.icon_size 
-    padding: Constants.padding / 1.5
+    padding: Constants.padding
     iconname: "bluetooth.svg"
+    radius: Constants.radius
 
     styles.background_color_idle: Constants.bluetooth_color_background
     styles.background_color_active: datamap.accent

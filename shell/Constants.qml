@@ -125,6 +125,12 @@ Singleton {
     readonly property color battery_color_critical: color_red
     readonly property color battery_color_charging: color_yellow
 
+    // System : Power Button
+    readonly property color power_control_color_background: color_base
+    readonly property color power_control_color_text: color_red
+    readonly property color power_control_color_background_active: color_red
+    readonly property color power_control_color_text_active: color_base
+
 
     // Network
     readonly property real network_threshold_warning: 0.50

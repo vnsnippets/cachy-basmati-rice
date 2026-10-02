@@ -43,10 +43,11 @@ ClickableWithIcon {
     }
 
     size: Constants.icon_size 
-    padding: Constants.padding / 1.5
+    padding: Constants.padding
     leftPadding: Constants.padding
     rightPadding: Constants.padding
     iconname: datamap.icon
+    radius: Constants.radius
 
     styles.background_color_idle: Constants.network_color_background
     styles.background_color_active: datamap.accent

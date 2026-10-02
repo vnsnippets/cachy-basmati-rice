@@ -52,7 +52,7 @@ PanelWindow {
         Keys.onEscapePressed: container.dismiss()
 
         opacity: (container.expanded) ? 1 : 0
-        height: (container.expanded) ? implicitHeight : 0
+        // height: (container.expanded) ? implicitHeight : 0
         // scale: (container.expanded) ? 1 : 0.95
 
         visible: opacity > 0
@@ -60,7 +60,7 @@ PanelWindow {
 
         Behavior on opacity { NumberAnimation { duration: Constants.animation_duration/2; easing.type: Easing.OutCubic } }
         // Behavior on scale { NumberAnimation { duration: Constants.animation_duration; easing.type: Easing.Linear } }
-        Behavior on height { NumberAnimation { duration: Constants.animation_duration/2; easing.type: Easing.Linear } }
+        Behavior on implicitHeight { NumberAnimation { duration: Constants.animation_duration/2; easing.type: Easing.Linear } }
 
         // Prevent clicks inside the console from closing it
         TapHandler {

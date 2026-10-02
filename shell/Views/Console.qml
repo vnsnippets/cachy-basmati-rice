@@ -6,15 +6,17 @@ import QtQuick.Layouts
 import qs
 import qs.Components
 import qs.Layouts
+import qs.Views.Power
 import qs.Views.System
 import qs.Views.Network
+import qs.Views.Battery
 import qs.Views.Bluetooth
 import qs.Views.Applications
 
 StyledBox {
     id: root
     readonly property int _gap: Constants.spacing / 1.5
-    readonly property Component default_content: PowerProfileSelection { }
+    readonly property Component default_content: ApplicationSpotlight { max_height: 160 }
     property Component active_content: default_content
 
     colors.background: Constants.console_color_background
@@ -25,14 +27,19 @@ StyledBox {
     implicitWidth: content.implicitWidth
     implicitHeight: content.implicitHeight
 
+    // Smoothly animate box container height adjustments
+    Behavior on implicitHeight {
+        NumberAnimation {
+            duration: Constants.animation_duration
+            easing.type: Easing.OutCubic
+        }
+    }
+
     ColumnLayout {
         id: content
         anchors.fill: parent
         spacing: root._gap * 2
         visible: root.opacity > 0.1
-        
-        // // Use margins within Layout instead of bottomMargin anchor
-        // Layout.bottomMargin: root._padding
         
         // --- Header Row ---
         RowLayout {
@@ -47,45 +54,31 @@ StyledBox {
             Item { Layout.fillWidth: true; }
 
             BluetoothWidget {
-                radius: Constants.radius
                 Layout.maximumWidth: Constants.bluetooth_pill_max_width
-                // active: activecontent === bluetoothmanager
-                // onClicked: activecontent = (active) ? defaultcontent : bluetoothmanager
-
-                // Component {
-                //     id: bluetoothmanager
-                //     BluetoothDevices {}
-                // }
             }
 
             NetworkWidget {
-                radius: Constants.radius
                 Layout.maximumWidth: Constants.network_pill_max_width
-                // active: activecontent === networkmanagement
-                // onClicked: activecontent = (active) ? defaultcontent : networkmanagement
-
-                // Component {
-                //     id: networkmanagement
-                //     NetworkDevices {}
-                // }
             }
 
             BatteryWidget {
-                radius: Constants.radius
-                // active: activecontent === powerprofiles
-                // onClicked: activecontent = (active) ? defaultcontent : powerprofiles
+                active: root.active_content === component_battery_profiles
+                onClicked: root.active_content = (active) ? root.default_content : component_battery_profiles
+                Component { id: component_battery_profiles; BatteryProfiles { max_height: 160 } }
+            }
 
-                // Component {
-                //     id: powerprofiles
-                //     PowerProfiles { itemheight: 200; }
-                // }
+            PowerButton {
+                active: root.active_content === component_power_menu
+                onClicked: root.active_content = (active) ? root.default_content : component_power_menu
+                Component { id: component_power_menu; PowerOptions { max_height: 160 } }
             }
         }
 
         // --- Main Container ---
         ContentContainer {
             Layout.fillWidth: true
-            Layout.fillHeight: true
+            // Remove Layout.fillHeight so layout calculates preferred implicitHeight automatically
+            Layout.preferredHeight: implicitHeight
             Layout.leftMargin: Constants.padding * 2
             Layout.rightMargin: Constants.padding * 2
             Layout.bottomMargin: Constants.padding * 2

@@ -9,7 +9,7 @@ Text {
 
     component Styles: QtObject {
         property color color_idle: "#000000"
-        property color color_active: idle
+        property color color_active: color_idle
     }
 
     property Styles styles: Styles { }
