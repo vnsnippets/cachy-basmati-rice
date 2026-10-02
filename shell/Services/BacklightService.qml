@@ -14,7 +14,6 @@ Singleton {
     property int brightness: 0
     property bool _busy: false
 
-    // Debounce slider drags so process spawns after movement pauses
     property Timer debounce: Timer {
         interval: 50
         repeat: false
@@ -22,7 +21,6 @@ Singleton {
         onTriggered: service.apply(pendingValue)
     }
 
-    // Lock release timer to swallow echo events right after a change
     property Timer release: Timer {
         interval: 150
         repeat: false
@@ -39,14 +37,12 @@ Singleton {
         const target = Math.max(0, Math.min(100, Math.round(value)));
 
         Daemon.execute(["brightnessctl", "set", `${target}%`], () => {
-            // Update value locally first, then release the lock shortly after
             service.brightness = target;
             service.release.restart();
         });
     }
 
     function sync() {
-        // Ignore incoming udev events while actively setting brightness
         if (service._busy) return;
 
         Daemon.execute(["brightnessctl", "-m"], (res) => {

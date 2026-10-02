@@ -1,4 +1,4 @@
-// pragma ComponentBehavior: Bound
+pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
@@ -22,7 +22,7 @@ Rectangle {
     property Styles styles: Styles {}
 
     color: styles.background_color
-    border.color:  styles.border_color
+    border.color: styles.border_color
 
     RowLayout {
         id: content
@@ -62,22 +62,51 @@ Rectangle {
             id: slide
             Layout.fillWidth: true
             property bool active: false
+            property bool _initializing: true
 
             signal moveCallback
 
-            from: 0; to: 100;
+            from: 0; to: 100
             stepSize: 5
 
             styles.track_color: control.styles.track_color
             styles.accent_color: control.styles.accent_color
             size: 12
 
-            value: PipewireService.defaultSink?.audio?.volume * 100 ?? 0
+            value: 0
+
+            NumberAnimation on value {
+                id: startupAnimation
+                from: 0
+                to: (PipewireService.defaultSink?.audio?.volume ?? 0) * 100
+                duration: control._animationDuration
+                easing.type: Easing.OutCubic
+                running: false
+
+                onFinished: {
+                    slide._initializing = false;
+                }
+            }
+
+            Component.onCompleted: {
+                startupAnimation.start();
+            }
+
+            Connections {
+                target: PipewireService.defaultSink?.audio ?? null
+                function onVolumeChanged() {
+                    if (!slide.pressed && !slide._initializing) {
+                        slide.value = (PipewireService.defaultSink?.audio?.volume ?? 0) * 100;
+                    }
+                }
+            }
+
             onValueChanged: {
-                if (!PipewireService.defaultSink) return;
-                PipewireService.defaultSink.audio.volume = value/100;
-                if (slide.moveCallback) slide.moveCallback();
-                changeCooldown.restart();
+                if (!_initializing && PipewireService.defaultSink) {
+                    PipewireService.defaultSink.audio.volume = value / 100;
+                    if (slide.moveCallback) slide.moveCallback();
+                    changeCooldown.restart();
+                }
             }
         }
 
@@ -86,7 +115,7 @@ Rectangle {
             visible: opacity > 0
 
             Layout.alignment: Qt.AlignVCenter
-            text: Math.round((PipewireService.defaultSink?.audio.volume * 100) / 5) * 5 + "%"
+            text: Math.round(slide.value) + "%"
             color: Constants.audio_control_color_text
 
             Behavior on opacity { NumberAnimation { duration: control._animationDuration } }

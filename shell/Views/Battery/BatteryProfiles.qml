@@ -85,7 +85,6 @@ RowLayout {
                         styles.icon_color_active: item.accent
                     }
 
-                    // Profile Title Text
                     StyledText {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
@@ -98,7 +97,6 @@ RowLayout {
                         active: item.active
                     }
 
-                    // Descriptive Subtext
                     StyledText {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter

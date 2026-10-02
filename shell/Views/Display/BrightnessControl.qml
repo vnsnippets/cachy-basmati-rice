@@ -1,4 +1,4 @@
-// pragma ComponentBehavior: Bound
+pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
@@ -22,7 +22,7 @@ Rectangle {
     property Styles styles: Styles {}
 
     color: styles.background_color
-    border.color:  styles.border_color
+    border.color: styles.border_color
 
     RowLayout {
         id: content
@@ -48,16 +48,45 @@ Rectangle {
             Layout.fillWidth: true
             property bool active: false
 
-            from: 0; to: 100;
+            property bool _initializing: true
+
+            from: 0; to: 100
             stepSize: 5
 
             styles.track_color: control.styles.track_color
             styles.accent_color: control.styles.accent_color
             size: 12
 
-            value: BacklightService.brightness ?? 0
+            value: 0
+
+            NumberAnimation on value {
+                id: startupAnimation
+                from: 0
+                to: BacklightService.brightness ?? 0
+                duration: control._animationDuration
+                easing.type: Easing.OutCubic
+                running: false
+
+                onFinished: {
+                    slide._initializing = false;
+                }
+            }
+
+            Component.onCompleted: {
+                startupAnimation.start();
+            }
+
+            Connections {
+                target: BacklightService
+                function onBrightnessChanged() {
+                    if (!slide.pressed && !slide._initializing) {
+                        slide.value = BacklightService.brightness;
+                    }
+                }
+            }
+
             onValueChanged: {
-                if (BacklightService.brightness !== value) {
+                if (!_initializing && BacklightService.brightness !== value) {
                     BacklightService.set(value);
                 }
             }
@@ -67,7 +96,7 @@ Rectangle {
             id: label
             visible: opacity > 0
             Layout.alignment: Qt.AlignVCenter
-            text: Math.round(BacklightService.brightness ?? 0) + "%"
+            text: Math.round(slide.value) + "%"
             color: Constants.display_control_color_text
             Behavior on opacity { NumberAnimation { duration: control._animationDuration } }
         }

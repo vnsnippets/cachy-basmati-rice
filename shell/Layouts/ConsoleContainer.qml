@@ -58,7 +58,6 @@ PanelWindow {
                     easing.type: Easing.Linear
                 }
                 
-                // Trigger event ONLY when target opacity reaches 0 after fade out finishes
                 ScriptAction {
                     script: {
                         if (!container.expanded && centerconsole.opacity === 0.0) {

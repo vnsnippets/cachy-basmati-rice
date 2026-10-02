@@ -13,7 +13,6 @@ Singleton {
 
     FontLoader {
         id: custom_font
-        // source: "./Assets/Fonts/UbuntuMono-Regular.ttf"
         source: "./Assets/Fonts/Lato-Regular.ttf"
     }
 
@@ -64,9 +63,6 @@ Singleton {
     readonly property int    spacing: 8
     readonly property int    gap: 8
  
-    // Default size
-    // Height in most cases, but also used for width
-    // in Clickable Icon Buttons
     readonly property int    size: 40
     readonly property int    icon_size: 20
     readonly property int    animation_duration: 250

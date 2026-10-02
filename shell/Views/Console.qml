@@ -34,7 +34,6 @@ StyledBox {
     implicitWidth: content.implicitWidth
     implicitHeight: content.implicitHeight
 
-    // Smoothly animate box container height adjustments
     Behavior on implicitHeight {
         NumberAnimation {
             duration: Constants.animation_duration
@@ -81,7 +80,7 @@ StyledBox {
             }
         }
 
-        // Widgets Row
+        // --- Widgets Row ---
         RowLayout {
             Layout.fillWidth: true
             Layout.leftMargin: root._padding

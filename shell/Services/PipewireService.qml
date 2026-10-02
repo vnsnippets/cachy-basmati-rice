@@ -43,7 +43,6 @@ Singleton {
         }
 
         // --- Hardware Verification Layer ---
-        
         // Clear out the phantom ALC257 analog jack clone
         if (node.properties["device.api"] === "alsa") {
             const alsaId = node.properties["alsa.id"] || "";

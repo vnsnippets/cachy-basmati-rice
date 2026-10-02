@@ -20,7 +20,6 @@ Slider {
     readonly property int _trackYPosition: control.topPadding + control.availableHeight / 2 - height / 2
     readonly property int _animationDuration: Constants.animation_duration
 
-    // Custom Handle
     handle: Rectangle {
         x: control.progressWidth - width
         y: control._trackYPosition
@@ -36,7 +35,6 @@ Slider {
         Behavior on scale { NumberAnimation { duration: 100; easing: Easing.InOutQuad; } }
     }
 
-    // Custom Background (Progress bar)
     background: Rectangle {
         x: control.leftPadding
         y: control._trackYPosition
@@ -62,7 +60,7 @@ Slider {
             Behavior on width {
                 NumberAnimation {
                     duration: 400
-                    easing.type: Easing.OutCubic // Fast to slow looks better for loading
+                    easing.type: Easing.OutCubic
                 }
             }
         }

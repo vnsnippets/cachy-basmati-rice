@@ -127,7 +127,6 @@ ColumnLayout {
         currentIndex: 0
         keyNavigationEnabled: false
 
-        // Perform initial alphabetical sort on completion
         Component.onCompleted: spotlight.updateSearchResults()
 
         delegate: Clickable {
@@ -216,7 +215,6 @@ ColumnLayout {
             }
         }
 
-        // --- ANIMATIONS ---
         add: Transition {
             NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 150; easing.type: Easing.OutQuad }
             NumberAnimation { property: "y"; from: app_list_view.height; duration: 200; easing.type: Easing.OutQuad }

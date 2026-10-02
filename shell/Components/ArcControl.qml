@@ -3,15 +3,11 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Shapes
 
-import qs
-
 Item {
     id: control
 
-    // External target ratio (0.0 to 1.0)
     property real ratio: 1.0
 
-    // Internal property driven during initial load and live updates
     property real animatedRatio: 0.0
     property real stroke: 2
 
@@ -27,7 +23,6 @@ Item {
 
     readonly property real center: width / 2
 
-    // Initial render animation from 0.0 to starting ratio
     NumberAnimation {
         id: _EntryAnim
         target: control
@@ -36,10 +31,7 @@ Item {
         to: control.ratio
         duration: 300
         easing.type: Easing.OutCubic
-        onFinished: {
-            // Bind directly to ratio prop once initial render animation completes
-            control.animatedRatio = Qt.binding(() => control.ratio)
-        }
+        onFinished: control.animatedRatio = Qt.binding(() => control.ratio)
     }
 
     Component.onCompleted: _EntryAnim.start()
@@ -49,7 +41,6 @@ Item {
         layer.enabled: true
         layer.samples: 20
 
-        // Track Background
         ShapePath {
             fillColor: "transparent"
             strokeColor: control.colors.track
@@ -65,7 +56,6 @@ Item {
             }
         }
 
-        // Active Arc
         ShapePath {
             fillColor: "transparent"
             strokeColor: control.colors.arc

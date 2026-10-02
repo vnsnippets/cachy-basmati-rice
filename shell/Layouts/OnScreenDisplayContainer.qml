@@ -22,7 +22,6 @@ PanelWindow {
     focusable: false
     color: "transparent"
 
-    // Use full window sizing rather than tight implicit sizing so input regions cover the full movement space
     implicitWidth: toast_item.implicitWidth
     implicitHeight: toast_item.implicitHeight + (_padding * 2)
 
@@ -101,14 +100,12 @@ PanelWindow {
         }
     }
 
-    // Container for layout and animations without absorbing pointer events
     Clickable {
         id: toast_item
 
         implicitWidth: toast_component.implicitWidth
         implicitHeight: toast_component.implicitHeight
 
-        // Clean positioning at the bottom center of the PanelWindow
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: container._padding

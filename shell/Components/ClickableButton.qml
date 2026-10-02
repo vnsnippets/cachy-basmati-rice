@@ -11,11 +11,9 @@ Button {
     property bool active: false
     property int radius: 0
 
-    // Grouped color definitions eliminate array out-of-bounds risks
     readonly property color background_color: (enabled && (hovered || active)) ? styles.background_color_active : styles.background_color_idle
     readonly property color icon_color: (enabled && (hovered || active)) ? styles.icon_color_active : styles.icon_color_idle
 
-    // Simple custom style container
     component Styles: QtObject {
         property color icon_color_idle: "transparent"
         property color icon_color_active: icon_color_idle
@@ -37,7 +35,6 @@ Button {
     antialiasing: true
     smooth: true
 
-    // Set pointing hand cursor via MouseArea or background cursor shape
     background: Rectangle {
         radius: clickable.radius
         color: clickable.background_color
@@ -50,7 +47,6 @@ Button {
         Behavior on border.color { ColorAnimation { duration: clickable._animationDuration } }
     }
 
-    // Press scale animation via states or direct signal handlers
     onPressed: scale = 0.94
     onReleased: scale = 1.00
     
@@ -60,10 +56,9 @@ Button {
 
     Behavior on scale { NumberAnimation { duration: clickable._animationDuration } }
 
-    // Change cursor shape when hovering
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        enabled: false // Let mouse events pass through to Button
+        enabled: false
     }
 }

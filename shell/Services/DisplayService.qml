@@ -11,7 +11,6 @@ Singleton {
     id: service
     property var screens: []
 
-    // Concurrency guards to deduplicate wlr-randr calls
     property bool isFetching: false
     property var pendingCallbacks: []
 
@@ -20,11 +19,9 @@ Singleton {
         all((result) => { service.screens = result; });
     }
 
-    // Retrieve all connected displays using wlr-randr (Deduplicated)
     function all(callback) {
         if (!callback) return;
 
-        // Queue callback if a request is already in-flight
         service.pendingCallbacks.push(callback);
         if (service.isFetching) return;
 
@@ -33,7 +30,6 @@ Singleton {
         Daemon.execute(["wlr-randr", "--json"], (res) => {
             service.isFetching = false;
             
-            // Flush queue
             const callbacks = service.pendingCallbacks;
             service.pendingCallbacks = [];
 
@@ -63,12 +59,10 @@ Singleton {
     function diff(callback) {
         if (!callback) return;
 
-        // 1. Snapshot previous state IMMEDIATELY (synchronously) before async execution
         const previous = [...service.screens];
 
         Debug.log("[Service][Display] Refreshing...");
         
-        // 2. Reuse deduplicated fetch
         all((result) => {
             service.screens = result;
             callback(previous, result);
