@@ -54,25 +54,25 @@ StyledBox {
             Layout.rightMargin: root._padding
             spacing: root._gap
 
-            ClockWidget { Layout.alignment: Qt.AlignTop; }
+            ClockControl { Layout.alignment: Qt.AlignTop; }
 
             Item { Layout.fillWidth: true; }
 
-            BluetoothWidget {
+            BluetoothControl {
                 Layout.maximumWidth: Constants.bluetooth_pill_max_width
             }
 
-            NetworkWidget {
+            NetworkControl {
                 Layout.maximumWidth: Constants.network_pill_max_width
             }
 
-            BatteryWidget {
+            BatteryControl {
                 active: root.active_content === component_battery_profiles
                 onClicked: root.active_content = (active) ? root.default_content : component_battery_profiles
                 Component { id: component_battery_profiles; BatteryProfiles { max_height: 160 } }
             }
 
-            PowerButton {
+            PowerControl {
                 active: root.active_content === component_power_menu
                 onClicked: root.active_content = (active) ? root.default_content : component_power_menu
                 Component { id: component_power_menu; PowerOptions { max_height: 160 } }

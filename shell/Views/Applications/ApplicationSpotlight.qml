@@ -15,7 +15,6 @@ ColumnLayout {
     id: spotlight
 
     required property int max_height
-    readonly property int item_height: Constants.app_spotlight_height
     readonly property string default_app_icon: "application-x-executable"
 
     spacing: Constants.spacing
@@ -55,17 +54,17 @@ ColumnLayout {
         id: search_text_field
         
         Layout.fillWidth: true
-        Layout.preferredHeight: spotlight.item_height
+        Layout.preferredHeight: Constants.spotlight_search_height
 
         leftPadding: icon.size + icon.padding + Constants.padding
         rightPadding: Constants.padding
         verticalAlignment: TextInput.AlignVCenter
         
-        color: Constants.app_spotlight_search_color_text
+        color: Constants.spotlight_search_color_text
         font.pixelSize: 14
         focus: true
         
-        placeholderText: Constants.app_spotlight_search_placeholder
+        placeholderText: Constants.spotlight_search_placeholder
         placeholderTextColor: Qt.alpha(color, 0.5)
 
         ClickableWithIcon {
@@ -131,7 +130,7 @@ ColumnLayout {
             id: item
 
             width: ListView.view.width
-            implicitHeight: spotlight.item_height
+            implicitHeight: Constants.spotlight_app_height
 
             required property int index
             required property string name
@@ -164,7 +163,7 @@ ColumnLayout {
                     spacing: Constants.padding
 
                     IconImage {
-                        implicitSize: spotlight.item_height - Constants.padding * 1.5
+                        implicitSize: Constants.spotlight_app_height - Constants.padding * 1.5
                         source: "image://icon/" + item.icon
                         mipmap: true
                     }

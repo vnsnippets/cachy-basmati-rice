@@ -97,24 +97,6 @@ Singleton {
     readonly property color  console_color_border: color_surface
     readonly property bool   console_show_widget_borders: false
 
-    // Applications
-    readonly property string spotlight_search_text: "Search..."
-    readonly property string spotlight_search_icon: "search.svg"
-
-    readonly property color  spotlight_search_color_background: Qt.alpha(color_surface, 0.10)
-    readonly property color  spotlight_search_color_background_active: Qt.alpha(color_surface, 0.25)
-    readonly property color  spotlight_search_color_border: Qt.alpha(color_subtext, 0.10)
-    readonly property color  spotlight_search_color_border_active: Qt.alpha(color_subtext, 0.25)
-    readonly property color  spotlight_search_color_icon: Qt.alpha(color_subtext, 0.25)
-    readonly property color  spotlight_search_color_text: color_text
-
-    readonly property color  spotlight_app_background_color: Qt.alpha(Constants.color_surface, 0)
-    readonly property color  spotlight_app_background_color_active: Qt.alpha(Constants.color_surface, 0.2)
-    readonly property color  spotlight_app_border_color: Qt.alpha(Constants.color_surface, 0)
-    readonly property color  spotlight_app_border_color_active: Qt.alpha(Constants.color_surface, 0.75)
-    readonly property color  spotlight_app_color_text: color_subtext
-    readonly property color  spotlight_app_color_text_active: color_text
-
     // System : Clock
     readonly property color  clock_color_text: color_text
     readonly property color  clock_color_subtext: color_subtext
@@ -200,10 +182,22 @@ Singleton {
     readonly property color  bluetooth_color_default: color_text
 
     // Application Launchpad / Spotlight
-    readonly property int    app_spotlight_height: 40 + padding
-    readonly property color  app_spotlight_search_color_background: color_base
-    readonly property color  app_spotlight_search_color_text: color_text
-    readonly property color  app_spotlight_search_color_border: color_overlay
+    readonly property string spotlight_search_placeholder: "Search..."
+    readonly property string spotlight_search_icon: "search.svg"
+    readonly property int    spotlight_search_height: 40 + padding
 
-    readonly property string app_spotlight_search_placeholder: "Search..."
+    readonly property color  spotlight_search_color_background: Qt.alpha(color_surface, 0.10)
+    readonly property color  spotlight_search_color_background_active: Qt.alpha(color_surface, 0.25)
+    readonly property color  spotlight_search_color_border: Qt.alpha(color_subtext, 0.10)
+    readonly property color  spotlight_search_color_border_active: Qt.alpha(color_subtext, 0.25)
+    readonly property color  spotlight_search_color_icon: Qt.alpha(color_subtext, 0.40)
+    readonly property color  spotlight_search_color_text: color_text
+
+    readonly property int    spotlight_app_height: 40 + padding
+    readonly property color  spotlight_app_background_color: Qt.alpha(Constants.color_surface, 0)
+    readonly property color  spotlight_app_background_color_active: Qt.alpha(Constants.color_surface, 0.2)
+    readonly property color  spotlight_app_border_color: Qt.alpha(Constants.color_surface, 0)
+    readonly property color  spotlight_app_border_color_active: Qt.alpha(Constants.color_surface, 0.75)
+    readonly property color  spotlight_app_color_text: color_subtext
+    readonly property color  spotlight_app_color_text_active: color_text
 }
