@@ -98,10 +98,10 @@ PanelWindow {
                                 Daemon.execute(["mmsg", "dispatch", "focusid", `client, ${target.id}`]);
                                 defaultAction.invoke();
                             } else {
-                                Debug.log("Could not match notification to an active Mango client");
+                                Debug.log(container.screen.name, "[Notification]", "Could not match notification to an active Mango client");
                             }
                         } catch (err) {
-                            Debug.log("Failed open target client:", err);
+                            Debug.log(container.screen.name, "[Notification]", "Failed open target client:", err);
                         }
                     });
                     return;
