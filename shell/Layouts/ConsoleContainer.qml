@@ -58,9 +58,9 @@ PanelWindow {
         visible: opacity > 0
         onVisibleChanged: if (!visible) EventOrchestrator.consoleCloseCompleted(container.screen)
 
-        Behavior on opacity { NumberAnimation { duration: Constants.animation_duration; easing.type: Easing.OutCubic } }
+        Behavior on opacity { NumberAnimation { duration: Constants.animation_duration/2; easing.type: Easing.OutCubic } }
         // Behavior on scale { NumberAnimation { duration: Constants.animation_duration; easing.type: Easing.Linear } }
-        Behavior on height { NumberAnimation { duration: Constants.animation_duration; easing.type: Easing.Linear } }
+        Behavior on height { NumberAnimation { duration: Constants.animation_duration/2; easing.type: Easing.Linear } }
 
         // Prevent clicks inside the console from closing it
         TapHandler {

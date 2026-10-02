@@ -71,7 +71,9 @@ Rectangle {
                 ClickableWithIcon {
                     size: Constants.size - Constants.padding * 2
                     iconname: item.modelData.connected ? "desktop-on.svg" : "desktop-off.svg"
-                    styles.icon.color.idle: item.modelData.connected ? Constants.color_accent : Constants.color_muted
+                    active: item.modelData.connected
+                    styles.icon_color_idle: Constants.color_surface
+                    styles.icon_color_active: Constants.color_accent
                 }
 
                 StyledText {
@@ -84,7 +86,7 @@ Rectangle {
                         var makeModel = [scr.make, scr.model].filter(Boolean).join(" ");
                         return makeModel.length > 0 ? makeModel : (scr.name || "Display");
                     }
-                    colors.idle: Constants.color_text
+                    color: Constants.color_text
                     horizontalAlignment: Text.AlignLeft
                 }
             }

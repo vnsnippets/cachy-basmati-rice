@@ -210,7 +210,8 @@ PanelWindow {
                         ClickableWithIcon {
                             size: 16
                             iconname: "dismiss.svg"
-                            styles.icon.color: [ Constants.notification_color_subtext, Constants.color_red ]
+                            styles.icon_color_idle: Constants.notification_color_subtext
+                            styles.icon_color_active: Constants.color_red
                             
                             visible: _ArcControl.opacity === 0
                             opacity: (_ArcControl.opacity === 0) ? 1 : 0
@@ -269,7 +270,8 @@ PanelWindow {
                                     id: _ActionText
                                     anchors.centerIn: parent
                                     text: _ActionButton.modelData.text
-                                    colors: [ Constants.notification_color_subtext, Constants.notification_color_text ]
+                                    styles.color_idle: Constants.notification_color_subtext
+                                    styles.color_active: Constants.notification_color_text
                                     font.pixelSize: Constants.font_size
                                     active: _ActionButton.containsMouse
                                 }

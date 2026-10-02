@@ -38,11 +38,13 @@ ClickableWithIcon {
     rightPadding: Constants.padding
     iconname: datamap.icon
 
-    styles.background.color: [ Constants.battery_color_background, datamap.accent ]
-    styles.icon.color: [ datamap.accent, Constants.battery_color_text_active ]
+    styles.background_color_idle: Constants.battery_color_background
+    styles.background_color_active: datamap.accent
+    styles.icon_color_idle: datamap.accent
+    styles.icon_color_active: Constants.battery_color_text_active
 
     // styles.border.width: 1
-    styles.border.color: Constants.battery_color_border
+    styles.border_color_idle: Constants.battery_color_border
 
     palette.buttonText: (hovered || active) ? Constants.battery_color_text_active : datamap.accent
 

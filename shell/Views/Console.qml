@@ -5,13 +5,17 @@ import QtQuick.Layouts
 
 import qs
 import qs.Components
+import qs.Layouts
 import qs.Views.System
 import qs.Views.Network
 import qs.Views.Bluetooth
+import qs.Views.Applications
 
 StyledBox {
     id: root
     readonly property int _gap: Constants.spacing / 1.5
+    readonly property Component default_content: PowerProfileSelection { }
+    property Component active_content: default_content
 
     colors.background: Constants.console_color_background
     colors.border: Constants.console_color_border
@@ -33,7 +37,9 @@ StyledBox {
         // --- Header Row ---
         RowLayout {
             Layout.fillWidth: true
-            Layout.margins: Constants.padding * 2
+            Layout.topMargin: Constants.padding * 2
+            Layout.leftMargin: Constants.padding * 2
+            Layout.rightMargin: Constants.padding * 2
             spacing: root._gap
 
             ClockWidget { Layout.alignment: Qt.AlignTop; }
@@ -74,6 +80,16 @@ StyledBox {
                 //     PowerProfiles { itemheight: 200; }
                 // }
             }
+        }
+
+        // --- Main Container ---
+        ContentContainer {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.leftMargin: Constants.padding * 2
+            Layout.rightMargin: Constants.padding * 2
+            Layout.bottomMargin: Constants.padding * 2
+            content: root.active_content
         }
     }
 }

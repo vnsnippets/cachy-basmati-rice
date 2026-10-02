@@ -86,6 +86,8 @@ PanelWindow {
                 return component_audio_osd;
             case EventOrchestrator._BACKLIGHT_OSD_EVENT_KEY:
                 return component_backlight_osd
+            case EventOrchestrator._SCREEN_OSD_EVENT_KEY:
+                return component_display_osd
             default:
                 return null;
         }
@@ -231,25 +233,25 @@ PanelWindow {
             implicitWidth: Constants.osd_width
         }
     }
+
+    Component {
+        id: component_display_osd
+
+        DisplayOSDControl {
+            id: display_osd
+            border.width: 1
+            border.color: Constants.color_overlay
+            color: Constants.color_base
+            radius: Constants.radius
+
+            Binding {
+                target: display_osd
+                property: "payload"
+                value: container.activePayload
+            }
+        }
+    }
 }
-
-    // Component {
-    //     id: _DisplayOSD
-
-    //     DisplayOSDControl {
-    //         id: _DisplayControl
-    //         border.width: 1
-    //         border.color: Constants.color_overlay
-    //         color: Constants.color_base
-    //         radius: Constants.radius
-
-    //         Binding {
-    //             target: _DisplayControl
-    //             property: "payload"
-    //             value: container.activePayload
-    //         }
-    //     }
-    // }
 
     // Component {
     //     id: _BrightnessOSD

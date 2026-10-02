@@ -7,12 +7,17 @@ import qs
 Text {
     id: control
 
-    property list<color> colors: [ "#505050", "#000000" ]
+    component Styles: QtObject {
+        property color color_idle: "#000000"
+        property color color_active: idle
+    }
+
+    property Styles styles: Styles { }
     property bool active: false
 
     readonly property int _animationDuration: Constants.animation_duration
 
-    color: (active) ? colors[1] : colors[0]
+    color: (active) ? styles.color_active : styles.color_idle
     font.pixelSize: Constants.font_size
     font.family: Constants.font_family
     font.letterSpacing: Constants.font_spacing

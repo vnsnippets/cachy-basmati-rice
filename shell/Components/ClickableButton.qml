@@ -8,9 +8,6 @@ import qs
 Button {
     id: clickable
 
-    required property string iconname
-    required property int size
-
     property bool active: false
     property int radius: 0
 
@@ -40,9 +37,6 @@ Button {
     antialiasing: true
     smooth: true
 
-    width: size + padding * 2
-    height: size + padding * 2
-
     // Set pointing hand cursor via MouseArea or background cursor shape
     background: Rectangle {
         radius: clickable.radius
@@ -55,11 +49,6 @@ Button {
         Behavior on color { ColorAnimation { duration: clickable._animationDuration } }
         Behavior on border.color { ColorAnimation { duration: clickable._animationDuration } }
     }
-
-    icon.width: size
-    icon.height: size
-    icon.color: clickable.icon_color
-    icon.source: Qt.resolvedUrl("../Assets/" + iconname)
 
     // Press scale animation via states or direct signal handlers
     onPressed: scale = 0.94

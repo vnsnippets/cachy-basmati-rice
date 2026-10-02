@@ -39,7 +39,8 @@ Rectangle {
             id: brightnessIcon
             size: Constants.osd_icon_size
             iconname: "brightness.svg"
-            styles.icon.color: [ Constants.color_text, Constants.color_text ]
+            styles.icon_color_idle: Constants.color_text
+            styles.icon_color_active: Constants.color_text
         }
         
         StyledSlider {

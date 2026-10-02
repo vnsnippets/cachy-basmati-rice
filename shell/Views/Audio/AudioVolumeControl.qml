@@ -52,7 +52,9 @@ Rectangle {
                 return icons[safeIndex];
             }
             
-            styles.icon.color: [ Constants.color_text, Constants.color_accent ]
+            styles.icon_color_idle: Constants.color_text
+            styles.icon_color_active: Constants.color_accent
+
             onClicked: PipewireService.defaultSink.audio.muted = !PipewireService.defaultSink?.audio.muted
         }
         
