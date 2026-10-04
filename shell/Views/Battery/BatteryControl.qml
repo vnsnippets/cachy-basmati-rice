@@ -16,7 +16,8 @@ ClickableWithIcon {
 
     property var datamap: {
         if (root.charging) return {
-            icon:           "battery-charge.svg",
+            icon:   "battery-charge.svg",
+            accent: Constants.battery_control_color_charging
         };
 
         const icons = [ "battery-empty.svg", "battery-low.svg", "battery-medium.svg", "battery-high.svg", "battery-full.svg" ];
@@ -25,10 +26,10 @@ ClickableWithIcon {
         const safeIndex =   Math.min(Math.max(0, targetIndex), icons.length - 1);
 
         return {
-            icon:           icons[safeIndex],
-            accent:         (root.batterypercentage <= Constants.battery_threshold_critical) ? Constants.battery_control_color_critical :
-                                (root.batterypercentage <= Constants.battery_threshold_warning) ? Constants.battery_control_color_warning :
-                                    Constants.battery_control_color_default
+            icon:   icons[safeIndex],
+            accent: (root.batterypercentage <= Constants.battery_threshold_critical) ? Constants.battery_control_color_critical :
+                    (root.batterypercentage <= Constants.battery_threshold_warning) ? Constants.battery_control_color_warning :
+                        Constants.battery_control_color_default
         };
     }
 
@@ -36,8 +37,6 @@ ClickableWithIcon {
     padding: Constants.padding 
     leftPadding: Constants.padding
     rightPadding: Constants.padding
-    iconname: datamap.icon
-    radius: (active) ? Constants.icon_size : Constants.radius
 
     styles.background_color_idle: Constants.battery_control_color_background
     styles.background_color_active: datamap.accent
@@ -52,6 +51,8 @@ ClickableWithIcon {
 
     font.family: Constants.font_family
     text: Math.floor(root.batterypercentage * 100) + "%"
+    iconname: datamap.icon
 
+    radius: (active) ? Constants.icon_size : Constants.radius
     Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 }

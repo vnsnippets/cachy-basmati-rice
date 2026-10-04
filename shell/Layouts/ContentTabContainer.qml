@@ -26,8 +26,6 @@ ColumnLayout {
         id: tab_bar_flickable
 
         Layout.fillWidth: true
-        Layout.leftMargin: Constants.padding / 2
-        Layout.rightMargin: Constants.spacing / 2
         implicitHeight: tab_row.implicitHeight
 
         contentWidth: tab_row.implicitWidth
@@ -58,10 +56,10 @@ ColumnLayout {
                         id: tab_text
                         anchors.centerIn: parent
                         text: tab_item.label.toUpperCase() ?? ""
-                        styles.color_idle: Constants.spotlight_app_color_text
-                        styles.color_active: Constants.spotlight_app_color_text_active
+                        styles.color_idle: Constants.console_tab_color_text_inactive
+                        styles.color_active: Constants.console_tab_color_text_active
                         active: tab_item.is_selected
-                        font.bold: tab_item.is_selected 
+                        font.bold: true
                     }
 
                     onClicked: {

@@ -96,6 +96,9 @@ Singleton {
     readonly property color  console_color_border: default_border
     readonly property bool   console_backdrop_enabled: true
 
+    readonly property color  console_tab_color_text_inactive: color_overlay
+    readonly property color  console_tab_color_text_active: color_text
+
     // System : Clock
     readonly property color  clock_color_text: color_text
     readonly property color  clock_color_subtext: color_subtext
@@ -168,13 +171,25 @@ Singleton {
     // Network
     readonly property real   network_threshold_warning: 0.50
     readonly property real   network_threshold_critical: 0.25
+
     readonly property real   network_control_max_width: 160
-    readonly property color  network_color_background: default_background
-    readonly property color  network_color_border: default_border
-    readonly property color  network_color_text_active: color_base
+    readonly property color  network_control_color_background: default_background
+    readonly property color  network_control_color_border: default_border
+    readonly property color  network_control_color_text_active: color_base
+
     readonly property color  network_color_default: color_green
     readonly property color  network_color_warning: color_yellow
     readonly property color  network_color_critical: color_red
+
+    readonly property color  network_device_status_connected: color_green
+    readonly property color  network_device_status_disconnected: color_overlay
+
+    readonly property color  network_device_section_color_title: color_text
+    readonly property color  network_device_color_text: color_text
+    readonly property color  network_device_color_text_active: default_color_accent
+
+    readonly property color  network_device_color_nonetwork_text: color_subtext
+    readonly property color  network_device_color_nonetwork_background: color_surface
 
     // Bluetooth
     readonly property real   bluetooth_control_max_width: 160

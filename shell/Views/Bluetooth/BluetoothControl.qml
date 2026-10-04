@@ -41,7 +41,6 @@ ClickableWithIcon {
     size: Constants.icon_size 
     padding: Constants.padding
     iconname: "bluetooth.svg"
-    radius: Constants.radius
 
     styles.background_color_idle: Constants.bluetooth_color_background
     styles.background_color_active: datamap.accent
@@ -59,4 +58,7 @@ ClickableWithIcon {
     // text: datamap.label
 
     onClicked: Bluetooth.defaultAdapter.enabled = !Bluetooth.defaultAdapter.enabled ?? false
+
+    radius: (active) ? Constants.icon_size : Constants.radius
+    Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 }
