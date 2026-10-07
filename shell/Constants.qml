@@ -11,10 +11,12 @@ Singleton {
         precision: SystemClock.Minutes
     }
 
-    FontLoader {
-        id: custom_font
-        source: "./Assets/Fonts/Lato-Regular.ttf"
-    }
+    // FontLoader {
+    //     id: custom_font
+    //     source: "./Assets/Fonts/Lato-Regular.ttf"
+    // }
+
+    readonly property string icons_directory: "./Assets"
 
     readonly property int    font_size: 14
     readonly property int    font_size_lg: font_size + 2

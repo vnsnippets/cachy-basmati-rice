@@ -32,6 +32,7 @@ Button {
     property Styles styles: Styles {}
 
     readonly property int _animationDuration: Constants.animation_duration
+    readonly property string _icon_path: (`../${Constants.icons_directory}/${iconname}`).replace("//", "/")
 
     padding: 0
     hoverEnabled: true
@@ -56,7 +57,7 @@ Button {
     icon.width: (iconname.length > 0) ? size : 0
     icon.height: (iconname.length > 0) ? size : 0
     icon.color: clickable.icon_color
-    icon.source: (iconname.length > 0) ? Qt.resolvedUrl("../Assets/" + iconname) : ""
+    icon.source: (iconname.length > 0) ? Qt.resolvedUrl(_icon_path) : ""
 
     onPressed: scale = 0.94
     onReleased: scale = 1.00
