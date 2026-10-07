@@ -20,6 +20,8 @@ ContentTabContainer {
             // Expects a Quickshell NetworkDevice object
             property NetworkDevice device: null
 
+            readonly property int device_type: network_device_view.device?.type
+
             spacing: Constants.spacing
             implicitHeight: device_loader.implicitHeight
 
@@ -31,17 +33,10 @@ ContentTabContainer {
             Loader {
                 id: device_loader
                 Layout.fillWidth: true
-                sourceComponent: {
-                    if (network_device_view.device.networks.values.length === 0) return component_no_network;
-
-                    // qmllint disable
-                    var deviceType = network_device_view.device?.type
-                    // qmllint enable
-
-                    switch (deviceType) {
-                        case DeviceType.Wired: return component_wired_device;
-                        case DeviceType.Wifi: return component_wireless_device
-                    }
+                sourceComponent: switch (network_device_view.device_type) {
+                    case DeviceType.Wired: return component_wired_device;
+                    case DeviceType.Wifi: return component_wireless_device;
+                    default: return null
                 }
             }
 
@@ -58,31 +53,6 @@ ContentTabContainer {
                 NetworkDeviceWired {
                     Layout.fillWidth: true
                     device: network_device_view.device as WiredDevice
-                }
-            }
-
-            Component {
-                id: component_no_network
-                Rectangle {
-                    Layout.fillWidth: true
-                    implicitHeight: no_network_label.implicitHeight + Constants.padding * 3
-                    radius: Constants.radius
-                    color: Qt.alpha(Constants.network_device_color_nonetwork_background, 0.15)
-                    border.width: 1
-                    border.color: Constants.network_device_color_nonetwork_background
-
-                    StyledText {
-                        id: no_network_label
-                        leftPadding: Constants.padding * 1.5
-                        rightPadding: Constants.padding * 1.5
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "Not connected to any networks"
-                        color: Constants.network_device_color_nonetwork_text
-                    }
-
-                    Behavior on opacity {
-                        NumberAnimation { duration: Constants.animation_duration }
-                    }
                 }
             }
         }

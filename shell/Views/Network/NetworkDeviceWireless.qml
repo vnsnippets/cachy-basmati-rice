@@ -95,18 +95,22 @@ ColumnLayout {
 
                 required property WifiNetwork modelData
 
-                readonly property bool is_connected: modelData?.connected ?? false
+                readonly property bool connected: modelData?.connected ?? false
                 readonly property bool state_changing: modelData?.stateChanging ?? false
 
                 readonly property string ssid: modelData?.name || "Unidentified Network"
                 readonly property bool is_known: modelData?.known ?? false
-                readonly property bool connected: modelData?.connected ?? false
 
                 readonly property real signal: modelData?.signalStrength ?? 0
                 readonly property bool is_critical: signal <= Constants.network_threshold_critical
                 readonly property bool is_warning: signal <= Constants.network_threshold_warning
 
                 // qmllint disable
+                readonly property bool requires_psk: [
+                    WifiSecurityType.WpaPsk,
+                    WifiSecurityType.Wpa2Psk,
+                    WifiSecurityType.Sae
+                ].includes(modelData?.security ?? null)
                 readonly property string connection_state: (modelData?.state) ? ConnectionState.toString(modelData.state) : ""
                 readonly property string security_type: (modelData?.security) ? WifiSecurityType.toString(modelData.security) : ""
                 readonly property bool is_secure: ![
@@ -116,13 +120,46 @@ ColumnLayout {
                 ].includes(modelData?.security ?? null)
                 // qmllint enable
 
+                // Reset field when network connects or disconnects
+                onConnectedChanged: if (connected) pskInputOngoing = false;
+
+                property bool pskInputOngoing: false
+                onPskInputOngoingChanged: psk_field.forceActiveFocus();
+
                 readonly property color accent_color:
                     (network.is_critical) ? Constants.network_color_critical :
-                                            (network.is_warning) ? Constants.network_color_warning :
-                                                                Constants.network_device_color_connected
+                        (network.is_warning) ? Constants.network_color_warning :
+                            Constants.network_device_color_connected
+
+                function forget() { modelData.forget(); }
+                function disconnect() { modelData.disconnect(); }
+                
+                function handleConnect() {
+                    if (network.connected) {
+                        network.disconnect();
+                        return;
+                    }
+
+                    // If network needs PSK and hasn't opened input box yet
+                    if (network.requires_psk && !network.is_known && !network.pskInputOngoing) {
+                        network.pskInputOngoing = true;
+                        return;
+                    }
+
+                    // Submit PSK if input is visible
+                    if (network.pskInputOngoing) {
+                        if (psk_field.text.length > 0) {
+                            modelData.connectWithPsk(psk_field.text);
+                        }
+                        return;
+                    }
+
+                    // Standard open network or already saved network connection
+                    modelData.connect();
+                }
 
                 color: Constants.network_device_color_background
-                border.color: (is_connected) ? Qt.alpha(accent_color, 0.5) : Constants.network_device_color_border
+                border.color: (connected) ? Qt.alpha(accent_color, 0.5) : Constants.network_device_color_border
                 border.width: 1
 
                 ColumnLayout {
@@ -145,7 +182,7 @@ ColumnLayout {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                                 text: network.ssid
-                                color: network.is_connected ? network.accent_color : Constants.network_device_color_text
+                                color: network.connected ? network.accent_color : Constants.network_device_color_text
                                 elide: Text.ElideRight
                             }
 
@@ -161,50 +198,63 @@ ColumnLayout {
                             }
                         }
 
-                        RowLayout {
-                            spacing: Constants.spacing
+                        Item {
                             Layout.fillHeight: true
-                            Layout.margins: network._padding * 1.25
+                            Layout.preferredWidth: network.pskInputOngoing ? psk_container.implicitWidth : network_properties.implicitWidth
 
-                            ClickableWithIcon {
-                                size: Constants.font_size_lg
-                                padding: 0
-
-                                enabled: network.is_known
-                                styles.icon_color_idle: Constants.network_device_color_subtext
-                                styles.icon_color_active: (enabled) ? Constants.network_device_color_text : Constants.network_device_color_subtext
-                                iconname: (enabled) ? "bookmark-filled.svg" : "bookmark-outline.svg"
-                                opacity: enabled ? 1 : 0.4
-                                onClicked: network.modelData.forget()
+                            Behavior on Layout.preferredWidth {
+                                NumberAnimation { duration: Constants.animation_duration; easing.type: Easing.OutCubic }
                             }
 
-                            BarControl {
-                                Layout.alignment: Qt.AlignVCenter
-                                Layout.preferredHeight: 14
-                                Layout.preferredWidth: (height * length) + (spacing * (length - 1))
+                            // Network Properties View (Hides when pskInputOngoing is true)
+                            RowLayout {
+                                id: network_properties
+                                anchors.centerIn: parent
+                                spacing: Constants.spacing
+                                opacity: network.pskInputOngoing ? 0 : 1
+                                scale: network.pskInputOngoing ? 0.9 : 1
+                                visible: opacity > 0
 
-                                value: network.signal
-                                blink: false
-                                length: 5
-                                radius: 2
-                                spacing: 2
-                                animation_duration: 50
+                                Behavior on opacity { NumberAnimation { duration: Constants.animation_duration } }
+                                Behavior on scale { NumberAnimation { duration: Constants.animation_duration; easing.type: Easing.OutCubic } }
 
-                                styles.color_idle: Constants.network_device_color_disconnected
-                                styles.color_active: network.accent_color
-                            }
+                                ClickableWithIcon {
+                                    size: Constants.font_size_lg
+                                    padding: 0
 
-                            StyledText {
-                                Layout.fillWidth: false
-                                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                                Layout.preferredWidth: 36
-                                text: Math.floor(network.signal * 100) + "%"
-                                color: Constants.network_device_color_subtext
-                            }
+                                    enabled: network.is_known
+                                    styles.icon_color_idle: Constants.network_device_color_subtext
+                                    styles.icon_color_active: (enabled) ? Constants.network_device_color_text : Constants.network_device_color_subtext
+                                    iconname: (enabled) ? "bookmark-filled.svg" : "bookmark-outline.svg"
+                                    opacity: enabled ? 1 : 0.4
+                                    onClicked: network.forget()
+                                }
 
-                            Loader {
-                                active: network.is_secure
-                                sourceComponent: ClickableWithIcon {
+                                BarControl {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.preferredHeight: 14
+                                    Layout.preferredWidth: (height * length) + (spacing * (length - 1))
+
+                                    value: network.signal
+                                    blink: false
+                                    length: 5
+                                    radius: 2
+                                    spacing: 2
+                                    animation_duration: 50
+
+                                    styles.color_idle: Constants.network_device_color_disconnected
+                                    styles.color_active: network.accent_color
+                                }
+
+                                StyledText {
+                                    Layout.fillWidth: false
+                                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                                    Layout.preferredWidth: 36
+                                    text: Math.floor(network.signal * 100) + "%"
+                                    color: Constants.network_device_color_subtext
+                                }
+
+                                ClickableWithIcon {
                                     size: Constants.icon_size * 1.5
                                     padding: 0
 
@@ -215,6 +265,70 @@ ColumnLayout {
                                     iconname: "key.svg"
                                 }
                             }
+
+                            RowLayout {
+                                id: psk_container
+                                anchors.centerIn: parent
+                                opacity: network.pskInputOngoing ? 1 : 0
+                                scale: network.pskInputOngoing ? 1 : 0.9
+                                visible: opacity > 0
+                                spacing: Constants.spacing
+
+                                Behavior on opacity { NumberAnimation { duration: Constants.animation_duration } }
+                                Behavior on scale { NumberAnimation { duration: Constants.animation_duration; easing.type: Easing.OutCubic } }
+
+                                TextField {
+                                    id: psk_field
+                                    implicitWidth: 200
+                                    implicitHeight: Constants.size - (Constants.padding)
+                                    padding: Constants.padding/2
+                                    echoMode: TextInput.Password
+                                    placeholderText: "Password..."
+                                    placeholderTextColor: Constants.network_device_color_subtext
+                                    font.family: Constants.font_family
+                                    color: Constants.network_device_color_text
+
+                                    background: Rectangle {
+                                        color: Constants.default_background
+                                        radius: Constants.radius / 2
+                                        border.color: psk_field.activeFocus ? Constants.network_device_color_subtext : Constants.network_device_color_border
+                                        border.width: 1
+                                    }
+
+                                    onAccepted: network.handleConnect();
+                                    Component.onCompleted: {
+                                        psk_field.forceActiveFocus();
+                                    }
+                                }
+
+                                ClickableWithIcon {
+                                    readonly property color accent_color: Constants.network_device_color_action_disconnect
+                                    
+                                    size: (Constants.icon_size * 1.5) - (padding * 2)
+                                    padding: Constants.padding / 1.5
+
+                                    styles.background_color_idle: Qt.alpha(accent_color, 0.2)
+                                    styles.background_color_active: Qt.alpha(accent_color, 1)
+
+                                    styles.icon_color_idle: accent_color
+                                    styles.icon_color_active: Constants.network_device_color_action_text_active
+
+                                    styles.border_width: 1
+                                    styles.border_color_idle: Qt.alpha(accent_color, 0.5)
+                                    styles.border_color_active: Qt.alpha(accent_color, 1)
+
+                                    iconname: "dismiss.svg"
+                                    radius: Constants.radius
+
+                                    onClicked: network.pskInputOngoing = false;
+                                }
+                            }
+                        }
+
+                        RowLayout {
+                            spacing: Constants.spacing
+                            Layout.fillHeight: true
+                            Layout.rightMargin: network._padding * 1.25
 
                             Loader {
                                 Layout.preferredWidth: implicitWidth
@@ -229,7 +343,7 @@ ColumnLayout {
                                         implicitWidth: 96
                                         Layout.fillHeight: true
 
-                                        readonly property color accent_color: (network.is_connected) ? Constants.network_device_color_action_disconnect : Constants.network_device_color_action_connect
+                                        readonly property color accent_color: (network.connected) ? Constants.network_device_color_action_disconnect : Constants.network_device_color_action_connect
 
                                         padding: Constants.padding / 1.5
                                         leftPadding: Constants.padding
@@ -248,11 +362,11 @@ ColumnLayout {
                                         palette.buttonText: (hovered || active) ? Constants.network_device_color_action_text_active : accent_color
 
                                         font.family: Constants.font_family
-                                        text: (network.is_connected) ? "Disconnect" : "Connect"
+                                        text: (network.connected) ? "Disconnect" : (network.pskInputOngoing ? "Submit" : "Connect")
 
                                         radius: Constants.radius
 
-                                        onClicked: (network.is_connected) ? network.modelData.disconnect() : network.modelData.connect();
+                                        onClicked: network.handleConnect()
                                     }
                                 }
 
@@ -276,7 +390,6 @@ ColumnLayout {
                                             color: Constants.network_device_color_action_busy
                                             radius: implicitHeight
 
-                                            // Oscillation travel parameters
                                             readonly property real min_x: Constants.padding
                                             readonly property real max_x: busy_box.width - rect_ball.width - Constants.padding
 
@@ -349,7 +462,7 @@ ColumnLayout {
 
     Timer {
         id: timeout_tick
-        
+
         property real now: Date.now()
         interval: 50
         running: timeout_scan.running

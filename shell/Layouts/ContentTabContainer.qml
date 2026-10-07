@@ -10,6 +10,7 @@ import qs.Components
 
 ColumnLayout {
     id: container
+    spacing: Constants.spacing * 1.5
     
     property string title: ""
     property Component toolbar: null
@@ -18,7 +19,6 @@ ColumnLayout {
     property int currentIndex: 0
     property int _pendingIndex: -1
 
-    spacing: Constants.padding
     implicitHeight: tab_bar_flickable.implicitHeight + swipe_view.implicitHeight + spacing
     
     RowLayout {
@@ -26,6 +26,7 @@ ColumnLayout {
             visible: container.title.trim().length > 0
             text: container.title
             color: Constants.color_text
+            font.pixelSize: Constants.font_size_lg
         }
 
         Item { Layout.fillWidth: true }
