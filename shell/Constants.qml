@@ -54,7 +54,7 @@ Singleton {
 
     readonly property color  default_color_accent: color_yellow
     readonly property color  default_background: color_base
-    readonly property color  default_border: color_surface
+    readonly property color  default_border: Qt.alpha(color_surface, 0.50)
 
     readonly property real   roundness: 0.25
     readonly property int    radius: roundness * 24
@@ -73,7 +73,7 @@ Singleton {
     readonly property int    osd_offset: 48
     readonly property int    osd_icon_size: 20
     readonly property color  osd_color_background: default_background
-    readonly property color  osd_color_border: default_border
+    readonly property color  osd_color_border: color_surface
 
     // Notifications
     readonly property int    notification_width: 320

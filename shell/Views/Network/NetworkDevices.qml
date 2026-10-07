@@ -1,67 +1,100 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Layouts
 
 import Quickshell.Networking
 
-import qs.Types
+import qs
 import qs.Layouts
-import qs.Utilities
+import qs.Components
 
 ContentTabContainer {
     id: container
 
-    // Function to populate the tabs array dynamically from NetworkService
-    function rebuildTabs() {
-        const devices = Networking.devices.values ?? [];
-        const generatedTabs = [];
-
-        for (var i=0; i < devices.length; i++) {
-            const dev = devices[i]
-            const tabName = dev.name ?? (dev.type === DeviceType.Wifi ? "Wi-Fi" : "Ethernet");
-
-            Debug.log(x)
-
-            // Create TabItem instance using component factory
-            const tabInstance = tabItemComponent.createObject(container, {
-                label: tabName,
-                // Assign a component delegate pre-bound to this specific device
-                content: component_device_item.createObject(container, { model: dev }).delegate
-            });
-
-            generatedTabs.push(tabInstance);
-        }
-
-        container.tabs = generatedTabs;
-    }
-
-    // Factory component for TabItem instances
     Component {
-        id: tabItemComponent
-        
-        TabItem {}
-    }
+        id: component_network_device
+        ColumnLayout {
+            id: network_device_view
 
-    Component {
-        id: component_device_item
-        QtObject {
-            id: device_item
-            property var model: null
-            property Component delegate: Component {
-                NetworkDeviceView {
-                    device: device_item.model
+            // Expects a Quickshell NetworkDevice object
+            property NetworkDevice device: null
+
+            spacing: Constants.spacing
+            implicitHeight: device_loader.implicitHeight
+
+            readonly property bool is_connected: network_device_view.device?.state === ConnectionState.Connected
+            readonly property color status_color: is_connected ? Constants.network_device_status_connected : Constants.network_device_status_disconnected
+            readonly property string status_label: network_device_view.is_connected ? "Connected" : "Disconnected"
+
+            // --- WIRED / ETHERNET VIEW ---
+            Loader {
+                id: device_loader
+                Layout.fillWidth: true
+                sourceComponent: {
+                    if (network_device_view.device.networks.values.length === 0) return component_no_network;
+
+                    // qmllint disable
+                    var deviceType = network_device_view.device?.type
+                    // qmllint enable
+
+                    switch (deviceType) {
+                        case DeviceType.Wired: return component_wired_device;
+                        case DeviceType.Wifi: return component_wireless_device
+                    }
+                }
+            }
+
+            Component {
+                id: component_wireless_device
+                NetworkDeviceWireless {
+                    Layout.fillWidth: true
+                    device: network_device_view.device as WifiDevice
+                }
+            }
+
+            Component {
+                id: component_wired_device
+                NetworkDeviceWired {
+                    Layout.fillWidth: true
+                    device: network_device_view.device as WiredDevice
+                }
+            }
+
+            Component {
+                id: component_no_network
+                Rectangle {
+                    Layout.fillWidth: true
+                    implicitHeight: no_network_label.implicitHeight + Constants.padding * 3
+                    radius: Constants.radius
+                    color: Qt.alpha(Constants.network_device_color_nonetwork_background, 0.15)
+                    border.width: 1
+                    border.color: Constants.network_device_color_nonetwork_background
+
+                    StyledText {
+                        id: no_network_label
+                        leftPadding: Constants.padding * 1.5
+                        rightPadding: Constants.padding * 1.5
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "Not connected to any networks"
+                        color: Constants.network_device_color_nonetwork_text
+                    }
+
+                    Behavior on opacity {
+                        NumberAnimation { duration: Constants.animation_duration }
+                    }
                 }
             }
         }
     }
 
-    Component.onCompleted: rebuildTabs()
+    title: "Network Adapters"
 
-    // Re-evaluate tabs if hardware interfaces are plugged in or removed
-    Connections {
-        target: Networking.devices
-        function onValuesChanged() {
-            container.rebuildTabs();
+    tabs: Networking.devices.values.map(dev => {
+        return {
+            name: dev.name.toUpperCase(),
+            delegate: component_network_device, // View Component
+            context: { "device": dev } // Injected properties
         }
-    }
+    })
 }

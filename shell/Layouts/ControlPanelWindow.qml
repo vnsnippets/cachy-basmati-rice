@@ -11,6 +11,7 @@ import qs.Views
 
 // qmllint disable
 PanelWindow {
+// qmllint enable
     id: container
 
     property bool expanded: true

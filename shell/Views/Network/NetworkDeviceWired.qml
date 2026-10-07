@@ -10,7 +10,6 @@ import qs.Components
 
 ColumnLayout {
     id: root
-    Layout.fillWidth: true
     spacing: Constants.padding
 
     required property WiredDevice device

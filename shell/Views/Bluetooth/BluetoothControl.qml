@@ -7,11 +7,14 @@ import Quickshell.Bluetooth
 import qs
 import qs.Components
 
-// qmllint disable
 ClickableWithIcon {
     id: root
 
-    property var datamap: switch (Bluetooth.defaultAdapter.state ?? true) {
+    // qmllint disable
+    readonly property var default_adapter: Bluetooth.defaultAdapter
+    // qmllint enable
+
+    property var datamap: switch (default_adapter.state ?? true) {
         case (BluetoothAdapterState.Enabling): return {
             label:  "Activating...",
             accent: Constants.bluetooth_color_busy
@@ -57,7 +60,7 @@ ClickableWithIcon {
     font.family: Constants.font_family
     // text: datamap.label
 
-    onClicked: Bluetooth.defaultAdapter.enabled = !Bluetooth.defaultAdapter.enabled ?? false
+    onClicked: default_adapter.enabled = !default_adapter.enabled ?? false
 
     radius: (active) ? Constants.icon_size : Constants.radius
     Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }

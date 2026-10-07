@@ -5,21 +5,37 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs
-import qs.Types
 import qs.Services
 import qs.Components
 
 ColumnLayout {
     id: container
-
-    // 2. Strongly-typed list of Tab objects
-    property list<TabItem> tabs: []
+    
+    property string title: ""
+    property Component toolbar: null
+    property var tabs: []
 
     property int currentIndex: 0
     property int _pendingIndex: -1
 
     spacing: Constants.padding
     implicitHeight: tab_bar_flickable.implicitHeight + swipe_view.implicitHeight + spacing
+    
+    RowLayout {
+        StyledText {
+            visible: container.title.trim().length > 0
+            text: container.title
+            color: Constants.color_text
+        }
+
+        Item { Layout.fillWidth: true }
+
+        Loader {
+            active: container.toolbar !== null
+            visible: active
+            sourceComponent: container.toolbar
+        }
+    }
 
     // --- TAB BAR ---
     Flickable {
@@ -45,7 +61,7 @@ ColumnLayout {
                 delegate: Clickable {
                     id: tab_item
                     required property int index
-                    required property string label
+                    required property string name
 
                     readonly property bool is_selected: container.currentIndex === index
 
@@ -55,7 +71,7 @@ ColumnLayout {
                     StyledText {
                         id: tab_text
                         anchors.centerIn: parent
-                        text: tab_item.label.toUpperCase() ?? ""
+                        text: tab_item.name.toUpperCase() ?? ""
                         styles.color_idle: Constants.console_tab_color_text_inactive
                         styles.color_active: Constants.console_tab_color_text_active
                         active: tab_item.is_selected
@@ -94,12 +110,22 @@ ColumnLayout {
             model: container.tabs
 
             delegate: Loader {
+                id: tab_content
+                
                 required property int index
-                required property Component content
+                required property var modelData
 
                 // Load active and pending targets
                 active: swipe_view.currentIndex === index || container._pendingIndex === index
-                sourceComponent: content
+                sourceComponent: modelData.delegate
+                
+                // Pass properties cleanly to the loaded component
+                Binding {
+                    target: tab_content.item
+                    property: "device"
+                    value: tab_content.modelData.context ? tab_content.modelData.context.device : null
+                    when: tab_content.status === Loader.Ready && tab_content.item !== null
+                }
             }
         }
     }
@@ -121,14 +147,6 @@ ColumnLayout {
                 target: swipe_view
                 property: "scale"
                 to: 0.98
-                duration: Constants.animation_duration / 2
-                easing.type: Easing.InCubic
-            }
-            NumberAnimation {
-                target: swipe_view
-                property: "x"
-                from: 0
-                to: (container.currentIndex > container._pendingIndex) ? 50 : -50
                 duration: Constants.animation_duration / 2
                 easing.type: Easing.InCubic
             }
