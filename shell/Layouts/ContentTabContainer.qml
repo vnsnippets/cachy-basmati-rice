@@ -123,8 +123,8 @@ ColumnLayout {
                 // Pass properties cleanly to the loaded component
                 Binding {
                     target: tab_content.item
-                    property: "device"
-                    value: tab_content.modelData.context ? tab_content.modelData.context.device : null
+                    property: "context"
+                    value: tab_content.modelData.context ?? null
                     when: tab_content.status === Loader.Ready && tab_content.item !== null
                 }
             }

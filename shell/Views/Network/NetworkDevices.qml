@@ -17,8 +17,8 @@ ContentTabContainer {
         ColumnLayout {
             id: network_device_view
 
-            // Expects a Quickshell NetworkDevice object
-            property NetworkDevice device: null
+            property var context: null
+            readonly property NetworkDevice device: context.device
 
             readonly property int device_type: network_device_view.device?.type
 
