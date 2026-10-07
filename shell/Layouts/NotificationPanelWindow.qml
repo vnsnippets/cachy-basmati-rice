@@ -11,7 +11,9 @@ import qs.Services
 import qs.Utilities
 import qs.Components
 
+// qmllint disable
 PanelWindow {
+// qmllint enable
     id: container
 
     anchors.bottom: true
@@ -47,7 +49,7 @@ PanelWindow {
         width: Constants.notification_width
         implicitWidth: Constants.notification_width
         implicitHeight: contentHeight
-        
+
         spacing: Constants.padding
         interactive: false
         verticalLayoutDirection: ListView.BottomToTop
@@ -62,7 +64,7 @@ PanelWindow {
                 easing.type: Easing.OutCubic
             }
         }
-        
+
         delegate: Clickable {
             id: delegate_item
 
@@ -88,7 +90,7 @@ PanelWindow {
                 dismiss_timeout.stop();
                 const defaultAction = modelData.actions.find(a => a && (a.identifier === "default" || a.id === "default"));
                 Debug.log(container.screen.name, "[Notification]", delegate_item.modelData.appName, "", "Default Action");
-                
+
                 if (defaultAction) {
                     MangoIPCService.clients((clients) => {
                         try {
@@ -211,7 +213,7 @@ PanelWindow {
                             iconname: "dismiss.svg"
                             styles.icon_color_idle: Constants.notification_color_subtext
                             styles.icon_color_active: Constants.notification_color_dismiss
-                            
+
                             visible: _ArcControl.opacity === 0
                             opacity: (_ArcControl.opacity === 0) ? 1 : 0
 

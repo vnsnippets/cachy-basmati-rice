@@ -61,6 +61,9 @@ StyledBox {
 
             BluetoothControl {
                 Layout.maximumWidth: Constants.bluetooth_control_max_width
+                active: root.active_content === component_bluetooth_devices
+                onClicked: root.active_content = (active) ? root.default_content : component_bluetooth_devices
+                Component { id: component_bluetooth_devices; BluetoothDevices { } }
             }
 
             NetworkControl {

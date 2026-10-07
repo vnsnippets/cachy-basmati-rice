@@ -212,6 +212,14 @@ Singleton {
     readonly property color  bluetooth_color_busy: color_yellow
     readonly property color  bluetooth_color_default: color_text
 
+    readonly property color  bluetooth_scan_color_disabled: color_overlay
+    readonly property color  bluetooth_scan_color_cancel: color_red
+    readonly property color  bluetooth_scan_color_run: color_sapphire
+    readonly property color  bluetooth_scan_color_text_active: color_base
+
+
+    
+
     // Application Launchpad / Spotlight
     readonly property string spotlight_search_placeholder: "Search..."
     readonly property string spotlight_search_icon: "search.svg"

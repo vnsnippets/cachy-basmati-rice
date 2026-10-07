@@ -11,10 +11,10 @@ ClickableWithIcon {
     id: root
 
     // qmllint disable
-    readonly property var default_adapter: Bluetooth.defaultAdapter
+    readonly property var adapter: Bluetooth.defaultAdapter
     // qmllint enable
 
-    property var datamap: switch (default_adapter.state ?? true) {
+    property var datamap: switch (adapter.state ?? true) {
         case (BluetoothAdapterState.Enabling): return {
             label:  "Activating...",
             accent: Constants.bluetooth_color_busy
@@ -41,7 +41,10 @@ ClickableWithIcon {
         }
     }
 
-    size: Constants.icon_size 
+    readonly property int size: Constants.icon_size + (Constants.padding * 2)
+    implicitWidth: size
+    implicitHeight: size
+    
     padding: Constants.padding
     iconname: "bluetooth.svg"
 
@@ -58,9 +61,6 @@ ClickableWithIcon {
     palette.buttonText: (hovered || active) ? Constants.bluetooth_color_text_active : datamap.accent
 
     font.family: Constants.font_family
-    // text: datamap.label
-
-    onClicked: default_adapter.enabled = !default_adapter.enabled ?? false
 
     radius: (active) ? Constants.icon_size : Constants.radius
     Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }

@@ -1,0 +1,401 @@
+pragma ComponentBehavior: Bound
+
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
+
+import Quickshell.Bluetooth
+
+import qs
+import qs.Components
+
+ColumnLayout {
+    id: root
+
+    // qmllint disable
+    readonly property BluetoothAdapter adapter: Bluetooth.defaultAdapter
+    property int page_size: Math.min(5, adapter?.devices?.values.length ?? 0)
+    // qmllint enable
+
+    readonly property int item_height: Constants.size * 1.5
+    readonly property int capped_height: (item_height * page_size) + (Constants.spacing * Math.max(0, page_size - 1))
+
+    RowLayout {
+        Layout.fillWidth: true
+        spacing: Constants.spacing
+
+        // Discovery Timer Progress Indicator
+        BarControl {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.topMargin: 4
+            Layout.bottomMargin: 4
+
+            value: 1.0 - (timeout_discovery.remaining / timeout_discovery.interval)
+            blink: false
+            length: 25
+            radius: Constants.radius / 2
+            spacing: Constants.spacing / 2
+
+            styles.color_idle: Constants.default_background
+            styles.color_active: Constants.default_color_accent
+        }
+
+        // Scan / Discovery Toggle Button
+        ClickableWithIcon {
+            implicitHeight: Constants.size - (Constants.padding / 2)
+            implicitWidth: 108
+            padding: Constants.padding
+
+            enabled: root.adapter.enabled
+
+            readonly property color accent_color: 
+                (!root.adapter.enabled) ? Constants.bluetooth_scan_color_disabled :
+                    (root.adapter.discovering) ? Constants.bluetooth_scan_color_cancel : Constants.bluetooth_scan_color_run
+
+            styles.background_color_idle: Qt.alpha(accent_color, 0.10)
+            styles.background_color_active: accent_color
+
+            styles.border_width: 1
+            styles.border_color_idle: Qt.alpha(accent_color, 0.5)
+            styles.border_color_active: Qt.alpha(accent_color, 1)
+
+            palette.buttonText: enabled && (hovered || active) ? Constants.bluetooth_scan_color_text_active : accent_color
+
+            font.family: Constants.font_family
+            text: root.adapter.discovering ? "Stop Scan" : "Scan Devices"
+
+            radius: Constants.radius
+
+            onClicked: {
+                if (root.adapter) {
+                    root.adapter.discovering = !root.adapter.discovering;
+                }
+            }
+        }
+
+        // Power Toggle Button
+        ClickableWithIcon {
+            implicitHeight: Constants.size - (Constants.padding / 2)
+            implicitWidth: Constants.size - (Constants.padding / 2)
+            
+            padding: Constants.padding
+
+            active: root.adapter.enabled
+
+            styles.background_color_idle: Constants.color_transparent
+            styles.background_color_active: Constants.bluetooth_color_enabled
+
+            styles.icon_color_idle: Constants.bluetooth_color_enabled
+            styles.icon_color_active: Constants.bluetooth_color_text_active
+
+            styles.border_width: 1
+            styles.border_color_idle: Constants.bluetooth_color_enabled
+            styles.border_color_active: Constants.bluetooth_color_enabled
+
+            iconname: "power.svg"
+
+            onClicked: if (root.adapter) {
+                root.adapter.enabled = !root.adapter.enabled;
+            }
+            
+            radius: (active) ? Constants.icon_size : Constants.radius
+            Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
+        }
+    }
+
+    Component {
+        id: component_with_devices
+        ListView {
+            id: device_list
+            Layout.fillWidth: true
+
+            implicitHeight: root.capped_height
+            Layout.preferredHeight: root.capped_height
+
+            spacing: Constants.spacing
+            clip: true
+
+            // qmllint disable
+            model: root.adapter?.devices?.values ?? []
+            // qmllint enable
+
+            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff; }
+
+            delegate: StyledBox {
+                id: device_item
+                width: ListView.view.width
+                radius: Constants.radius
+
+                readonly property int _padding: Constants.padding * 1.25
+
+                implicitHeight: root.item_height
+
+                required property BluetoothDevice modelData
+
+                readonly property bool connected: modelData?.connected ?? false
+                readonly property bool paired: modelData?.paired ?? false
+
+                readonly property string device_name: modelData?.name || modelData?.address || "Unknown Device"
+
+                // qmllint disable
+                readonly property bool state_changing: (modelData?.state === BluetoothDeviceState.Connecting || modelData?.state === BluetoothDeviceState.Disconnecting)
+                readonly property string connection_state: {
+                    if (!modelData) return "";
+                    switch (modelData.state) {
+                        case BluetoothDeviceState.Connected: return "Connected";
+                        case BluetoothDeviceState.Connecting: return "Connecting...";
+                        case BluetoothDeviceState.Disconnecting: return "Disconnecting...";
+                        default: return modelData.paired ? "Paired" : "Available";
+                    }
+                }
+                // qmllint enable
+
+                readonly property color accent_color: Constants.network_device_color_connected
+
+                function forget() { modelData.forget(); }
+                function disconnect() { modelData.disconnect(); }
+                function connect() { modelData.connect(); }
+                function pair() { modelData.pair(); }
+
+                function handleConnect() {
+                    if (device_item.connected) {
+                        device_item.disconnect();
+                    } else if (device_item.paired) {
+                        device_item.connect();
+                    } else {
+                        device_item.pair();
+                    }
+                }
+
+                color: Constants.network_device_color_background
+                border.color: (connected) ? Qt.alpha(accent_color, 0.5) : Constants.network_device_color_border
+                border.width: 1
+
+                RowLayout {
+                    id: device_content
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Column {
+                        spacing: 1
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                        Layout.margins: device_item._padding
+
+                        StyledText {
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                            text: device_item.device_name
+                            color: device_item.connected ? device_item.accent_color : Constants.network_device_color_text
+                            elide: Text.ElideRight
+                        }
+
+                        StyledText {
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                            text: device_item.connection_state
+                            color: Constants.network_device_color_subtext
+                            font.pixelSize: Constants.font_size - 1
+                            visible: device_item.connection_state !== ""
+                        }
+                    }
+
+                    RowLayout {
+                        spacing: Constants.spacing
+                        Layout.fillHeight: true
+                        Layout.margins: device_item._padding
+                        Layout.topMargin: device_item._padding * 2
+                        Layout.bottomMargin: device_item._padding * 2
+
+                        Loader {
+                            Layout.preferredWidth: implicitWidth
+                            Layout.fillHeight: true
+                            Layout.alignment: Qt.AlignVCenter
+
+                            sourceComponent: (device_item.state_changing) ? action_busy : action_connect
+
+                            Component {
+                                id: action_connect
+
+                                ClickableWithIcon {
+                                    implicitWidth: 96
+
+                                    readonly property color accent_color: (device_item.connected) ? Constants.network_device_color_action_disconnect : Constants.network_device_color_action_connect
+
+                                    padding: Constants.padding / 1.5
+                                    leftPadding: Constants.padding
+                                    rightPadding: Constants.padding
+
+                                    styles.background_color_idle: Qt.alpha(accent_color, 0.1)
+                                    styles.background_color_active: Qt.alpha(accent_color, 1)
+
+                                    styles.icon_color_idle: accent_color
+                                    styles.icon_color_active: Constants.network_device_color_action_text_active
+
+                                    styles.border_width: 1
+                                    styles.border_color_idle: Qt.alpha(accent_color, 0.5)
+                                    styles.border_color_active: Qt.alpha(accent_color, 1)
+
+                                    palette.buttonText: (hovered || active) ? Constants.network_device_color_action_text_active : accent_color
+
+                                    font.family: Constants.font_family
+                                    text: (device_item.connected) ? "Disconnect" : (device_item.paired ? "Connect" : "Pair")
+
+                                    radius: Constants.radius
+
+                                    onClicked: device_item.handleConnect()
+                                }
+                            }
+
+                            Component {
+                                id: action_busy
+                                Item {
+                                    id: busy_box
+                                    implicitWidth: 96
+                                    Layout.fillHeight: true
+
+                                    Rectangle {
+                                        id: rect_ball
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        implicitHeight: 10
+                                        implicitWidth: implicitHeight
+
+                                        color: Constants.network_device_color_action_busy
+                                        radius: implicitHeight
+
+                                        readonly property real min_x: Constants.padding
+                                        readonly property real max_x: busy_box.width - rect_ball.width - Constants.padding
+
+                                        SequentialAnimation on x {
+                                            loops: Animation.Infinite
+                                            running: true
+
+                                            NumberAnimation {
+                                                from: rect_ball.min_x
+                                                to: rect_ball.max_x
+                                                duration: Constants.animation_duration * 2
+                                                easing.type: Easing.InOutQuad
+                                            }
+
+                                            NumberAnimation {
+                                                from: rect_ball.max_x
+                                                to: rect_ball.min_x
+                                                duration: Constants.animation_duration * 2
+                                                easing.type: Easing.InOutQuad
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        ClickableWithIcon {
+                            readonly property color accent: Constants.bluetooth_scan_color_cancel
+                            Layout.fillHeight: true
+                            implicitWidth: implicitHeight
+
+                            padding: Constants.padding / 1.5
+
+                            styles.background_color_idle: Qt.alpha(accent, 0.2)
+                            styles.background_color_active: Qt.alpha(accent, 1)
+
+                            styles.icon_color_idle: accent
+                            styles.icon_color_active: Constants.network_device_color_action_text_active
+
+                            styles.border_width: 1
+                            styles.border_color_idle: Qt.alpha(accent, 0.5)
+                            styles.border_color_active: Qt.alpha(accent, 1)
+
+                            iconname: "dismiss.svg"
+                            radius: Constants.radius
+
+                            onClicked: device_item.forget()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: component_no_device
+        Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: no_device_label.implicitHeight + Constants.padding * 3
+            radius: Constants.radius
+            color: Qt.alpha(Constants.network_device_color_nonetwork_background, 0.15)
+            border.width: 1
+            border.color: Constants.network_device_color_nonetwork_background
+
+            StyledText {
+                id: no_device_label
+                leftPadding: Constants.padding * 1.5
+                rightPadding: Constants.padding * 1.5
+                anchors.verticalCenter: parent.verticalCenter
+                text: "No Bluetooth devices found"
+                color: Constants.network_device_color_nonetwork_text
+            }
+
+            Behavior on opacity {
+                NumberAnimation { duration: Constants.animation_duration }
+            }
+        }
+    }
+
+    Loader {
+        Layout.fillWidth: true
+        sourceComponent: (!root.adapter.enabled) ? component_powered_off :
+            (root.page_size > 0) ? component_with_devices : component_no_device
+    }
+
+    Component {
+        id: component_powered_off
+        Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: powered_off_label.implicitHeight + Constants.padding * 3
+            radius: Constants.radius
+            color: Qt.alpha(Constants.network_device_color_nonetwork_background, 0.15)
+            border.width: 1
+            border.color: Constants.network_device_color_nonetwork_background
+
+            StyledText {
+                id: powered_off_label
+                leftPadding: Constants.padding * 1.5
+                rightPadding: Constants.padding * 1.5
+                anchors.verticalCenter: parent.verticalCenter
+                text: "Bluetooth adapter is turned off"
+                color: Constants.network_device_color_nonetwork_text
+            }
+
+            Behavior on opacity {
+                NumberAnimation { duration: Constants.animation_duration }
+            }
+        }
+    }
+
+    Timer {
+        id: timeout_discovery
+
+        property real starttime: -1
+        readonly property int remaining: (running && starttime > 0) ? Math.max(0, interval - (timeout_tick.now - starttime)) : interval
+
+        interval: 10000
+        running: root.adapter?.discovering ?? false
+
+        onTriggered: if (root.adapter) root.adapter.discovering = false
+        onRunningChanged: starttime = running ? Date.now() : -1
+    }
+
+    Timer {
+        id: timeout_tick
+
+        property real now: Date.now()
+        interval: 50
+        running: timeout_discovery.running
+        repeat: true
+        onTriggered: now = Date.now()
+    }
+}
