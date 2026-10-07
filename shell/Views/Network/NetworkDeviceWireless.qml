@@ -220,68 +220,39 @@ ColumnLayout {
                                 Layout.preferredWidth: implicitWidth
                                 Layout.alignment: Qt.AlignVCenter
 
-                                sourceComponent: (network.state_changing) ? action_busy :
-                                                    (network.is_connected) ? action_disconnect : action_connect
-
-                                Component {
-                                    id: action_disconnect
-                                    ClickableWithIcon {
-                                        implicitWidth: 96
-                                        Layout.fillHeight: true
-
-                                        padding: Constants.padding / 1.5
-                                        leftPadding: Constants.padding
-                                        rightPadding: Constants.padding
-
-                                        styles.background_color_idle: Qt.alpha(Constants.network_device_color_action_disconnect, 0.2)
-                                        styles.background_color_active: Qt.alpha(Constants.network_device_color_action_disconnect, 1)
-
-                                        styles.icon_color_idle: Constants.network_device_color_action_disconnect
-                                        styles.icon_color_active: Constants.network_device_color_action_text_active
-
-                                        styles.border_width: 1
-                                        styles.border_color_idle: Qt.alpha(Constants.network_device_color_action_disconnect, 0.5)
-                                        styles.border_color_active: Qt.alpha(Constants.network_device_color_action_disconnect, 1)
-
-                                        palette.buttonText: (hovered || active) ? Constants.network_device_color_action_text_active : Constants.network_device_color_action_disconnect
-
-                                        font.family: Constants.font_family
-                                        text: "Disconnect"
-
-                                        radius: Constants.radius
-
-                                        onClicked: network.modelData.disconnect()
-                                    }
-                                }
+                                sourceComponent: (network.state_changing) ? action_busy : action_connect
 
                                 Component {
                                     id: action_connect
+
                                     ClickableWithIcon {
                                         implicitWidth: 96
                                         Layout.fillHeight: true
+
+                                        readonly property color accent_color: (network.is_connected) ? Constants.network_device_color_action_disconnect : Constants.network_device_color_action_connect
 
                                         padding: Constants.padding / 1.5
                                         leftPadding: Constants.padding
                                         rightPadding: Constants.padding
 
-                                        styles.background_color_idle: Qt.alpha(Constants.network_device_color_action_connect, 0.2)
-                                        styles.background_color_active: Qt.alpha(Constants.network_device_color_action_connect, 1)
+                                        styles.background_color_idle: Qt.alpha(accent_color, 0.2)
+                                        styles.background_color_active: Qt.alpha(accent_color, 1)
 
-                                        styles.icon_color_idle: Constants.network_device_color_action_connect
+                                        styles.icon_color_idle: accent_color
                                         styles.icon_color_active: Constants.network_device_color_action_text_active
 
                                         styles.border_width: 1
-                                        styles.border_color_idle: Qt.alpha(Constants.network_device_color_action_connect, 0.5)
-                                        styles.border_color_active: Qt.alpha(Constants.network_device_color_action_connect, 1)
+                                        styles.border_color_idle: Qt.alpha(accent_color, 0.5)
+                                        styles.border_color_active: Qt.alpha(accent_color, 1)
 
-                                        palette.buttonText: (hovered || active) ? Constants.network_device_color_action_text_active : Constants.network_device_color_action_connect
+                                        palette.buttonText: (hovered || active) ? Constants.network_device_color_action_text_active : accent_color
 
                                         font.family: Constants.font_family
-                                        text: "Connect"
+                                        text: (network.is_connected) ? "Disconnect" : "Connect"
 
                                         radius: Constants.radius
 
-                                        onClicked: network.modelData.connect()
+                                        onClicked: (network.is_connected) ? network.modelData.disconnect() : network.modelData.connect();
                                     }
                                 }
 
@@ -297,7 +268,6 @@ ColumnLayout {
 
                                         Rectangle {
                                             id: rect_ball
-                                            // Anchor vertically only so 'x' can animate freely
                                             anchors.verticalCenter: parent.verticalCenter
 
                                             implicitHeight: 10
@@ -310,7 +280,6 @@ ColumnLayout {
                                             readonly property real min_x: Constants.padding
                                             readonly property real max_x: busy_box.width - rect_ball.width - Constants.padding
 
-                                            // Continuous left-to-right bounce
                                             SequentialAnimation on x {
                                                 loops: Animation.Infinite
                                                 running: true
@@ -380,6 +349,7 @@ ColumnLayout {
 
     Timer {
         id: timeout_tick
+        
         property real now: Date.now()
         interval: 50
         running: timeout_scan.running
