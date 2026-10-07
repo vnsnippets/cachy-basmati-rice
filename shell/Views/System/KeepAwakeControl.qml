@@ -7,7 +7,7 @@ import qs.Components
 
 ClickableWithIcon {
     required property IdleInhibitor inhibitor
-    active: inhibitor.enabled
+    active: inhibitor.enabled || anim_rotation.running
 
     id: keepawake
     size: Constants.icon_size
@@ -31,6 +31,6 @@ ClickableWithIcon {
     rotation: inhibitor.enabled ? 270 : 0
     transformOrigin: Item.Center
 
-    Behavior on rotation { NumberAnimation { duration: Constants.animation_duration; easing.type: Easing.InOutQuad } }
+    Behavior on rotation { NumberAnimation { id: anim_rotation; duration: Constants.animation_duration; easing.type: Easing.InOutQuad } }
     Behavior on radius { NumberAnimation { duration: Constants.animation_duration/4; easing.type: Easing.OutCubic } }
 }

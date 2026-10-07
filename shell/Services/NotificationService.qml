@@ -27,6 +27,11 @@ Singleton {
         }
     }
 
+    function push(title, message) {
+        // notify-send -u critical -i dialog-warning -a "System Monitor" "Thermal Warning" "CPU temperature has exceeded 85°C"
+        Quickshell.execDetached(["notify-send", "-u critical", "-i dialog-warning", `-a "${title}"`, `"${message}"`]);
+    }
+
     function target(clients, notification) {
         Debug.log("-------: ", notification);
         Debug.log("---", "Discovered", clients.length, "clients");

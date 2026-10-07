@@ -110,7 +110,7 @@ RowLayout {
                         visible: Constants.power_option_show_description
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                        font.pixelSize: 14
+                        font.pixelSize: Constants.font_size
                         horizontalAlignment: Text.AlignHCenter
                         wrapMode: Text.WordWrap
                         elide: Text.ElideRight

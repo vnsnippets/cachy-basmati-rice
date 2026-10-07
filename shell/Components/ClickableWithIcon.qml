@@ -8,8 +8,8 @@ import qs
 Button {
     id: clickable
 
-    required property string iconname
-    required property int size
+    property string iconname: ""
+    property int size: 0
 
     property bool active: false
     property int radius: 0
@@ -38,8 +38,8 @@ Button {
     antialiasing: true
     smooth: true
 
-    width: size + padding * 2
-    height: size + padding * 2
+    width: (size > 0) ? size + padding * 2 : implicitWidth
+    height: (size > 0) ? size + padding * 2 : implicitHeight
 
     background: Rectangle {
         radius: clickable.radius
@@ -53,10 +53,10 @@ Button {
         Behavior on border.color { ColorAnimation { duration: clickable._animationDuration } }
     }
 
-    icon.width: size
-    icon.height: size
+    icon.width: (iconname.length > 0) ? size : 0
+    icon.height: (iconname.length > 0) ? size : 0
     icon.color: clickable.icon_color
-    icon.source: Qt.resolvedUrl("../Assets/" + iconname)
+    icon.source: (iconname.length > 0) ? Qt.resolvedUrl("../Assets/" + iconname) : ""
 
     onPressed: scale = 0.94
     onReleased: scale = 1.00
@@ -66,6 +66,7 @@ Button {
     font.letterSpacing: Constants.font_spacing
 
     Behavior on scale { NumberAnimation { duration: clickable._animationDuration } }
+    Behavior on icon.color { ColorAnimation { duration: clickable._animationDuration } }
 
     MouseArea {
         anchors.fill: parent

@@ -89,7 +89,7 @@ RowLayout {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         font.bold: true
-                        font.pixelSize: 16
+                        font.pixelSize: Constants.font_size_lg
                         horizontalAlignment: Text.AlignHCenter
                         text: item.title
                         styles.color_idle: Constants.battery_profile_color_text

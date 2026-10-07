@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import Quickshell
 import Quickshell.Networking
 
 import qs
@@ -15,198 +14,354 @@ ColumnLayout {
     spacing: Constants.spacing
 
     required property WifiDevice device
+    readonly property bool is_scanning: device?.scannerEnabled ?? false
 
-    readonly property int item_height: Constants.size
+    readonly property int item_height: Constants.size * 1.5
 
-    property int page_size: Math.min(5, device.networks.values.length)
-    readonly property int capped_height: (item_height * page_size) + (Constants.spacing * page_size-1)
+    property int page_size: Math.min(5, device?.networks?.values.length ?? 0)
+    readonly property int capped_height: (item_height * page_size) + (Constants.spacing * Math.max(0, page_size - 1))
 
     RowLayout {
         Layout.fillWidth: true
-        Layout.topMargin: Constants.spacing
-        Layout.bottomMargin: Constants.spacing
         spacing: Constants.spacing
 
         BarControl {
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
+            Layout.fillHeight: true
 
             value: 1.0 - (timeout_scan.remaining / timeout_scan.interval)
             blink: false
-            length: 30
+            length: 25
             radius: Constants.radius / 2
             spacing: Constants.spacing / 2
 
-            styles.color_idle: Constants.color_surface
-            styles.color_active: Qt.alpha(Constants.color_green, 1)
-
-            Behavior on opacity { NumberAnimation { duration: Constants.animation_duration } }
+            styles.color_idle: Constants.default_background
+            styles.color_active: Constants.default_color_accent
         }
 
         ClickableWithIcon {
-            id: scan_button
-            size: Constants.icon_size
-            padding: Constants.padding / 2            
+            implicitHeight: Constants.size - (Constants.padding / 2)
+            padding: Constants.padding
 
-            active: root.device?.scannerEnabled ?? false
-            radius: (active)  ? Constants.icon_size : Constants.radius / 2
-            iconname: "reboot.svg"
+            readonly property color accent_color: (root.is_scanning) ?  Constants.network_device_color_action_disconnect : Constants.network_device_color_action_connect
 
-            styles.background_color_idle: Constants.color_surface
-            styles.background_color_active: Constants.color_green
-            styles.icon_color_idle: Constants.color_text
-            styles.icon_color_active: Constants.color_base
+            styles.background_color_idle: Constants.color_transparent
+            styles.background_color_active: accent_color
 
-            onClicked: root.device.scannerEnabled = !root.device.scannerEnabled;
+            styles.border_width: 1
+            styles.border_color_idle: Qt.alpha(accent_color, 0.5)
+            styles.border_color_active: Qt.alpha(accent_color, 1)
 
-            states: State {
-                name: "spinning"
-                when: root.device?.scannerEnabled ?? false
-                PropertyChanges { scan_button.rotation: 360 }
-            }
+            palette.buttonText: (hovered || active) ? Constants.network_device_color_action_text_active : accent_color
 
-            transitions: [
-                Transition {
-                    to: "spinning"
-                    RotationAnimation {
-                        direction: RotationAnimation.Clockwise
-                        loops: Animation.Infinite
-                        duration: 800
-                    }
-                },
-                Transition {
-                    from: "spinning"
-                    RotationAnimation {
-                        duration: 400
-                        easing.type: Easing.OutQuad
-                    }
-                }
-            ]
-            
-            Behavior on radius { NumberAnimation { duration: Constants.animation_duration/4; easing.type: Easing.OutCubic } }
+            font.family: Constants.font_family
+            text: (root.is_scanning) ? "Stop Scanning" : "Scan Networks"
+
+            radius: Constants.radius
+
+            onClicked: root.device.scannerEnabled = !root.is_scanning;
         }
     }
 
-    Repeater {
-        model: root.device.networks.values
-        implicitHeight: root.capped_height
+    Loader {
+        Layout.fillWidth: true
+        sourceComponent: (root.page_size > 0) ? component_with_networks : component_no_network
+    }
 
-        delegate: StyledBox {
-            id: item
+    Component {
+        id: component_with_networks
+        ListView {
+            id: network_list
             Layout.fillWidth: true
-            radius: Constants.radius / 2
-            implicitHeight: item_details.height + (Constants.padding * 2)
 
-            required property WifiNetwork modelData
-            
-            // FIX: Derive connection status directly from modelData
-            readonly property bool is_connected: modelData.connected ?? false
-            readonly property bool is_changing: modelData.stateChanging ?? false
+            implicitHeight: root.capped_height
+            Layout.preferredHeight: root.capped_height
 
-            // Highlight border state depending on connection
-            color: item.is_connected ? Qt.alpha(Constants.color_green, 0.10) : Qt.alpha(Constants.color_surface, 0.20)
-            border.color: item.is_connected ? Qt.alpha(Constants.color_green, 0.30) : Qt.alpha(Constants.color_surface, 0.20)
-            border.width: 1
+            spacing: Constants.spacing
+            clip: true
 
-            ColumnLayout {
-                id: item_details
-                implicitWidth: parent.width - (Constants.padding * 2)
-                anchors.centerIn: parent
+            model: root.device?.networks?.values ?? []
 
-                 // Network Name (SSID)
-                StyledText {
-                    Layout.fillWidth: false
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                    leftPadding: Constants.padding / 2
-                    text: item.modelData.name || "Unidentified Network"
-                    color: item.is_connected ? Constants.network_device_color_text_active : Constants.network_device_color_text
-                    elide: Text.ElideRight
+            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff; }
+
+            delegate: StyledBox {
+                id: network
+                width: ListView.view.width
+                radius: Constants.radius
+
+                readonly property int _padding: Constants.padding
+
+                implicitHeight: root.item_height
+
+                required property WifiNetwork modelData
+
+                readonly property bool is_connected: modelData?.connected ?? false
+                readonly property bool state_changing: modelData?.stateChanging ?? false
+
+                readonly property string ssid: modelData?.name || "Unidentified Network"
+                readonly property bool is_known: modelData?.known ?? false
+                readonly property bool connected: modelData?.connected ?? false
+
+                readonly property real signal: modelData?.signalStrength ?? 0
+                readonly property bool is_critical: signal <= Constants.network_threshold_critical
+                readonly property bool is_warning: signal <= Constants.network_threshold_warning
+
+                // qmllint disable
+                readonly property string connection_state: (modelData?.state) ? ConnectionState.toString(modelData.state) : ""
+                readonly property string security_type: (modelData?.security) ? WifiSecurityType.toString(modelData.security) : ""
+                readonly property bool is_secure: ![
+                    WifiSecurityType.Open,
+                    WifiSecurityType.Owe,
+                    WifiSecurityType.Unknown
+                ].includes(modelData?.security ?? null)
+                // qmllint enable
+
+                readonly property color accent_color:
+                    (network.is_critical) ? Constants.network_color_critical :
+                                            (network.is_warning) ? Constants.network_color_warning :
+                                                                Constants.network_device_color_connected
+
+                color: Constants.network_device_color_background
+                border.color: (is_connected) ? Qt.alpha(accent_color, 0.5) : Constants.network_device_color_border
+                border.width: 1
+
+                ColumnLayout {
+                    id: network_content
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    // Network SSID and Strength
+                    RowLayout {
+                        Layout.fillWidth: true
+
+                        Column {
+                            spacing: 1
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                            Layout.margins: network._padding * 1.25
+
+                            StyledText {
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                                text: network.ssid
+                                color: network.is_connected ? network.accent_color : Constants.network_device_color_text
+                                elide: Text.ElideRight
+                            }
+
+                            StyledText {
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                                text: network.connection_state
+                                color: Constants.network_device_color_subtext
+                                font.pixelSize: Constants.font_size - 1
+                                // qmllint disable
+                                visible: network.modelData?.state !== ConnectionState.Disconnected
+                                // qmllint enable
+                            }
+                        }
+
+                        RowLayout {
+                            spacing: Constants.spacing
+                            Layout.fillHeight: true
+                            Layout.margins: network._padding * 1.25
+
+                            ClickableWithIcon {
+                                size: Constants.font_size_lg
+                                padding: 0
+
+                                enabled: network.is_known
+                                styles.icon_color_idle: Constants.network_device_color_subtext
+                                styles.icon_color_active: (enabled) ? Constants.network_device_color_text : Constants.network_device_color_subtext
+                                iconname: (enabled) ? "bookmark-filled.svg" : "bookmark-outline.svg"
+                                opacity: enabled ? 1 : 0.4
+                                onClicked: network.modelData.forget()
+                            }
+
+                            BarControl {
+                                Layout.alignment: Qt.AlignVCenter
+                                Layout.preferredHeight: 14
+                                Layout.preferredWidth: (height * length) + (spacing * (length - 1))
+
+                                value: network.signal
+                                blink: false
+                                length: 5
+                                radius: 2
+                                spacing: 2
+                                animation_duration: 50
+
+                                styles.color_idle: Constants.network_device_color_disconnected
+                                styles.color_active: network.accent_color
+                            }
+
+                            StyledText {
+                                Layout.fillWidth: false
+                                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                                Layout.preferredWidth: 36
+                                text: Math.floor(network.signal * 100) + "%"
+                                color: Constants.network_device_color_subtext
+                            }
+
+                            Loader {
+                                active: network.is_secure
+                                sourceComponent: ClickableWithIcon {
+                                    size: Constants.icon_size * 1.5
+                                    padding: 0
+
+                                    styles.icon_color_idle: Constants.network_device_color_subtext
+                                    styles.border_width: 0
+
+                                    enabled: false
+                                    iconname: "key.svg"
+                                }
+                            }
+
+                            Loader {
+                                Layout.preferredWidth: implicitWidth
+                                Layout.alignment: Qt.AlignVCenter
+
+                                sourceComponent: (network.state_changing) ? action_busy :
+                                                    (network.is_connected) ? action_disconnect : action_connect
+
+                                Component {
+                                    id: action_disconnect
+                                    ClickableWithIcon {
+                                        implicitWidth: 96
+                                        Layout.fillHeight: true
+
+                                        padding: Constants.padding / 1.5
+                                        leftPadding: Constants.padding
+                                        rightPadding: Constants.padding
+
+                                        styles.background_color_idle: Qt.alpha(Constants.network_device_color_action_disconnect, 0.2)
+                                        styles.background_color_active: Qt.alpha(Constants.network_device_color_action_disconnect, 1)
+
+                                        styles.icon_color_idle: Constants.network_device_color_action_disconnect
+                                        styles.icon_color_active: Constants.network_device_color_action_text_active
+
+                                        styles.border_width: 1
+                                        styles.border_color_idle: Qt.alpha(Constants.network_device_color_action_disconnect, 0.5)
+                                        styles.border_color_active: Qt.alpha(Constants.network_device_color_action_disconnect, 1)
+
+                                        palette.buttonText: (hovered || active) ? Constants.network_device_color_action_text_active : Constants.network_device_color_action_disconnect
+
+                                        font.family: Constants.font_family
+                                        text: "Disconnect"
+
+                                        radius: Constants.radius
+
+                                        onClicked: network.modelData.disconnect()
+                                    }
+                                }
+
+                                Component {
+                                    id: action_connect
+                                    ClickableWithIcon {
+                                        implicitWidth: 96
+                                        Layout.fillHeight: true
+
+                                        padding: Constants.padding / 1.5
+                                        leftPadding: Constants.padding
+                                        rightPadding: Constants.padding
+
+                                        styles.background_color_idle: Qt.alpha(Constants.network_device_color_action_connect, 0.2)
+                                        styles.background_color_active: Qt.alpha(Constants.network_device_color_action_connect, 1)
+
+                                        styles.icon_color_idle: Constants.network_device_color_action_connect
+                                        styles.icon_color_active: Constants.network_device_color_action_text_active
+
+                                        styles.border_width: 1
+                                        styles.border_color_idle: Qt.alpha(Constants.network_device_color_action_connect, 0.5)
+                                        styles.border_color_active: Qt.alpha(Constants.network_device_color_action_connect, 1)
+
+                                        palette.buttonText: (hovered || active) ? Constants.network_device_color_action_text_active : Constants.network_device_color_action_connect
+
+                                        font.family: Constants.font_family
+                                        text: "Connect"
+
+                                        radius: Constants.radius
+
+                                        onClicked: network.modelData.connect()
+                                    }
+                                }
+
+                                Component {
+                                    id: action_busy
+                                    Item {
+                                        id: busy_box
+                                        implicitWidth: 96
+                                        Layout.fillHeight: true
+                                        Layout.margins: Constants.padding / 1.5
+                                        Layout.leftMargin: Constants.padding
+                                        Layout.rightMargin: Constants.padding
+
+                                        Rectangle {
+                                            id: rect_ball
+                                            // Anchor vertically only so 'x' can animate freely
+                                            anchors.verticalCenter: parent.verticalCenter
+
+                                            implicitHeight: 10
+                                            implicitWidth: implicitHeight
+
+                                            color: Constants.network_device_color_action_busy
+                                            radius: implicitHeight
+
+                                            // Oscillation travel parameters
+                                            readonly property real min_x: Constants.padding
+                                            readonly property real max_x: busy_box.width - rect_ball.width - Constants.padding
+
+                                            // Continuous left-to-right bounce
+                                            SequentialAnimation on x {
+                                                loops: Animation.Infinite
+                                                running: true
+
+                                                NumberAnimation {
+                                                    from: rect_ball.min_x
+                                                    to: rect_ball.max_x
+                                                    duration: Constants.animation_duration * 2
+                                                    easing.type: Easing.InOutQuad
+                                                }
+
+                                                NumberAnimation {
+                                                    from: rect_ball.max_x
+                                                    to: rect_ball.min_x
+                                                    duration: Constants.animation_duration * 2
+                                                    easing.type: Easing.InOutQuad
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
+        }
+    }
 
-            // Row {
-            //     anchors.left: parent.left
-            //     anchors.right: parent.right
-            //     spacing: Constants.spacing
+    Component {
+        id: component_no_network
+        Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: no_network_label.implicitHeight + Constants.padding * 3
+            radius: Constants.radius
+            color: Qt.alpha(Constants.network_device_color_nonetwork_background, 0.15)
+            border.width: 1
+            border.color: Constants.network_device_color_nonetwork_background
 
-            //     // Network Name (SSID)
-            //     StyledText {
-            //         Layout.fillWidth: false
-            //         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            //         leftPadding: Constants.padding / 2
-            //         text: item.modelData.name || "Hidden Network"
-            //         color: item.is_connected ? Constants.network_device_color_text_active : Constants.network_device_color_text
-            //         elide: Text.ElideRight
-            //     }
+            StyledText {
+                id: no_network_label
+                leftPadding: Constants.padding * 1.5
+                rightPadding: Constants.padding * 1.5
+                anchors.verticalCenter: parent.verticalCenter
+                text: "Not connected to any networks"
+                color: Constants.network_device_color_nonetwork_text
+            }
 
-            //     // Signal Strength Indicator
-            //     StyledText {
-            //         Layout.fillWidth: false
-            //         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            //         visible: item.modelData.signalStrength !== undefined
-            //         text: visible ? "(" + (item.modelData.signalStrength * 100).toFixed(0) + "%)" : ""
-            //         color: Constants.network_device_color_text
-            //     }
-
-            //     Item { Layout.fillWidth: true }
-                
-            //     Clickable {
-            //         id: network_details
-                    
-            //         StyledText {
-            //             Layout.fillWidth: false
-            //             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            //             active: network_details.containsMouse
-            //             text: item.is_changing ? "Connecting..." : (item.is_connected ? "Connected" : "")
-            //             styles.color_idle: Constants.network_device_color_text
-            //             styles.color_active: Constants.network_device_color_text_active
-            //         }
-            //     }
-
-            //     // Action Buttons Block (Connect / Disconnect)
-            //     Row {
-            //         spacing: Constants.spacing / 2
-
-            //         // CONNECT BUTTON
-            //         ClickableWithIcon {
-            //             visible: !item.is_connected && !item.is_changing
-            //             size: Constants.icon_size
-            //             padding: Constants.padding / 2
-            //             radius: Constants.radius
-            //             iconname: "plug-connect.svg"
-            //             styles.icon_color_idle: Constants.color_overlay
-            //             styles.icon_color_active: Constants.color_green
-            //             styles.background_color_idle: Constants.color_surface
-            //             styles.background_color_active: Constants.color_green
-
-            //             onClicked: {
-            //                 if (item.modelData.known || !item.modelData.security) {
-            //                     item.modelData.connect();
-            //                 } else {
-            //                     Quickshell.execDetached([
-            //                         "foot", "sh", "-c", 
-            //                         `nmcli device wifi connect "${item.modelData.name}"`
-            //                     ]);
-            //                 }
-            //             }
-            //         }
-
-            //         // DISCONNECT BUTTON
-            //         ClickableWithIcon {
-            //             visible: item.is_connected
-            //             size: Constants.icon_size
-            //             padding: Constants.padding / 2
-            //             radius: Constants.radius
-            //             iconname: "plug-disconnect.svg"
-            //             styles.icon_color_idle: Constants.color_overlay
-            //             styles.icon_color_active: Constants.color_red
-            //             styles.background_color_idle: Constants.color_surface
-            //             styles.background_color_active: Constants.color_red
-
-            //             onClicked: item.modelData.disconnect()
-            //         }
-            //     }
-            // }
+            Behavior on opacity {
+                NumberAnimation { duration: Constants.animation_duration }
+            }
         }
     }
 
@@ -231,125 +386,4 @@ ColumnLayout {
         repeat: true
         onTriggered: now = Date.now()
     }
-
-    // readonly property var sortedNetworks: {
-    //     const connected = [];
-    //     const known = [];
-    //     const available = [];
-
-    //     if (!root.device || !root.device.networks) return { connected, known, available }
-
-    //     const allNets = root.device.networks.values;
-    //     for (let i = 0; i < allNets.length; i++) {
-    //         const net = allNets[i];
-    //         if (net.connected) {
-    //             connected.push(net);
-    //         } else if (net.known) {
-    //             known.push(net);
-    //         } else {
-    //             available.push(net);
-    //         }
-    //     }
-
-    //     return { connected, known, available };
-    // }
-
-    // // --- HEADER / TOOLBAR AREA ---
-    // RowLayout {
-    //     Layout.fillWidth: true
-    //     Layout.topMargin: Constants.spacing
-    //     Layout.bottomMargin: Constants.spacing
-    //     spacing: Constants.spacing
-
-    //     BarControl {
-    //         Layout.fillWidth: true
-    //         Layout.alignment: Qt.AlignVCenter
-
-    //         value: 1.0 - (timeout_scan.remaining / timeout_scan.interval)
-    //         blink: false
-    //         length: 30
-    //         radius: Constants.radius / 2
-    //         spacing: Constants.spacing / 2
-
-    //         styles.color_idle: Constants.color_surface
-    //         styles.color_active: Qt.alpha(Constants.color_green, 1)
-
-    //         Behavior on opacity { NumberAnimation { duration: Constants.animation_duration } }
-    //     }
-
-    //     ClickableWithIcon {
-    //         id: scan_button
-    //         size: Constants.icon_size
-    //         padding: Constants.padding / 2            
-
-    //         active: root.device?.scannerEnabled ?? false
-    //         radius: (active)  ? Constants.icon_size : Constants.radius / 2
-    //         iconname: "reboot.svg"
-
-    //         styles.background_color_idle: Constants.color_surface
-    //         styles.background_color_active: Constants.color_green
-    //         styles.icon_color_idle: Constants.color_text
-    //         styles.icon_color_active: Constants.color_base
-
-    //         onClicked: root.device.scannerEnabled = !root.device.scannerEnabled;
-
-    //         states: State {
-    //             name: "spinning"
-    //             when: root.device?.scannerEnabled ?? false
-    //             PropertyChanges { scan_button.rotation: 360 }
-    //         }
-
-    //         transitions: [
-    //             Transition {
-    //                 to: "spinning"
-    //                 RotationAnimation {
-    //                     direction: RotationAnimation.Clockwise
-    //                     loops: Animation.Infinite
-    //                     duration: 800
-    //                 }
-    //             },
-    //             Transition {
-    //                 from: "spinning"
-    //                 RotationAnimation {
-    //                     duration: 400
-    //                     easing.type: Easing.OutQuad
-    //                 }
-    //             }
-    //         ]
-            
-    //         Behavior on radius { NumberAnimation { duration: Constants.animation_duration/4; easing.type: Easing.OutCubic } }
-    //     }
-    // }
-
-    // // --- SCROLLABLE NETWORK LIST ---
-    // ScrollView {
-    //     Layout.fillWidth: true
-    //     implicitHeight: Math.min(networksections.implicitHeight, 300)
-
-    //     clip: true
-
-    //     ColumnLayout {
-    //         id: networksections
-    //         Layout.fillWidth: true
-    //         spacing: Constants.spacing * 2
-
-    //         NetworkDeviceSection {
-    //             Layout.fillWidth: true
-    //             networks: root.sortedNetworks.connected
-    //             title: "Connected Network"
-    //         }
-
-    //         NetworkDeviceSection {
-    //             Layout.fillWidth: true
-    //             networks: root.sortedNetworks.known
-    //             title: "Saved Networks"
-    //         }
-
-    //         NetworkDeviceSection {
-    //             Layout.fillWidth: true
-    //             networks: root.sortedNetworks.available
-    //             title: "Available Networks"
-    //         }
-    //     }
-    // }
 }

@@ -65,7 +65,7 @@ ColumnLayout {
         verticalAlignment: TextInput.AlignVCenter
         
         color: Constants.spotlight_search_color_text
-        font.pixelSize: 14
+        font.pixelSize: Constants.font_size
         focus: true
         
         placeholderText: Constants.spotlight_search_placeholder

@@ -49,7 +49,7 @@ ColumnLayout {
                 Item { Layout.fillWidth: true }
                 StyledText { 
                     text: root.device ? "Active" : "No Active Cable / Link"
-                    color: root.device ? Constants.network_device_status_connected : Constants.spotlight_app_color_text
+                    color: root.device ? Constants.network_device_color_connected : Constants.network_device_color_disconnected
                 }
             }
         }

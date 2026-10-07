@@ -17,9 +17,11 @@ Singleton {
     }
 
     readonly property int    font_size: 14
-    readonly property real   font_spacing: 0.5
-    readonly property string font_family: custom_font.name
-
+    readonly property int    font_size_lg: font_size + 2
+    readonly property int    font_size_sm: font_size - 2
+    readonly property real   font_spacing: 0
+    readonly property string font_family: "Noto Sans"
+    // readonly property string font_family: custom_font.name
 
     readonly property color  color_transparent: "transparent"
 
@@ -181,12 +183,18 @@ Singleton {
     readonly property color  network_color_warning: color_yellow
     readonly property color  network_color_critical: color_red
 
-    readonly property color  network_device_status_connected: color_green
-    readonly property color  network_device_status_disconnected: color_overlay
-
-    readonly property color  network_device_section_color_title: color_text
     readonly property color  network_device_color_text: color_text
-    readonly property color  network_device_color_text_active: default_color_accent
+    readonly property color  network_device_color_subtext: color_subtext
+    readonly property color  network_device_color_background: Qt.alpha(Constants.color_surface, 0.2)
+    readonly property color  network_device_color_border: Qt.alpha(Constants.color_surface, 0.75)
+    readonly property color  network_device_color_connected: color_green
+    readonly property color  network_device_color_disconnected: color_surface
+
+
+    readonly property color  network_device_color_action_connect: color_green
+    readonly property color  network_device_color_action_disconnect: color_red
+    readonly property color  network_device_color_action_busy: color_peach
+    readonly property color  network_device_color_action_text_active: color_base
 
     readonly property color  network_device_color_nonetwork_text: color_subtext
     readonly property color  network_device_color_nonetwork_background: color_surface

@@ -24,7 +24,7 @@ ContentTabContainer {
             implicitHeight: device_loader.implicitHeight
 
             readonly property bool is_connected: network_device_view.device?.state === ConnectionState.Connected
-            readonly property color status_color: is_connected ? Constants.network_device_status_connected : Constants.network_device_status_disconnected
+            readonly property color status_color: is_connected ? Constants.network_device_color_connected : Constants.network_device_color_disconnected
             readonly property string status_label: network_device_view.is_connected ? "Connected" : "Disconnected"
 
             // --- WIRED / ETHERNET VIEW ---
@@ -90,11 +90,19 @@ ContentTabContainer {
 
     title: "Network Adapters"
 
-    tabs: Networking.devices.values.map(dev => {
-        return {
-            name: dev.name.toUpperCase(),
-            delegate: component_network_device, // View Component
-            context: { "device": dev } // Injected properties
-        }
-    })
+    tabs: (Networking.devices.values ?? []).slice().sort((a, b) => {
+        const aIsWifi = a.type === DeviceType.Wifi;
+        const bIsWifi = b.type === DeviceType.Wifi;
+        
+        // Wifi comes first
+        if (aIsWifi && !bIsWifi) return -1;
+        if (!aIsWifi && bIsWifi) return 1;
+        
+        // Optional secondary sort by name
+        return (a.name ?? "").localeCompare(b.name ?? "");
+    }).map(dev => ({
+        name: dev.name.toUpperCase(),
+        delegate: component_network_device,
+        context: { "device": dev }
+    }))
 }
