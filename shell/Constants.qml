@@ -153,6 +153,7 @@ Singleton {
     readonly property color  volume_control_color_track:            color_surface
     readonly property color  volume_control_color_ink_default:      color_text
     readonly property color  volume_control_color_ink_active:       color_yellow
+    readonly property color  volume_control_color_ink_muted:     color_subtext
 
     // Widgets: Brightness
     readonly property color  display_control_color_track:           color_surface

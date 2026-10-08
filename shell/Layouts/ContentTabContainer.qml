@@ -24,9 +24,8 @@ ColumnLayout {
     RowLayout {
         StyledText {
             visible: container.title.trim().length > 0
-            text: container.title
+            text: container.title.toUpperCase()
             color: Constants.color_text
-            font.pixelSize: Constants.font_size_lg
         }
 
         Item { Layout.fillWidth: true }

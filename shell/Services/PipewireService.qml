@@ -35,7 +35,8 @@ Singleton {
         // (Fallback) ID: Smaller ID comes first
         return a.id - b.id;
     })
-
+    
+    readonly property PwNode defaultMicrophone: Pipewire.defaultAudioSource
     readonly property var connectedMicrophones: Pipewire.nodes.values.filter(node => node.ready && !node.name.includes(".monitor") && node.properties["media.class"] === "Audio/Source").map((node) => {
         const enrichedNode = {
             node: node,

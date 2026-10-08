@@ -93,6 +93,8 @@ StyledBox {
             Layout.rightMargin: root._padding
             spacing: root._gap
 
+            MuteControl {}
+
             Clickable {
                 id: volume_wrapper
                 Layout.fillWidth: true
@@ -145,10 +147,8 @@ StyledBox {
         ContentContainer {
             Layout.fillWidth: true
             Layout.preferredHeight: implicitHeight
-            
-            Layout.leftMargin: root._padding
-            Layout.rightMargin: root._padding
-            Layout.bottomMargin: root._padding
+            Layout.margins: root._padding
+            Layout.topMargin: 0
             
             content: root.active_content
         }

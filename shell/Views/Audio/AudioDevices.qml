@@ -33,11 +33,11 @@ ContentTabContainer {
 
     tabs: [
         {
-            name: "OUTPUT",
+            name: "Speakers",
             delegate: component_audio_output
         },
         {
-            name: "INPUT",
+            name: "Microphones",
             delegate: component_audio_input
         }
     ]
