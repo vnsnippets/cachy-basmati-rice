@@ -53,7 +53,7 @@ ColumnLayout {
 
             readonly property color accent: 
                 (!root.adapter.enabled) ? Constants.bluetooth_color_inactive :
-                    (root.adapter.discovering) ? Constants.bluetooth_color_destruct : Constants.bluetooth_color_active
+                    (root.adapter.discovering) ? Constants.bluetooth_color_critical : Constants.bluetooth_color_active
 
             styles.background_color_idle: Qt.alpha(accent, 0.05)
             styles.background_color_active: accent
@@ -270,7 +270,7 @@ ColumnLayout {
                                     implicitWidth: 96
 
                                     readonly property color accent: 
-                                        (device_item.connected) ? Constants.bluetooth_color_destruct : 
+                                        (device_item.connected) ? Constants.bluetooth_color_critical : 
                                             Constants.bluetooth_color_active
 
                                     padding: Constants.padding / 1.5
@@ -351,7 +351,7 @@ ColumnLayout {
 
                             readonly property color accent:
                                 (!device_item.paired) ? Constants.bluetooth_color_inactive : 
-                                    Constants.bluetooth_color_destruct
+                                    Constants.bluetooth_color_critical
 
                             styles.background_color_idle: Qt.alpha(accent, 0.05)
                             styles.background_color_active: accent

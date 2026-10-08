@@ -17,7 +17,7 @@ ClickableWithIcon {
     property var datamap: {
         if (root.charging) return {
             icon:   "battery-charge.svg",
-            accent: Constants.battery_control_color_charging
+            accent: Constants.battery_color_charging
         };
 
         const icons = [ "battery-empty.svg", "battery-low.svg", "battery-medium.svg", "battery-high.svg", "battery-full.svg" ];
@@ -27,9 +27,9 @@ ClickableWithIcon {
 
         return {
             icon:   icons[safeIndex],
-            accent: (root.batterypercentage <= Constants.battery_threshold_critical) ? Constants.battery_control_color_critical :
-                    (root.batterypercentage <= Constants.battery_threshold_warning) ? Constants.battery_control_color_warning :
-                        Constants.battery_control_color_default
+            accent: (root.batterypercentage <= Constants.battery_threshold_critical) ? Constants.battery_color_critical :
+                    (root.batterypercentage <= Constants.battery_threshold_warning) ? Constants.battery_color_warning :
+                        Constants.battery_color_ink_default
         };
     }
 
@@ -41,14 +41,14 @@ ClickableWithIcon {
     styles.background_color_idle: Constants.control_color_background_default
     styles.background_color_active: datamap.accent
     styles.icon_color_idle: datamap.accent
-    styles.icon_color_active: Constants.battery_control_color_text_active
+    styles.icon_color_active: Constants.battery_color_ink_active
 
     styles.border_width: 1
     styles.border_color_idle: Constants.control_color_border_default
     styles.border_color_active: datamap.accent
 
     styles.text_color_idle: datamap.accent
-    styles.text_color_active: Constants.battery_control_color_text_active
+    styles.text_color_active: Constants.battery_color_ink_active
 
     font.family: Constants.font_family
     text: Math.floor(root.batterypercentage * 100) + "%"

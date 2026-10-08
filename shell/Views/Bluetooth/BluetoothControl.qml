@@ -38,7 +38,7 @@ ClickableWithIcon {
         case (BluetoothAdapterState.Blocked): return {
             label:  "Bluetooth",
             icon:   "bluetooth-off.svg",
-            accent: Constants.bluetooth_color_destruct
+            accent: Constants.bluetooth_color_critical
         }
         default: return {
             label:  "Bluetooth",

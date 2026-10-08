@@ -133,10 +133,12 @@ PanelWindow {
                 width: Constants.notification_width
                 implicitHeight: _ContentColumn.implicitHeight + item_padding
 
-                color: Constants.notification_color_background
+                color: Qt.alpha(Constants.notification_color_background, 0.80)
                 radius: Constants.radius
                 border.width: 1
-                border.color: delegate_item.containsMouse ? Constants.notification_color_border_active : Constants.notification_color_border
+                border.color: Qt.alpha(Constants.notification_color_border, delegate_item.containsMouse ? 0.6 : 0.4)
+
+                Behavior on opacity { NumberAnimation { duration: Constants.animation_duration } }
 
                 Behavior on border.color { ColorAnimation { duration: Constants.animation_duration } }
 
@@ -175,7 +177,7 @@ PanelWindow {
 
                         StyledText {
                             text: delegate_item.createdAt.toLocaleTimeString(Qt.locale(), "HH:mm")
-                            color: Constants.notification_color_subtext
+                            color: Constants.notification_color_ink_muted
                             font.pixelSize: Constants.font_size
                             horizontalAlignment: Text.AlignLeft
                         }
@@ -184,7 +186,7 @@ PanelWindow {
                             readonly property string appName: (delegate_item.appNameIsSummary) ? delegate_item.modelData?.summary : delegate_item.modelData?.appName
                             visible: appName !== "notify-send" && appName.length > 0
                             text: appName
-                            color: Constants.notification_color_subtext
+                            color: Constants.notification_color_ink_muted
                             font.pixelSize: Constants.font_size
                             horizontalAlignment: Text.AlignLeft
                         }
@@ -199,8 +201,8 @@ PanelWindow {
 
                             ratio: delegate_item.dismissProgress
                             stroke: 2
-                            colors.arc: Constants.notification_color_ticker_foreground
-                            colors.track: Constants.notification_color_ticker_background
+                            colors.arc: Constants.notification_color_ink_muted
+                            colors.track: Constants.notification_color_background
 
                             visible: opacity > 0
                             opacity: (delegate_item.containsMouse) ? 0 : 1
@@ -211,8 +213,8 @@ PanelWindow {
                         ClickableWithIcon {
                             size: 16
                             iconname: "dismiss.svg"
-                            styles.icon_color_idle: Constants.notification_color_subtext
-                            styles.icon_color_active: Constants.notification_color_dismiss
+                            styles.icon_color_idle: Constants.notification_color_ink_muted
+                            styles.icon_color_active: Constants.notification_color_ink_critical
 
                             visible: _ArcControl.opacity === 0
                             opacity: (_ArcControl.opacity === 0) ? 1 : 0
@@ -233,7 +235,7 @@ PanelWindow {
                         readonly property string summary: delegate_item.modelData.summary.trim() ?? ""
                         visible: summary.length > 0 && !delegate_item.appNameIsSummary
                         text: summary
-                        color: Constants.notification_color_subtext
+                        color: Constants.notification_color_ink_muted
                         wrapMode: Text.Wrap
                         horizontalAlignment: Text.AlignLeft
                     }
@@ -243,7 +245,7 @@ PanelWindow {
                         Layout.fillWidth: true
                         textFormat: Text.StyledText
                         text: (delegate_item.modelData.body || "").replace(/\r?\n/g, "<br>")
-                        color: Constants.notification_color_text
+                        color: Constants.notification_color_ink_default
                         wrapMode: Text.Wrap
                         maximumLineCount: 2
                         elide: Text.ElideRight
@@ -271,8 +273,8 @@ PanelWindow {
                                     id: _ActionText
                                     anchors.centerIn: parent
                                     text: _ActionButton.modelData.text
-                                    styles.color_idle: Constants.notification_color_subtext
-                                    styles.color_active: Constants.notification_color_text
+                                    styles.color_idle: Constants.notification_color_ink_muted
+                                    styles.color_active: Constants.notification_color_ink_default
                                     font.pixelSize: Constants.font_size
                                     active: _ActionButton.containsMouse
                                 }

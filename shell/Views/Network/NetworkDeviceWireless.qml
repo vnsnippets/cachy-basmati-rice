@@ -50,7 +50,7 @@ ColumnLayout {
 
             readonly property color accent:
                 (!Networking.wifiEnabled) ? Constants.network_color_inactive :
-                    (root.is_scanning) ? Constants.network_color_destruct : 
+                    (root.is_scanning) ? Constants.network_color_critical : 
                         Constants.network_color_active
             
             styles.background_color_idle: Qt.alpha(accent, 0.05)
@@ -168,7 +168,7 @@ ColumnLayout {
                 onPskInputOngoingChanged: psk_field.forceActiveFocus();
 
                 readonly property color accent:
-                    (network.is_critical) ? Constants.network_color_destruct :
+                    (network.is_critical) ? Constants.network_color_critical :
                         (network.is_warning) ? Constants.network_color_warning :
                             Constants.network_color_active
 
@@ -345,7 +345,7 @@ ColumnLayout {
                                 }
 
                                 ClickableWithIcon {
-                                    readonly property color accent: Constants.network_color_destruct
+                                    readonly property color accent: Constants.network_color_critical
                                     
                                     size: (Constants.icon_size * 1.5) - (padding * 2)
                                     padding: Constants.padding / 1.5
@@ -386,7 +386,7 @@ ColumnLayout {
                                         implicitWidth: 96
                                         Layout.fillHeight: true
 
-                                        readonly property color accent: (network.connected) ? Constants.network_color_destruct : Constants.network_color_active
+                                        readonly property color accent: (network.connected) ? Constants.network_color_critical : Constants.network_color_active
 
                                         padding: Constants.padding / 1.5
                                         leftPadding: Constants.padding

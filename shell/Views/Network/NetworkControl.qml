@@ -37,7 +37,7 @@ ClickableWithIcon {
                     icon:           icons[safeIndex],
                     label:          (Constants.network_hide_ssid) ? "" : NetworkService.activeNetwork.name,
                     highlighted:    (iscritical || iswarning),
-                    accent:         (iscritical) ? Constants.network_color_destruct :
+                    accent:         (iscritical) ? Constants.network_color_critical :
                                         (iswarning) ? Constants.network_color_warning :
                                             Constants.network_color_active
                 }

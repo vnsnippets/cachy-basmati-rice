@@ -163,7 +163,7 @@ ColumnLayout {
                                         implicitWidth: 96
                                         Layout.fillHeight: true
 
-                                        readonly property color accent_color: (network.connected) ? Constants.network_color_destruct : Constants.network_color_active
+                                        readonly property color accent_color: (network.connected) ? Constants.network_color_critical : Constants.network_color_active
 
                                         padding: Constants.padding / 1.5
                                         leftPadding: Constants.padding
