@@ -21,7 +21,7 @@ StyledBox {
     id: root
     readonly property int _gap: Constants.spacing / 1.5
     readonly property int _padding: Constants.padding * 3
-    readonly property Component default_content: Launchpad { page_size: 7 }
+    readonly property Component default_content: Launchpad { page_size: 8 }
 
     property Component content: navigation_stack[root.navigation_stack.length - 1] ?? default_content
     property list<Component> navigation_stack: [ default_content ]
