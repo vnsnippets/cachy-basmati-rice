@@ -25,7 +25,7 @@ ClickableWithIcon {
         }
         case (BluetoothAdapterState.Disabled): return {
             label:  "Bluetooth",
-            accent: Constants.bluetooth_color_disabled
+            accent: Constants.bluetooth_color_subtext
         }
         case (BluetoothAdapterState.Enabled): return {
             label:  "Bluetooth",
@@ -37,7 +37,7 @@ ClickableWithIcon {
         }
         default: return {
             label:  "Bluetooth",
-            accent: Constants.bluetooth_color_default
+            accent: Constants.bluetooth_color_text
         }
     }
     
@@ -56,7 +56,8 @@ ClickableWithIcon {
     styles.border_color_idle: Constants.bluetooth_color_border
     styles.border_color_active: datamap.accent
 
-    palette.buttonText: (hovered || active) ? Constants.bluetooth_color_text_active : datamap.accent
+    styles.text_color_idle: datamap.accent
+    styles.text_color_active: Constants.bluetooth_color_text_active
 
     font.family: Constants.font_family
 

@@ -50,18 +50,19 @@ ColumnLayout {
 
             enabled: root.adapter.enabled
 
-            readonly property color accent_color: 
+            readonly property color accent: 
                 (!root.adapter.enabled) ? Constants.bluetooth_scan_color_disabled :
                     (root.adapter.discovering) ? Constants.bluetooth_scan_color_cancel : Constants.bluetooth_scan_color_run
 
-            styles.background_color_idle: Qt.alpha(accent_color, 0.10)
-            styles.background_color_active: accent_color
+            styles.background_color_idle: Qt.alpha(accent, 0.05)
+            styles.background_color_active: accent
 
             styles.border_width: 1
-            styles.border_color_idle: Qt.alpha(accent_color, 0.5)
-            styles.border_color_active: Qt.alpha(accent_color, 1)
+            styles.border_color_idle: Qt.alpha(accent, 0.5)
+            styles.border_color_active: Qt.alpha(accent, 1)
 
-            palette.buttonText: enabled && (hovered || active) ? Constants.bluetooth_scan_color_text_active : accent_color
+            styles.text_color_idle: accent
+            styles.text_color_active: Constants.bluetooth_scan_color_text_active
 
             font.family: Constants.font_family
             text: root.adapter.discovering ? "Stop Scan" : "Scan Devices"
@@ -156,7 +157,7 @@ ColumnLayout {
                 }
                 // qmllint enable
 
-                readonly property color accent_color: Constants.network_device_color_connected
+                readonly property color accent: Constants.bluetooth_color_enabled
 
                 function forget() { modelData.forget(); }
                 function disconnect() { modelData.disconnect(); }
@@ -180,8 +181,8 @@ ColumnLayout {
                     }
                 }
 
-                color: Constants.network_device_color_background
-                border.color: (connected) ? Qt.alpha(accent_color, 0.5) : Constants.network_device_color_border
+                color: Constants.bluetooth_color_background
+                border.color: (connected) ? Qt.alpha(accent, 0.5) : Constants.bluetooth_color_border
                 border.width: 1
 
                 RowLayout {
@@ -200,7 +201,7 @@ ColumnLayout {
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                             text: device_item.device_name
-                            color: device_item.connected ? device_item.accent_color : Constants.network_device_color_text
+                            color: device_item.connected ? device_item.accent : Constants.bluetooth_color_text
                             elide: Text.ElideRight
                         }
 
@@ -208,7 +209,7 @@ ColumnLayout {
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                             text: device_item.connection_state
-                            color: Constants.network_device_color_subtext
+                            color: Constants.bluetooth_color_subtext
                             font.pixelSize: Constants.font_size - 1
                             visible: device_item.connection_state !== ""
                         }
@@ -221,25 +222,25 @@ ColumnLayout {
 
                         StyledText {
                             text: "Bonded: " + device_item.modelData.bonded
-                            color: Constants.network_device_color_subtext
+                            color: Constants.bluetooth_color_subtext
                             font.pixelSize: Constants.font_size - 1
                             visible: device_item.connection_state !== ""
                         }
                         StyledText {
                             text: "Trusted: " + device_item.modelData.trusted
-                            color: Constants.network_device_color_subtext
+                            color: Constants.bluetooth_color_subtext
                             font.pixelSize: Constants.font_size - 1
                             visible: device_item.connection_state !== ""
                         }
                         StyledText {
                             text: "Blocked: " + device_item.modelData.blocked
-                            color: Constants.network_device_color_subtext
+                            color: Constants.bluetooth_color_subtext
                             font.pixelSize: Constants.font_size - 1
                             visible: device_item.connection_state !== ""
                         }
                         StyledText {
                             text: "Wake: " + device_item.modelData.wakeAllowed
-                            color: Constants.network_device_color_subtext
+                            color: Constants.bluetooth_color_subtext
                             font.pixelSize: Constants.font_size - 1
                             visible: device_item.connection_state !== ""
                         }
@@ -265,23 +266,26 @@ ColumnLayout {
                                 ClickableWithIcon {
                                     implicitWidth: 96
 
-                                    readonly property color accent_color: (device_item.connected) ? Constants.network_device_color_action_disconnect : Constants.network_device_color_action_connect
+                                    readonly property color accent: 
+                                        (device_item.connected) ? Constants.bluetooth_scan_color_cancel : 
+                                            Constants.bluetooth_scan_color_run
 
                                     padding: Constants.padding / 1.5
                                     leftPadding: Constants.padding
                                     rightPadding: Constants.padding
 
-                                    styles.background_color_idle: Qt.alpha(accent_color, 0.1)
-                                    styles.background_color_active: Qt.alpha(accent_color, 1)
+                                    styles.background_color_idle: Qt.alpha(accent, 0.1)
+                                    styles.background_color_active: Qt.alpha(accent, 1)
 
-                                    styles.icon_color_idle: accent_color
-                                    styles.icon_color_active: Constants.network_device_color_action_text_active
+                                    styles.icon_color_idle: accent
+                                    styles.icon_color_active: Constants.bluetooth_color_text_active
 
                                     styles.border_width: 1
-                                    styles.border_color_idle: Qt.alpha(accent_color, 0.5)
-                                    styles.border_color_active: Qt.alpha(accent_color, 1)
+                                    styles.border_color_idle: Qt.alpha(accent, 0.5)
+                                    styles.border_color_active: Qt.alpha(accent, 1)
 
-                                    palette.buttonText: (hovered || active) ? Constants.network_device_color_action_text_active : accent_color
+                                    styles.text_color_idle: accent
+                                    styles.text_color_active: Constants.bluetooth_color_text_active
 
                                     font.family: Constants.font_family
                                     text: (device_item.connected) ? "Disconnect" : (device_item.paired ? "Connect" : "Pair")
@@ -306,7 +310,7 @@ ColumnLayout {
                                         implicitHeight: 10
                                         implicitWidth: implicitHeight
 
-                                        color: Constants.network_device_color_action_busy
+                                        color: Constants.bluetooth_color_busy
                                         radius: implicitHeight
 
                                         readonly property real min_x: Constants.padding
@@ -342,16 +346,16 @@ ColumnLayout {
 
                             enabled: device_item.paired
 
-                            readonly property color accent_color: (!device_item.paired) ? Constants.bluetooth_scan_color_disabled : Constants.bluetooth_scan_color_cancel
+                            readonly property color accent: (!device_item.paired) ? Constants.bluetooth_scan_color_disabled : Constants.bluetooth_scan_color_cancel
 
-                            styles.background_color_idle: Qt.alpha(accent_color, 0.10)
-                            styles.background_color_active: accent_color
+                            styles.background_color_idle: Qt.alpha(accent, 0.10)
+                            styles.background_color_active: accent
 
                             styles.border_width: 1
-                            styles.border_color_idle: Qt.alpha(accent_color, 0.5)
-                            styles.border_color_active: Qt.alpha(accent_color, 1)
+                            styles.border_color_idle: Qt.alpha(accent, 0.5)
+                            styles.border_color_active: Qt.alpha(accent, 1)
 
-                            styles.icon_color_idle: Qt.alpha(accent_color, 0.5)
+                            styles.icon_color_idle: Qt.alpha(accent, 0.5)
                             styles.icon_color_active: Constants.bluetooth_scan_color_text_active
 
                             iconname: "dismiss.svg"
@@ -371,9 +375,9 @@ ColumnLayout {
             Layout.fillWidth: true
             implicitHeight: no_device_label.implicitHeight + Constants.padding * 3
             radius: Constants.radius
-            color: Qt.alpha(Constants.network_device_color_nonetwork_background, 0.15)
+            color: Qt.alpha(Constants.bluetooth_color_disabled, 0.15)
             border.width: 1
-            border.color: Constants.network_device_color_nonetwork_background
+            border.color: Constants.bluetooth_color_disabled
 
             StyledText {
                 id: no_device_label
@@ -381,7 +385,7 @@ ColumnLayout {
                 rightPadding: Constants.padding * 1.5
                 anchors.verticalCenter: parent.verticalCenter
                 text: "No Bluetooth devices found"
-                color: Constants.network_device_color_nonetwork_text
+                color: Constants.bluetooth_color_subtext
             }
 
             Behavior on opacity {
@@ -402,9 +406,9 @@ ColumnLayout {
             Layout.fillWidth: true
             implicitHeight: powered_off_label.implicitHeight + Constants.padding * 3
             radius: Constants.radius
-            color: Qt.alpha(Constants.network_device_color_nonetwork_background, 0.15)
+            color: Qt.alpha(Constants.bluetooth_color_disabled, 0.15)
             border.width: 1
-            border.color: Constants.network_device_color_nonetwork_background
+            border.color: Constants.bluetooth_color_disabled
 
             StyledText {
                 id: powered_off_label
@@ -412,7 +416,7 @@ ColumnLayout {
                 rightPadding: Constants.padding * 1.5
                 anchors.verticalCenter: parent.verticalCenter
                 text: "Bluetooth adapter is turned off"
-                color: Constants.network_device_color_nonetwork_text
+                color: Constants.bluetooth_color_subtext
             }
 
             Behavior on opacity {

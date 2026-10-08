@@ -27,6 +27,9 @@ Button {
         property int border_width: 0
         property color border_color_idle: "transparent"
         property color border_color_active: border_color_idle
+
+        property color text_color_idle: "transparent"
+        property color text_color_active: text_color_idle
     }
 
     property Styles styles: Styles {}
@@ -65,6 +68,8 @@ Button {
     font.pixelSize: Constants.font_size
     font.family: Constants.font_family
     font.letterSpacing: Constants.font_spacing
+
+    palette.buttonText: enabled &&  (hovered || active) ? clickable.styles.text_color_active : clickable.styles.text_color_idle
 
     Behavior on scale { NumberAnimation { duration: clickable._animationDuration } }
     Behavior on icon.color { ColorAnimation { duration: clickable._animationDuration } }

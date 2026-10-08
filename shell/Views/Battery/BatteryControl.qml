@@ -47,7 +47,8 @@ ClickableWithIcon {
     styles.border_color_idle: Constants.battery_control_color_border
     styles.border_color_active: datamap.accent
 
-    palette.buttonText: (hovered || active) ? Constants.battery_control_color_text_active : datamap.accent
+    styles.text_color_idle: datamap.accent
+    styles.text_color_active: Constants.battery_control_color_text_active
 
     font.family: Constants.font_family
     text: Math.floor(root.batterypercentage * 100) + "%"

@@ -206,12 +206,13 @@ Singleton {
     readonly property real   bluetooth_control_max_width: 160
     readonly property color  bluetooth_color_background: default_background
     readonly property color  bluetooth_color_border: default_border
+    readonly property color  bluetooth_color_text: color_text
+    readonly property color  bluetooth_color_subtext: color_subtext
     readonly property color  bluetooth_color_text_active: color_base
     readonly property color  bluetooth_color_enabled: color_sapphire
-    readonly property color  bluetooth_color_disabled: color_subtext
+    readonly property color  bluetooth_color_disabled: color_surface
     readonly property color  bluetooth_color_blocked: color_red
     readonly property color  bluetooth_color_busy: color_yellow
-    readonly property color  bluetooth_color_default: color_text
 
     readonly property color  bluetooth_scan_color_disabled: color_overlay
     readonly property color  bluetooth_scan_color_cancel: color_red

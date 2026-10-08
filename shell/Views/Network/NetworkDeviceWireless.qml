@@ -43,18 +43,25 @@ ColumnLayout {
 
         ClickableWithIcon {
             implicitHeight: Constants.size - (Constants.padding / 2)
+            implicitWidth: 120
             padding: Constants.padding
 
-            readonly property color accent: (root.is_scanning) ?  Constants.network_device_color_action_disconnect : Constants.network_device_color_action_connect
+            enabled: Networking.wifiEnabled
 
-            styles.background_color_idle: Constants.color_transparent
+            readonly property color accent:
+                (!Networking.wifiEnabled) ? Constants.network_device_color_disabled :
+                    (root.is_scanning) ? Constants.network_device_color_action_disconnect : 
+                        Constants.network_device_color_action_connect
+            
+            styles.background_color_idle: Qt.alpha(accent, 0.05)
             styles.background_color_active: accent
 
             styles.border_width: 1
             styles.border_color_idle: Qt.alpha(accent, 0.5)
             styles.border_color_active: Qt.alpha(accent, 1)
 
-            palette.buttonText: (hovered || active) ? Constants.network_device_color_action_text_active : accent
+            styles.text_color_idle: accent
+            styles.text_color_active: Constants.network_device_color_action_text_active
 
             font.family: Constants.font_family
             text: (root.is_scanning) ? "Stop Scanning" : "Scan Networks"
