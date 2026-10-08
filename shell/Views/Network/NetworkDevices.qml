@@ -26,7 +26,7 @@ ContentTabContainer {
             implicitHeight: device_loader.implicitHeight
 
             readonly property bool is_connected: network_device_view.device?.state === ConnectionState.Connected
-            readonly property color status_color: is_connected ? Constants.network_device_color_connected : Constants.network_device_color_disconnected
+            readonly property color status_color: is_connected ? Constants.network_color_active : Constants.network_color_inactive
             readonly property string status_label: network_device_view.is_connected ? "Connected" : "Disconnected"
 
             // --- WIRED / ETHERNET VIEW ---

@@ -49,9 +49,9 @@ ColumnLayout {
             enabled: Networking.wifiEnabled
 
             readonly property color accent:
-                (!Networking.wifiEnabled) ? Constants.network_device_color_disabled :
-                    (root.is_scanning) ? Constants.network_device_color_action_disconnect : 
-                        Constants.network_device_color_action_connect
+                (!Networking.wifiEnabled) ? Constants.network_color_ink_muted :
+                    (root.is_scanning) ? Constants.network_color_destruct : 
+                        Constants.network_color_active
             
             styles.background_color_idle: Qt.alpha(accent, 0.05)
             styles.background_color_active: accent
@@ -61,7 +61,7 @@ ColumnLayout {
             styles.border_color_active: Qt.alpha(accent, 1)
 
             styles.text_color_idle: accent
-            styles.text_color_active: Constants.network_device_color_action_text_active
+            styles.text_color_active: Constants.network_color_ink_active
 
             font.family: Constants.font_family
             text: (root.is_scanning) ? "Stop Scanning" : "Scan Networks"
@@ -73,7 +73,7 @@ ColumnLayout {
 
         // Power Toggle Button
         ClickableWithIcon {
-            readonly property color accent: Constants.network_device_color_action_connect
+            readonly property color accent: Constants.network_color_active
 
             implicitHeight: Constants.size - (Constants.padding / 2)
             implicitWidth: Constants.size - (Constants.padding / 2)
@@ -86,7 +86,7 @@ ColumnLayout {
             styles.background_color_active: accent
 
             styles.icon_color_idle: accent
-            styles.icon_color_active: Constants.network_device_color_action_text_active
+            styles.icon_color_active: Constants.network_color_ink_active
 
             styles.border_width: 1
             styles.border_color_idle: Qt.alpha(accent, 0.5)
@@ -94,7 +94,10 @@ ColumnLayout {
 
             iconname: "power.svg"
 
-            onClicked: Networking.wifiEnabled = !Networking.wifiEnabled
+            onClicked: {
+                if (root.device) root.device.scannerEnabled = false;
+                Networking.wifiEnabled = !Networking.wifiEnabled;
+            }
             
             radius: (active) ? Constants.icon_size : Constants.radius
             Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
@@ -165,9 +168,9 @@ ColumnLayout {
                 onPskInputOngoingChanged: psk_field.forceActiveFocus();
 
                 readonly property color accent:
-                    (network.is_critical) ? Constants.network_color_critical :
+                    (network.is_critical) ? Constants.network_color_destruct :
                         (network.is_warning) ? Constants.network_color_warning :
-                            Constants.network_device_color_connected
+                            Constants.network_color_active
 
                 function forget() { modelData.forget(); }
                 function disconnect() { modelData.disconnect(); }
@@ -196,8 +199,8 @@ ColumnLayout {
                     modelData.connect();
                 }
 
-                color: Constants.network_device_color_background
-                border.color: (connected) ? Qt.alpha(accent, 0.5) : Constants.network_device_color_border
+                color: Qt.alpha(Constants.network_color_background, 0.25)
+                border.color: (connected) ? Qt.alpha(accent, 0.5) : Constants.network_color_border
                 border.width: 1
 
                 ColumnLayout {
@@ -220,7 +223,7 @@ ColumnLayout {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                                 text: network.ssid
-                                color: network.connected ? network.accent : Constants.network_device_color_text
+                                color: network.connected ? network.accent : Constants.network_color_ink_default
                                 elide: Text.ElideRight
                             }
 
@@ -228,7 +231,7 @@ ColumnLayout {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                                 text: network.connection_state
-                                color: Constants.network_device_color_subtext
+                                color: Constants.network_color_ink_muted
                                 font.pixelSize: Constants.font_size - 1
                                 // qmllint disable
                                 visible: network.modelData?.state !== ConnectionState.Disconnected
@@ -261,8 +264,8 @@ ColumnLayout {
                                     padding: 0
 
                                     enabled: network.is_known
-                                    styles.icon_color_idle: Constants.network_device_color_subtext
-                                    styles.icon_color_active: (enabled) ? Constants.network_device_color_text : Constants.network_device_color_subtext
+                                    styles.icon_color_idle: Constants.network_color_ink_muted
+                                    styles.icon_color_active: (enabled) ? Constants.network_color_ink_default : Constants.network_color_ink_muted
                                     iconname: (enabled) ? "bookmark-filled.svg" : "bookmark-outline.svg"
                                     opacity: enabled ? 1 : 0.4
                                     onClicked: network.forget()
@@ -280,7 +283,7 @@ ColumnLayout {
                                     spacing: 2
                                     animation_duration: 50
 
-                                    styles.color_idle: Constants.network_device_color_disconnected
+                                    styles.color_idle: Constants.network_color_inactive
                                     styles.color_active: network.accent
                                 }
 
@@ -289,14 +292,14 @@ ColumnLayout {
                                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                                     Layout.preferredWidth: 36
                                     text: Math.floor(network.signal * 100) + "%"
-                                    color: Constants.network_device_color_subtext
+                                    color: Constants.network_color_ink_muted
                                 }
 
                                 ClickableWithIcon {
                                     size: Constants.icon_size * 1.5
                                     padding: 0
 
-                                    styles.icon_color_idle: Constants.network_device_color_subtext
+                                    styles.icon_color_idle: Constants.network_color_ink_muted
                                     styles.border_width: 0
 
                                     enabled: false
@@ -322,14 +325,14 @@ ColumnLayout {
                                     padding: Constants.padding/2
                                     echoMode: TextInput.Password
                                     placeholderText: "Password..."
-                                    placeholderTextColor: Constants.network_device_color_subtext
+                                    placeholderTextColor: Constants.network_color_ink_muted
                                     font.family: Constants.font_family
-                                    color: Constants.network_device_color_text
+                                    color: Constants.network_color_ink_default
 
                                     background: Rectangle {
                                         color: Constants.default_background
                                         radius: Constants.radius / 2
-                                        border.color: psk_field.activeFocus ? Constants.network_device_color_subtext : Constants.network_device_color_border
+                                        border.color: psk_field.activeFocus ? Constants.network_color_ink_muted : Constants.network_color_border
                                         border.width: 1
                                     }
 
@@ -340,7 +343,7 @@ ColumnLayout {
                                 }
 
                                 ClickableWithIcon {
-                                    readonly property color accent: Constants.network_device_color_action_disconnect
+                                    readonly property color accent: Constants.network_color_destruct
                                     
                                     size: (Constants.icon_size * 1.5) - (padding * 2)
                                     padding: Constants.padding / 1.5
@@ -349,7 +352,7 @@ ColumnLayout {
                                     styles.background_color_active: Qt.alpha(accent, 1)
 
                                     styles.icon_color_idle: accent
-                                    styles.icon_color_active: Constants.network_device_color_action_text_active
+                                    styles.icon_color_active: Constants.network_color_ink_active
 
                                     styles.border_width: 1
                                     styles.border_color_idle: Qt.alpha(accent, 0.5)
@@ -381,7 +384,7 @@ ColumnLayout {
                                         implicitWidth: 96
                                         Layout.fillHeight: true
 
-                                        readonly property color accent: (network.connected) ? Constants.network_device_color_action_disconnect : Constants.network_device_color_action_connect
+                                        readonly property color accent: (network.connected) ? Constants.network_color_destruct : Constants.network_color_active
 
                                         padding: Constants.padding / 1.5
                                         leftPadding: Constants.padding
@@ -391,13 +394,13 @@ ColumnLayout {
                                         styles.background_color_active: Qt.alpha(accent, 1)
 
                                         styles.icon_color_idle: accent
-                                        styles.icon_color_active: Constants.network_device_color_action_text_active
+                                        styles.icon_color_active: Constants.network_color_ink_active
 
                                         styles.border_width: 1
                                         styles.border_color_idle: Qt.alpha(accent, 0.5)
                                         styles.border_color_active: Qt.alpha(accent, 1)
 
-                                        palette.buttonText: (hovered || active) ? Constants.network_device_color_action_text_active : accent
+                                        palette.buttonText: (hovered || active) ? Constants.network_color_ink_active : accent
 
                                         font.family: Constants.font_family
                                         text: (network.connected) ? "Disconnect" : (network.pskInputOngoing ? "Submit" : "Connect")
@@ -425,7 +428,7 @@ ColumnLayout {
                                             implicitHeight: 10
                                             implicitWidth: implicitHeight
 
-                                            color: Constants.network_device_color_action_busy
+                                            color: Constants.network_color_busy
                                             radius: implicitHeight
 
                                             readonly property real min_x: Constants.padding
@@ -466,9 +469,9 @@ ColumnLayout {
             Layout.fillWidth: true
             implicitHeight: no_network_label.implicitHeight + Constants.padding * 3
             radius: Constants.radius
-            color: Qt.alpha(Constants.network_device_color_nonetwork_background, 0.15)
+            color: Qt.alpha(Constants.network_color_inactive, 0.15)
             border.width: 1
-            border.color: Constants.network_device_color_nonetwork_background
+            border.color: Constants.network_color_inactive
 
             StyledText {
                 id: no_network_label
@@ -476,7 +479,7 @@ ColumnLayout {
                 rightPadding: Constants.padding * 1.5
                 anchors.verticalCenter: parent.verticalCenter
                 text: "Not connected to any networks"
-                color: Constants.network_device_color_nonetwork_text
+                color: Constants.network_color_ink_muted
             }
 
             Behavior on opacity {

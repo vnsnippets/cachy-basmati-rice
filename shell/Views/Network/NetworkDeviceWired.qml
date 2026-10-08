@@ -62,7 +62,7 @@ ColumnLayout {
                 readonly property string connection_state: (modelData?.state) ? ConnectionState.toString(modelData.state) : ""
                 // qmllint enable
 
-                readonly property color accent_color: Constants.network_device_color_connected
+                readonly property color accent_color: Constants.network_color_active
 
                 function forget() { modelData.forget(); }
                 function disconnect() { modelData.disconnect(); }
@@ -76,8 +76,8 @@ ColumnLayout {
                     }
                 }
 
-                color: Constants.network_device_color_background
-                border.color: (connected) ? Qt.alpha(accent_color, 0.5) : Constants.network_device_color_border
+                color: Constants.network_color_background
+                border.color: (connected) ? Qt.alpha(accent_color, 0.5) : Constants.network_color_border
                 border.width: 1
 
                 ColumnLayout {
@@ -99,7 +99,7 @@ ColumnLayout {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                                 text: network.name
-                                color: network.connected ? network.accent_color : Constants.network_device_color_text
+                                color: network.connected ? network.accent_color : Constants.network_color_ink_default
                                 elide: Text.ElideRight
                             }
 
@@ -107,7 +107,7 @@ ColumnLayout {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                                 text: network.connection_state
-                                color: Constants.network_device_color_subtext
+                                color: Constants.network_color_ink_muted
                                 font.pixelSize: Constants.font_size - 1
                                 // qmllint disable
                                 visible: network.modelData?.state !== ConnectionState.Disconnected
@@ -125,8 +125,8 @@ ColumnLayout {
                                 padding: 0
 
                                 enabled: network.is_known
-                                styles.icon_color_idle: Constants.network_device_color_subtext
-                                styles.icon_color_active: (enabled) ? Constants.network_device_color_text : Constants.network_device_color_subtext
+                                styles.icon_color_idle: Constants.network_color_ink_muted
+                                styles.icon_color_active: (enabled) ? Constants.network_color_ink_default : Constants.network_color_ink_muted
                                 iconname: (enabled) ? "bookmark-filled.svg" : "bookmark-outline.svg"
                                 opacity: enabled ? 1 : 0.4
                                 onClicked: network.forget()
@@ -141,7 +141,7 @@ ColumnLayout {
                                     if (speed <= 0) return "Disconnected";
                                     return speed >= 1000 ? (speed / 1000) + " Gbps" : speed + " Mbps";
                                 }
-                                color: Constants.network_device_color_subtext
+                                color: Constants.network_color_ink_muted
                             }
                         }
 
@@ -163,7 +163,7 @@ ColumnLayout {
                                         implicitWidth: 96
                                         Layout.fillHeight: true
 
-                                        readonly property color accent_color: (network.connected) ? Constants.network_device_color_action_disconnect : Constants.network_device_color_action_connect
+                                        readonly property color accent_color: (network.connected) ? Constants.network_color_destruct : Constants.network_color_active
 
                                         padding: Constants.padding / 1.5
                                         leftPadding: Constants.padding
@@ -173,13 +173,13 @@ ColumnLayout {
                                         styles.background_color_active: Qt.alpha(accent_color, 1)
 
                                         styles.icon_color_idle: accent_color
-                                        styles.icon_color_active: Constants.network_device_color_action_text_active
+                                        styles.icon_color_active: Constants.network_color_ink_active
 
                                         styles.border_width: 1
                                         styles.border_color_idle: Qt.alpha(accent_color, 0.5)
                                         styles.border_color_active: Qt.alpha(accent_color, 1)
 
-                                        palette.buttonText: (hovered || active) ? Constants.network_device_color_action_text_active : accent_color
+                                        palette.buttonText: (hovered || active) ? Constants.network_color_ink_active : accent_color
 
                                         font.family: Constants.font_family
                                         text: (network.connected) ? "Disconnect" : "Connect"
@@ -207,7 +207,7 @@ ColumnLayout {
                                             implicitHeight: 10
                                             implicitWidth: implicitHeight
 
-                                            color: Constants.network_device_color_action_busy
+                                            color: Constants.network_color_busy
                                             radius: implicitHeight
 
                                             readonly property real min_x: Constants.padding
@@ -248,9 +248,9 @@ ColumnLayout {
             Layout.fillWidth: true
             implicitHeight: no_network_label.implicitHeight + Constants.padding * 3
             radius: Constants.radius
-            color: Qt.alpha(Constants.network_device_color_nonetwork_background, 0.15)
+            color: Qt.alpha(Constants.network_color_inactive, 0.15)
             border.width: 1
-            border.color: Constants.network_device_color_nonetwork_background
+            border.color: Constants.network_color_inactive
 
             StyledText {
                 id: no_network_label
@@ -258,7 +258,7 @@ ColumnLayout {
                 rightPadding: Constants.padding * 1.5
                 anchors.verticalCenter: parent.verticalCenter
                 text: "No ethernet cable connected"
-                color: Constants.network_device_color_nonetwork_text
+                color: Constants.network_color_ink_muted
             }
 
             Behavior on opacity {

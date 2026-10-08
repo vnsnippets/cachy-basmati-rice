@@ -98,6 +98,7 @@ ColumnLayout {
             iconname: "power.svg"
 
             onClicked: if (root.adapter) {
+                root.adapter.discovering = false;
                 root.adapter.enabled = !root.adapter.enabled;
             }
             
@@ -181,7 +182,8 @@ ColumnLayout {
                     }
                 }
 
-                color: Constants.bluetooth_color_background
+
+                color: Qt.alpha(Constants.bluetooth_color_background, 0.25)
                 border.color: (connected) ? Qt.alpha(accent, 0.5) : Constants.bluetooth_color_border
                 border.width: 1
 

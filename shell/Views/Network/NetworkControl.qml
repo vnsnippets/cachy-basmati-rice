@@ -15,7 +15,7 @@ ClickableWithIcon {
         if (!Networking.wifiEnabled) return {
             icon:          "wifi-disconnect.svg",
             highlighted:    false,
-            accent:         Constants.network_device_color_disabled
+            accent:         Constants.network_color_ink_muted
         }
         
         switch (NetworkService.activeNetwork?.device.type) {
@@ -23,7 +23,7 @@ ClickableWithIcon {
                 icon:           "ethernet.svg",
                 label:          "Ethernet",
                 highlighted:    false,
-                accent:         Constants.network_color_default
+                accent:         Constants.network_color_active
             }
 
             case (DeviceType.Wifi):
@@ -37,15 +37,15 @@ ClickableWithIcon {
                     icon:           icons[safeIndex],
                     label:          NetworkService.activeNetwork.name,
                     highlighted:    (iscritical || iswarning),
-                    accent:         (iscritical) ? Constants.network_color_critical :
+                    accent:         (iscritical) ? Constants.network_color_destruct :
                                         (iswarning) ? Constants.network_color_warning :
-                                            Constants.network_color_default
+                                            Constants.network_color_active
                 }
 
             default: return {
                 icon:          "wifi-disconnect.svg",
                 highlighted:    false,
-                accent:         Constants.network_color_default
+                accent:         Constants.network_color_active
             }
         }
     }
@@ -56,16 +56,16 @@ ClickableWithIcon {
     rightPadding: Constants.padding
     iconname: datamap.icon
 
-    styles.background_color_idle: Constants.network_control_color_background
+    styles.background_color_idle: Constants.network_color_background
     styles.background_color_active: datamap.accent
     styles.icon_color_idle: datamap.accent
-    styles.icon_color_active: Constants.network_control_color_text_active
+    styles.icon_color_active: Constants.network_color_ink_active
 
     styles.border_width: 1
-    styles.border_color_idle: Constants.network_control_color_border
+    styles.border_color_idle: Constants.network_color_border
     styles.border_color_active: datamap.accent
 
-    palette.buttonText: (hovered || active) ? Constants.network_control_color_text_active : datamap.accent
+    palette.buttonText: (hovered || active) ? Constants.network_color_ink_active : datamap.accent
 
     font.family: Constants.font_family
     text: datamap?.label ?? ""

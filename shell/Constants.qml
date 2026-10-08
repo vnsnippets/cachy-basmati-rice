@@ -177,30 +177,19 @@ Singleton {
     readonly property real   network_threshold_critical: 0.25
 
     readonly property real   network_control_max_width: 160
-    readonly property color  network_control_color_background: default_background
-    readonly property color  network_control_color_border: default_border
-    readonly property color  network_control_color_text_active: color_base
 
-    readonly property color  network_color_default: color_green
+    readonly property color  network_color_background: default_background
+    readonly property color  network_color_border: default_border
+
+    readonly property color  network_color_ink_default: color_text
+    readonly property color  network_color_ink_active: color_base
+    readonly property color  network_color_ink_muted: color_subtext
+
+    readonly property color  network_color_active: color_green
+    readonly property color  network_color_inactive: color_surface
     readonly property color  network_color_warning: color_yellow
-    readonly property color  network_color_critical: color_red
-
-    readonly property color  network_device_color_text: color_text
-    readonly property color  network_device_color_subtext: color_subtext
-    readonly property color  network_device_color_background: Qt.alpha(Constants.color_surface, 0.2)
-    readonly property color  network_device_color_border: Qt.alpha(Constants.color_surface, 0.75)
-    readonly property color  network_device_color_connected: color_green
-    readonly property color  network_device_color_disconnected: color_surface
-    readonly property color  network_device_color_disabled: color_subtext
-
-
-    readonly property color  network_device_color_action_connect: color_green
-    readonly property color  network_device_color_action_disconnect: color_red
-    readonly property color  network_device_color_action_busy: color_peach
-    readonly property color  network_device_color_action_text_active: color_base
-
-    readonly property color  network_device_color_nonetwork_text: color_subtext
-    readonly property color  network_device_color_nonetwork_background: color_surface
+    readonly property color  network_color_destruct: color_red
+    readonly property color  network_color_busy: color_peach
 
     // Bluetooth
     readonly property real   bluetooth_control_max_width: 160
