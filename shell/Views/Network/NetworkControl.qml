@@ -53,16 +53,16 @@ ClickableWithIcon {
     size: Constants.icon_size 
     padding: Constants.padding
     leftPadding: Constants.padding
-    rightPadding: Constants.padding
+    rightPadding: (text.length > 0) ? Constants.padding * 1.25 : Constants.padding
     iconname: datamap.icon
 
-    styles.background_color_idle: Constants.network_color_background
+    styles.background_color_idle: Constants.control_color_background_default
     styles.background_color_active: datamap.accent
     styles.icon_color_idle: datamap.accent
     styles.icon_color_active: Constants.network_color_ink_active
 
     styles.border_width: 1
-    styles.border_color_idle: Constants.network_color_border
+    styles.border_color_idle: Constants.control_color_border_default
     styles.border_color_active: datamap.accent
 
     palette.buttonText: (hovered || active) ? Constants.network_color_ink_active : datamap.accent

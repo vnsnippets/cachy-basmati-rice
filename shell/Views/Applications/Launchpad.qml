@@ -10,14 +10,14 @@ import Quickshell.Widgets
 import qs
 import qs.Services
 import qs.Components
-import qs.Utilities
 
 ColumnLayout {
     id: spotlight
 
     required property int page_size
 
-    readonly property int max_height: (Constants.spotlight_app_height * page_size) + (Constants.padding * page_size-1)
+    readonly property int result_item_height: Constants.spotlight_item_height + Constants.spacing
+    readonly property int max_height: (result_item_height * page_size) + (Constants.padding * page_size-1)
     readonly property string default_app_icon: "application-x-executable"
 
     spacing: Constants.spacing
@@ -58,13 +58,13 @@ ColumnLayout {
         id: search_text_field
         
         Layout.fillWidth: true
-        Layout.preferredHeight: Constants.spotlight_search_height
+        Layout.preferredHeight: Constants.spotlight_item_height
 
         leftPadding: icon.size + icon.padding + Constants.padding
         rightPadding: Constants.padding
         verticalAlignment: TextInput.AlignVCenter
         
-        color: Constants.spotlight_search_color_text
+        color: Constants.spotlight_color_ink_active
         font.pixelSize: Constants.font_size
         focus: true
         
@@ -78,12 +78,12 @@ ColumnLayout {
             anchors.verticalCenter: parent.verticalCenter
             iconname: "search.svg"
             enabled: false
-            icon_color: Constants.spotlight_search_color_icon
+            icon_color: Qt.alpha(Constants.spotlight_color_ink_muted, (search_text_field.activeFocus) ? 0.60: 0.20)
         }
 
         background: Rectangle {
-            color: (search_text_field.activeFocus) ? Constants.spotlight_search_color_background_active : Constants.spotlight_search_color_background
-            border.color: (search_text_field.activeFocus) ? Constants.spotlight_search_color_border_active : Constants.spotlight_search_color_border
+            color: (search_text_field.activeFocus) ? Constants.spotlight_color_background_active : Constants.spotlight_color_background_default
+            border.color: Qt.alpha(Constants.spotlight_color_border, (search_text_field.activeFocus) ? 0.50: 0.15)
             radius: Constants.radius
         }
 
@@ -133,7 +133,7 @@ ColumnLayout {
             id: item
 
             width: ListView.view.width
-            implicitHeight: Constants.spotlight_app_height
+            implicitHeight: spotlight.result_item_height
 
             required property int index
             required property string id
@@ -149,10 +149,10 @@ ColumnLayout {
                 
                 anchors.fill: parent
                 radius: Constants.radius
-                color: (item.active) ? Constants.spotlight_app_background_color_active : Constants.spotlight_app_background_color
+                color: (item.is_selected) ? Constants.spotlight_color_background_active : Constants.color_transparent
 
                 border.width: 1
-                border.color: (item.active) ? Constants.spotlight_app_border_color_active : Constants.spotlight_app_border_color
+                border.color: Qt.alpha(Constants.spotlight_color_border, (item.active) ? 0.25 : 0)
 
                 Behavior on radius { NumberAnimation { duration: Constants.animation_duration } }
                 Behavior on color { ColorAnimation { duration: Constants.animation_duration } }
@@ -167,7 +167,7 @@ ColumnLayout {
                     spacing: Constants.padding
 
                     IconImage {
-                        implicitSize: Constants.spotlight_app_height - Constants.padding * 2
+                        implicitSize: Constants.spotlight_item_height - Constants.padding * 2
                         source: "image://icon/" + item.icon
                         mipmap: true
                     }
@@ -180,8 +180,8 @@ ColumnLayout {
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
 
-                        styles.color_idle: Constants.spotlight_app_color_text
-                        styles.color_active: Constants.spotlight_app_color_text_active
+                        styles.color_idle: Constants.spotlight_color_ink_muted
+                        styles.color_active: Constants.spotlight_color_ink_active
 
                         active: item.active
 
@@ -195,13 +195,13 @@ ColumnLayout {
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
 
-                        styles.color_idle: Constants.spotlight_app_color_text
-                        styles.color_active: Constants.spotlight_app_color_text_active
+                        styles.color_idle: Constants.spotlight_color_ink_muted
+                        styles.color_active: Constants.spotlight_color_ink_active
 
                         active: item.active
                         opacity: (active) ? 0.70 : 0.50
 
-                        text: (Constants.spotlight_app_show_appid) ? item.id : item.app.genericName ? item.app.genericName : ""
+                        text: (Constants.spotlight_show_appid) ? item.id : item.app.genericName ? item.app.genericName : ""
 
                         Behavior on opacity { NumberAnimation { duration: Constants.animation_duration } }
                     }

@@ -38,13 +38,13 @@ ClickableWithIcon {
     leftPadding: Constants.padding
     rightPadding: Constants.padding
 
-    styles.background_color_idle: Constants.battery_control_color_background
+    styles.background_color_idle: Constants.control_color_background_default
     styles.background_color_active: datamap.accent
     styles.icon_color_idle: datamap.accent
     styles.icon_color_active: Constants.battery_control_color_text_active
 
     styles.border_width: 1
-    styles.border_color_idle: Constants.battery_control_color_border
+    styles.border_color_idle: Constants.control_color_border_default
     styles.border_color_active: datamap.accent
 
     styles.text_color_idle: datamap.accent

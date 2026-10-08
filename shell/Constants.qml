@@ -94,14 +94,20 @@ Singleton {
 
     //  Center Console
     readonly property int    console_width: 720
-    readonly property color  console_color_backdrop_active: Qt.alpha(color_crust, 0.6)
-    readonly property color  console_color_backdrop_inactive: Qt.alpha(color_crust, 0)
+    readonly property bool   console_backdrop_enabled: true
+    
     readonly property color  console_color_background: color_mantle
     readonly property color  console_color_border: default_border
-    readonly property bool   console_backdrop_enabled: true
 
-    readonly property color  console_tab_color_text_inactive: color_overlay
-    readonly property color  console_tab_color_text_active: color_text
+    readonly property color  console_color_backdrop_active: Qt.alpha(color_crust, 0.6)
+    readonly property color  console_color_backdrop_inactive: Qt.alpha(color_crust, 0)
+
+    readonly property color  tab_color_ink_active: color_text
+    readonly property color  tab_color_ink_inactive: color_overlay
+
+    readonly property color  control_color_background_default: default_background
+    readonly property color  control_color_border_default: default_border
+
 
     // System : Clock
     readonly property color  clock_color_text: color_text
@@ -111,8 +117,6 @@ Singleton {
     readonly property real   battery_threshold_warning: 0.40
     readonly property real   battery_threshold_critical: 0.20
 
-    readonly property color  battery_control_color_background: default_background
-    readonly property color  battery_control_color_border: default_border
     readonly property color  battery_control_color_text_active: color_base
     readonly property color  battery_control_color_default: color_text
     readonly property color  battery_control_color_warning: color_yellow
@@ -130,8 +134,6 @@ Singleton {
     readonly property color  battery_profile_color_performance: color_red
 
     // System : Power Button
-    readonly property color  power_control_color_background: default_background
-    readonly property color  power_control_color_border: default_border
     readonly property color  power_control_color_text: color_red
     readonly property color  power_control_color_background_active: color_red
     readonly property color  power_control_color_text_active: color_base
@@ -149,23 +151,17 @@ Singleton {
     readonly property bool   power_option_show_description: false
 
     // System : Keep Awake Control
-    readonly property color  keep_awake_control_color_background: default_background
-    readonly property color  keep_awake_color_border: default_border
     readonly property color  keep_awake_control_color_background_active: color_peach
     readonly property color  keep_awake_control_color_text: color_text
     readonly property color  keep_awake_control_color_text_active: color_base
 
     // Widgets : Audio
-    readonly property color  audio_control_color_background: default_background
-    readonly property color  audio_control_color_border: default_border
     readonly property color  audio_control_color_track: color_surface
     readonly property color  audio_control_color_text: color_text
     readonly property color  audio_control_color_icon: color_text
     readonly property color  audio_control_color_icon_active: default_color_accent
 
     // Widgets: Brightness
-    readonly property color  display_control_color_background: default_background
-    readonly property color  display_control_color_border: default_border
     readonly property color  display_control_color_track: color_surface
     readonly property color  display_control_color_text: color_text
     readonly property color  display_control_color_icon: color_text
@@ -173,58 +169,50 @@ Singleton {
     readonly property color  display_control_color_icon_active: default_color_accent
 
     // Network
-    readonly property real   network_threshold_warning: 0.50
-    readonly property real   network_threshold_critical: 0.25
+    readonly property real   network_threshold_warning:             0.50
+    readonly property real   network_threshold_critical:            0.25
 
-    readonly property real   network_control_max_width: 160
+    readonly property real   network_control_max_width:             160
 
-    readonly property color  network_color_background: default_background
-    readonly property color  network_color_border: default_border
+    readonly property color  network_color_background:              color_transparent
+    readonly property color  network_color_border:                  color_surface
 
-    readonly property color  network_color_ink_default: color_text
-    readonly property color  network_color_ink_active: color_base
-    readonly property color  network_color_ink_muted: color_subtext
+    readonly property color  network_color_ink_default:             color_text
+    readonly property color  network_color_ink_active:              color_base
+    readonly property color  network_color_ink_muted:               color_subtext
 
-    readonly property color  network_color_active: color_green
-    readonly property color  network_color_inactive: color_surface
-    readonly property color  network_color_warning: color_yellow
-    readonly property color  network_color_destruct: color_red
-    readonly property color  network_color_busy: color_peach
+    readonly property color  network_color_active:                  color_green
+    readonly property color  network_color_inactive:                color_surface
+    readonly property color  network_color_warning:                 color_yellow
+    readonly property color  network_color_destruct:                color_red
+    readonly property color  network_color_busy:                    color_yellow
 
     // Bluetooth
-    readonly property real   bluetooth_control_max_width: 160
+    readonly property real   bluetooth_control_max_width:           160
 
-    readonly property color  bluetooth_color_background: default_background
-    readonly property color  bluetooth_color_border: default_border
+    readonly property color  bluetooth_color_background:            color_transparent
+    readonly property color  bluetooth_color_border:                color_surface
 
-    readonly property color  bluetooth_color_ink_default: color_text
-    readonly property color  bluetooth_color_ink_muted: color_subtext
-    readonly property color  bluetooth_color_ink_active: color_base
+    readonly property color  bluetooth_color_ink_default:           color_text
+    readonly property color  bluetooth_color_ink_muted:             color_subtext
+    readonly property color  bluetooth_color_ink_active:            color_base
     
-    readonly property color  bluetooth_color_active: color_sapphire
-    readonly property color  bluetooth_color_inactive: color_overlay
-    readonly property color  bluetooth_color_destruct: color_red
-    readonly property color  bluetooth_color_busy: color_yellow
+    readonly property color  bluetooth_color_active:                color_sapphire
+    readonly property color  bluetooth_color_inactive:              color_surface
+    readonly property color  bluetooth_color_destruct:              color_red
+    readonly property color  bluetooth_color_busy:                  color_yellow
 
 
     // Application Launchpad / Spotlight
-    readonly property string spotlight_search_placeholder: "Search..."
-    readonly property string spotlight_search_icon: "search.svg"
-    readonly property int    spotlight_search_height: 40 + padding
+    readonly property string spotlight_search_placeholder:          "Search..."
+    readonly property bool   spotlight_show_appid:                  true
 
-    readonly property color  spotlight_search_color_background: Qt.alpha(color_base, 0.10)
-    readonly property color  spotlight_search_color_background_active: Qt.alpha(color_base, 0.25)
-    readonly property color  spotlight_search_color_border: Qt.alpha(color_subtext, 0.10)
-    readonly property color  spotlight_search_color_border_active: Qt.alpha(color_subtext, 0.25)
-    readonly property color  spotlight_search_color_icon: Qt.alpha(color_subtext, 0.40)
-    readonly property color  spotlight_search_color_text: color_text
+    readonly property int    spotlight_item_height:                 40 + padding
 
-    readonly property int    spotlight_app_height: 40 + padding
-    readonly property color  spotlight_app_background_color: color_transparent
-    readonly property color  spotlight_app_background_color_active: Qt.alpha(Constants.color_surface, 0.2)
-    readonly property color  spotlight_app_border_color: color_transparent
-    readonly property color  spotlight_app_border_color_active: Qt.alpha(Constants.color_surface, 0.75)
-    readonly property color  spotlight_app_color_text: color_subtext
-    readonly property color  spotlight_app_color_text_active: color_text
-    readonly property bool   spotlight_app_show_appid: true
+    readonly property color  spotlight_color_border:                color_subtext
+    readonly property color  spotlight_color_ink_active:            color_text
+    readonly property color  spotlight_color_ink_muted:             color_subtext
+
+    readonly property color  spotlight_color_background_default:    Qt.alpha(color_base, 0.10)
+    readonly property color  spotlight_color_background_active:     Qt.alpha(color_base, 0.25)
 }

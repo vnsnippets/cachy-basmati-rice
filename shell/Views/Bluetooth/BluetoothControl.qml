@@ -17,26 +17,32 @@ ClickableWithIcon {
     property var datamap: switch (adapter.state ?? true) {
         case (BluetoothAdapterState.Enabling): return {
             label:  "Activating...",
+            icon:   "bluetooth-on.svg",
             accent: Constants.bluetooth_color_busy
         }
         case (BluetoothAdapterState.Disabling): return {
             label:  "Deactivating...",
+            icon:   "bluetooth-off.svg",
             accent: Constants.bluetooth_color_busy
         }
         case (BluetoothAdapterState.Disabled): return {
             label:  "Bluetooth",
+            icon:   "bluetooth-off.svg",
             accent: Constants.bluetooth_color_ink_muted
         }
         case (BluetoothAdapterState.Enabled): return {
             label:  "Bluetooth",
+            icon:   "bluetooth-on.svg",
             accent: Constants.bluetooth_color_active
         }
         case (BluetoothAdapterState.Blocked): return {
             label:  "Bluetooth",
+            icon:   "bluetooth-off.svg",
             accent: Constants.bluetooth_color_destruct
         }
         default: return {
             label:  "Bluetooth",
+            icon:   "bluetooth-on.svg",
             accent: Constants.bluetooth_color_ink_default
         }
     }
@@ -44,16 +50,17 @@ ClickableWithIcon {
     size: Constants.icon_size
     
     padding: Constants.padding
-    iconname: "bluetooth.svg"
+    rightPadding: (text.length > 0) ? Constants.padding * 1.25 : Constants.padding
 
-    styles.background_color_idle: Constants.bluetooth_color_background
+    iconname: datamap.icon
+    styles.background_color_idle: Constants.control_color_background_default
     styles.background_color_active: datamap.accent
 
     styles.icon_color_idle: datamap.accent
     styles.icon_color_active: Constants.bluetooth_color_ink_active
 
     styles.border_width: 1
-    styles.border_color_idle: Constants.bluetooth_color_border
+    styles.border_color_idle: Constants.control_color_border_default
     styles.border_color_active: datamap.accent
 
     styles.text_color_idle: datamap.accent

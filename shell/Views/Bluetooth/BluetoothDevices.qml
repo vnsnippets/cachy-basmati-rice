@@ -38,8 +38,8 @@ ColumnLayout {
             radius: Constants.radius / 2
             spacing: Constants.spacing / 2
 
-            styles.color_idle: Constants.default_background
-            styles.color_active: Constants.default_color_accent
+            styles.color_idle: Qt.alpha(Constants.bluetooth_color_inactive, 0.5)
+            styles.color_active: Constants.bluetooth_color_busy
         }
 
         // Scan / Discovery Toggle Button
@@ -183,7 +183,7 @@ ColumnLayout {
                 }
 
 
-                color: Qt.alpha(Constants.bluetooth_color_background, 0.25)
+                color: Constants.bluetooth_color_background
                 border.color: (connected) ? Qt.alpha(accent, 0.5) : Constants.bluetooth_color_border
                 border.width: 1
 
@@ -410,9 +410,7 @@ ColumnLayout {
             Layout.fillWidth: true
             implicitHeight: powered_off_label.implicitHeight + Constants.padding * 3
             radius: Constants.radius
-
-            color: Constants.color_transparent
-
+            color:  Qt.alpha(Constants.bluetooth_color_inactive, 0.15)
             border.width: 1
             border.color: Qt.alpha(Constants.bluetooth_color_inactive, 0.5)
 
@@ -422,7 +420,7 @@ ColumnLayout {
                 rightPadding: Constants.padding * 1.5
                 anchors.verticalCenter: parent.verticalCenter
                 text: "Bluetooth adapter is turned off"
-                color: Constants.bluetooth_color_inactive
+                color: Constants.bluetooth_color_ink_muted
             }
 
             Behavior on opacity {

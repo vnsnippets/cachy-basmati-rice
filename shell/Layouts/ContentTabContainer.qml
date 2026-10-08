@@ -73,8 +73,8 @@ ColumnLayout {
                         id: tab_text
                         anchors.centerIn: parent
                         text: tab_item.name.toUpperCase() ?? ""
-                        styles.color_idle: Constants.console_tab_color_text_inactive
-                        styles.color_active: Constants.console_tab_color_text_active
+                        styles.color_idle: Constants.tab_color_ink_inactive
+                        styles.color_active: Constants.tab_color_ink_active
                         active: tab_item.is_selected
                         font.bold: true
                     }

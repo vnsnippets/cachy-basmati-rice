@@ -21,7 +21,7 @@ StyledBox {
     id: root
     readonly property int _gap: Constants.spacing / 1.5
     readonly property int _padding: Constants.padding * 3
-    readonly property Component default_content: ApplicationSpotlight {
+    readonly property Component default_content: Launchpad {
         page_size: 8
     }
     property Component active_content: default_content
@@ -97,24 +97,26 @@ StyledBox {
                 Layout.fillWidth: true
                 radius: Constants.radius
 
-                styles.background_color: Constants.audio_control_color_background
+                styles.background_color: Constants.control_color_background_default
+                styles.border_color: Constants.control_color_border_default
+
                 styles.track_color: Constants.audio_control_color_track
                 styles.accent_color: Constants.default_color_accent
 
                 border.width: 1
-                styles.border_color: Constants.audio_control_color_border
             }
 
             BrightnessControl {
                 Layout.fillWidth: true
                 radius: Constants.radius
 
-                styles.background_color: Constants.display_control_color_background
+                styles.background_color: Constants.control_color_background_default
+                styles.border_color: Constants.control_color_border_default
+
                 styles.track_color: Constants.display_control_color_track
                 styles.accent_color: Constants.default_color_accent
 
                 border.width: 1
-                styles.border_color: Constants.display_control_color_border
             }
 
             KeepAwakeControl {
@@ -126,10 +128,11 @@ StyledBox {
         ContentContainer {
             Layout.fillWidth: true
             Layout.preferredHeight: implicitHeight
+            
             Layout.leftMargin: root._padding
             Layout.rightMargin: root._padding
             Layout.bottomMargin: root._padding
-            Layout.topMargin: root._padding / 2
+            
             content: root.active_content
         }
     }

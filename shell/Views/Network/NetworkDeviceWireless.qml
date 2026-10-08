@@ -37,8 +37,8 @@ ColumnLayout {
             radius: Constants.radius / 2
             spacing: Constants.spacing / 2
 
-            styles.color_idle: Constants.default_background
-            styles.color_active: Constants.default_color_accent
+            styles.color_idle: Qt.alpha(Constants.network_color_inactive, 0.5)
+            styles.color_active: Constants.network_color_busy
         }
 
         ClickableWithIcon {
@@ -49,7 +49,7 @@ ColumnLayout {
             enabled: Networking.wifiEnabled
 
             readonly property color accent:
-                (!Networking.wifiEnabled) ? Constants.network_color_ink_muted :
+                (!Networking.wifiEnabled) ? Constants.network_color_inactive :
                     (root.is_scanning) ? Constants.network_color_destruct : 
                         Constants.network_color_active
             
@@ -199,7 +199,7 @@ ColumnLayout {
                     modelData.connect();
                 }
 
-                color: Qt.alpha(Constants.network_color_background, 0.25)
+                color: Constants.network_color_background
                 border.color: (connected) ? Qt.alpha(accent, 0.5) : Constants.network_color_border
                 border.width: 1
 
@@ -330,7 +330,7 @@ ColumnLayout {
                                     color: Constants.network_color_ink_default
 
                                     background: Rectangle {
-                                        color: Constants.default_background
+                                        color: Constants.network_color_background
                                         radius: Constants.radius / 2
                                         border.color: psk_field.activeFocus ? Constants.network_color_ink_muted : Constants.network_color_border
                                         border.width: 1
@@ -390,7 +390,7 @@ ColumnLayout {
                                         leftPadding: Constants.padding
                                         rightPadding: Constants.padding
 
-                                        styles.background_color_idle: Qt.alpha(accent, 0.2)
+                                        styles.background_color_idle: Qt.alpha(accent, 0.05)
                                         styles.background_color_active: Qt.alpha(accent, 1)
 
                                         styles.icon_color_idle: accent
