@@ -58,7 +58,7 @@ RowLayout {
             required property string desc
             required property string vector
             required property color accent
-            required property int command
+            required property list<string> command
 
             readonly property bool active: containsMouse
 
@@ -125,8 +125,8 @@ RowLayout {
             }
 
             onClicked: {
-                Debug.log("[Power Menu] Executing System Action: " + item.command)
-                Quickshell.execDetached({ command: item.command });
+                Debug.log("[Power Menu] Executing System Action: " + command)
+                Quickshell.execDetached({ command: command });
             }
         }
     }

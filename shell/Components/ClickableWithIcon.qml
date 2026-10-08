@@ -14,8 +14,8 @@ Button {
     property bool active: false
     property int radius: 0
 
-    property color background_color: (hovered || active) ? styles.background_color_active : styles.background_color_idle
-    property color icon_color: (hovered || active) ? styles.icon_color_active : styles.icon_color_idle
+    property color background_color: enabled && (hovered || active) ? styles.background_color_active : styles.background_color_idle
+    property color icon_color: enabled && (hovered || active) ? styles.icon_color_active : styles.icon_color_idle
 
     component Styles: QtObject {
         property color icon_color_idle: "transparent"

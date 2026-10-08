@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import Quickshell
 import Quickshell.Bluetooth
 
 import qs
@@ -132,9 +133,13 @@ ColumnLayout {
                 implicitHeight: root.item_height
 
                 required property BluetoothDevice modelData
+                
+                readonly property string icon: modelData?.icon ?? ""
 
                 readonly property bool connected: modelData?.connected ?? false
+                readonly property bool pairing: modelData?.pairing ?? false
                 readonly property bool paired: modelData?.paired ?? false
+                readonly property string address: modelData?.address ?? ""
 
                 readonly property string device_name: modelData?.name || modelData?.address || "Unknown Device"
 
@@ -157,14 +162,21 @@ ColumnLayout {
                 function disconnect() { modelData.disconnect(); }
                 function connect() { modelData.connect(); }
                 function pair() { modelData.pair(); }
+                function cancel() { modelData.cancelPair(); }
 
-                function handleConnect() {
-                    if (device_item.connected) {
+                function clicked() {
+                    if (device_item.pairing) {
+                        device_item.cancel()
+                    } else if (device_item.connected) {
                         device_item.disconnect();
                     } else if (device_item.paired) {
                         device_item.connect();
                     } else {
-                        device_item.pair();
+                        // device_item.pair();
+                        Quickshell.execDetached([
+                            "foot", "sh", "-c", 
+                            `(echo 'agent on'; echo 'default-agent'; echo 'pair ${device_item.address}'; cat) | bluetoothctl`
+                        ]);
                     }
                 }
 
@@ -196,6 +208,37 @@ ColumnLayout {
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                             text: device_item.connection_state
+                            color: Constants.network_device_color_subtext
+                            font.pixelSize: Constants.font_size - 1
+                            visible: device_item.connection_state !== ""
+                        }
+                    }
+                    
+                    RowLayout {
+                        spacing: Constants.spacing
+                        Layout.fillHeight: true
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+
+                        StyledText {
+                            text: "Bonded: " + device_item.modelData.bonded
+                            color: Constants.network_device_color_subtext
+                            font.pixelSize: Constants.font_size - 1
+                            visible: device_item.connection_state !== ""
+                        }
+                        StyledText {
+                            text: "Trusted: " + device_item.modelData.trusted
+                            color: Constants.network_device_color_subtext
+                            font.pixelSize: Constants.font_size - 1
+                            visible: device_item.connection_state !== ""
+                        }
+                        StyledText {
+                            text: "Blocked: " + device_item.modelData.blocked
+                            color: Constants.network_device_color_subtext
+                            font.pixelSize: Constants.font_size - 1
+                            visible: device_item.connection_state !== ""
+                        }
+                        StyledText {
+                            text: "Wake: " + device_item.modelData.wakeAllowed
                             color: Constants.network_device_color_subtext
                             font.pixelSize: Constants.font_size - 1
                             visible: device_item.connection_state !== ""
@@ -245,7 +288,7 @@ ColumnLayout {
 
                                     radius: Constants.radius
 
-                                    onClicked: device_item.handleConnect()
+                                    onClicked: device_item.clicked()
                                 }
                             }
 
@@ -293,21 +336,23 @@ ColumnLayout {
                         }
 
                         ClickableWithIcon {
-                            readonly property color accent: Constants.bluetooth_scan_color_cancel
                             Layout.fillHeight: true
                             implicitWidth: implicitHeight
-
                             padding: Constants.padding / 1.5
 
-                            styles.background_color_idle: Qt.alpha(accent, 0.2)
-                            styles.background_color_active: Qt.alpha(accent, 1)
+                            enabled: device_item.paired
 
-                            styles.icon_color_idle: accent
-                            styles.icon_color_active: Constants.network_device_color_action_text_active
+                            readonly property color accent_color: (!device_item.paired) ? Constants.bluetooth_scan_color_disabled : Constants.bluetooth_scan_color_cancel
+
+                            styles.background_color_idle: Qt.alpha(accent_color, 0.10)
+                            styles.background_color_active: accent_color
 
                             styles.border_width: 1
-                            styles.border_color_idle: Qt.alpha(accent, 0.5)
-                            styles.border_color_active: Qt.alpha(accent, 1)
+                            styles.border_color_idle: Qt.alpha(accent_color, 0.5)
+                            styles.border_color_active: Qt.alpha(accent_color, 1)
+
+                            styles.icon_color_idle: Qt.alpha(accent_color, 0.5)
+                            styles.icon_color_active: Constants.bluetooth_scan_color_text_active
 
                             iconname: "dismiss.svg"
                             radius: Constants.radius
