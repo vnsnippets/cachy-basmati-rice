@@ -88,6 +88,7 @@ Singleton {
 
     //  Center Console
     readonly property int    console_width: 720
+    readonly property bool   console_disable_navigation: false
     readonly property bool   console_backdrop_enabled: true
     
     readonly property color  console_color_background: color_mantle
@@ -102,6 +103,8 @@ Singleton {
 
     readonly property color  control_color_background_default: default_background
     readonly property color  control_color_border_default: Qt.alpha(color_surface, 0.50)
+    readonly property color  control_color_ink_default: color_text
+    readonly property color  control_color_ink_active: color_yellow
 
 
     // System : Clock
@@ -163,6 +166,7 @@ Singleton {
     readonly property color  display_control_color_ink_muted:       color_overlay
 
     // Network
+    readonly property bool   network_hide_ssid:                     true
     readonly property real   network_threshold_warning:             0.50
     readonly property real   network_threshold_critical:            0.25
 

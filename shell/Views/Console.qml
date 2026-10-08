@@ -22,9 +22,11 @@ StyledBox {
     readonly property int _gap: Constants.spacing / 1.5
     readonly property int _padding: Constants.padding * 3
     readonly property Component default_content: Launchpad {
-        page_size: 6
+        page_size: 7
     }
-    property Component active_content: default_content
+
+    property Component content: navigation_stack[root.navigation_stack.length - 1] ?? default_content
+    property list<Component> navigation_stack: [ default_content ]
 
     colors.background: Constants.console_color_background
     colors.border: Constants.console_color_border
@@ -39,6 +41,28 @@ StyledBox {
             duration: Constants.animation_duration
             easing.type: Easing.OutCubic
         }
+    }
+
+    function navigate(_content) {
+        // Toggling back to default if re-selecting current content
+        if (_content === root.content) {
+            root.navigation_stack = [ root.default_content ];
+            root.content = root.default_content;
+            return;
+        }
+
+        if (Constants.console_disable_navigation) {
+            root.navigation_stack = [ _content ];
+            return;
+        }
+
+        // Filter out existing instances of _content to avoid duplicate entries
+        const filteredStack = root.navigation_stack.filter(item => item !== _content);
+        filteredStack.push(_content);
+
+        // Reassign array to trigger QML property binding updates
+        root.navigation_stack = filteredStack;
+        root.content = _content;
     }
 
     ColumnLayout {
@@ -61,28 +85,28 @@ StyledBox {
 
             BluetoothControl {
                 Layout.maximumWidth: Constants.bluetooth_control_max_width
-                active: root.active_content === component_bluetooth_devices
-                onClicked: root.active_content = (active) ? root.default_content : component_bluetooth_devices
-                Component { id: component_bluetooth_devices; BluetoothDevices { } }
+                active: root.content === bluetooth_devices
+                onClicked: root.navigate(bluetooth_devices)
+                Component { id: bluetooth_devices; BluetoothDevices { } }
             }
 
             NetworkControl {
                 Layout.maximumWidth: Constants.network_control_max_width
-                active: root.active_content === component_network_devices
-                onClicked: root.active_content = (active) ? root.default_content : component_network_devices
-                Component { id: component_network_devices; NetworkDevices { } }
+                active: root.content === network_devices
+                onClicked: root.navigate(network_devices)
+                Component { id: network_devices; NetworkDevices { } }
             }
 
             BatteryControl {
-                active: root.active_content === component_battery_profiles
-                onClicked: root.active_content = (active) ? root.default_content : component_battery_profiles
-                Component { id: component_battery_profiles; BatteryProfiles { max_height: 160 } }
+                active: root.content === battery_profiles
+                onClicked: root.navigate(battery_profiles)
+                Component { id: battery_profiles; BatteryProfiles { max_height: 160 } }
             }
 
             PowerControl {
-                active: root.active_content === component_power_menu
-                onClicked: root.active_content = (active) ? root.default_content : component_power_menu
-                Component { id: component_power_menu; PowerOptions { max_height: 160; } }
+                active: root.content === power_options
+                onClicked: root.navigate(power_options)
+                Component { id: power_options; PowerOptions { max_height: 160; } }
             }
         }
 
@@ -100,7 +124,7 @@ StyledBox {
                 Layout.fillWidth: true
                 implicitHeight: volume_control.implicitHeight
 
-                readonly property bool active: root.active_content === audio_devices
+                readonly property bool active: root.content === audio_devices
 
                 VolumeControl {
                     id: volume_control
@@ -121,7 +145,7 @@ StyledBox {
                     Behavior on styles.border_color { ColorAnimation { duration: Constants.animation_duration }}
                 }
 
-                onClicked: root.active_content = (active) ? root.default_content : audio_devices
+                onClicked: root.navigate(audio_devices)
                 Component { id: audio_devices; AudioDevices { } }
             }
 
@@ -147,10 +171,51 @@ StyledBox {
         ContentContainer {
             Layout.fillWidth: true
             Layout.preferredHeight: implicitHeight
-            Layout.margins: root._padding
-            Layout.topMargin: 0
+            Layout.leftMargin: root._padding
+            Layout.rightMargin: root._padding
+            Layout.bottomMargin: root._padding
             
-            content: root.active_content
+            content: root.navigation_stack.length > 0 ? root.navigation_stack[root.navigation_stack.length - 1] : root.default_content
+        }
+
+        RowLayout {
+            visible: (opacity) > 0
+            opacity: (root.navigation_stack.length > 1) ? 1 : 0
+
+            Behavior on opacity { NumberAnimation { duration: 200 } }
+
+            Layout.fillWidth: true
+            Layout.leftMargin: root._padding
+            Layout.rightMargin: root._padding
+            Layout.bottomMargin: root._padding
+            spacing: root._gap
+
+            ClickableWithIcon {
+                size: Constants.icon_size
+                padding: Constants.padding
+                radius: Constants.icon_size
+
+                iconname: "arrow-left.svg"
+
+                styles.background_color_idle: Constants.control_color_background_default
+
+                styles.border_width: 1
+                styles.border_color_idle: Constants.control_color_border_default
+                styles.border_color_active: Qt.alpha(Constants.control_color_ink_default, 0.20)
+
+                styles.icon_color_idle: Constants.control_color_ink_default
+                styles.icon_color_active: Constants.control_color_ink_active
+
+                onClicked: {
+                    if (root.navigation_stack.length > 1) {
+                        const newStack = root.navigation_stack.slice(0, -1);
+                        root.navigation_stack = newStack;
+                        root.content = newStack[newStack.length - 1];
+                    }
+                }
+            }
+
+            Item { Layout.fillWidth: true }
         }
     }
 }

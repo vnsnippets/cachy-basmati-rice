@@ -16,8 +16,8 @@ ColumnLayout {
 
     required property int page_size
 
-    readonly property int result_item_height: Constants.spotlight_item_height + Constants.spacing
-    readonly property int max_height: (result_item_height * page_size) + (Constants.padding * page_size-1)
+    readonly property int result_item_height: Constants.spotlight_item_height //+ Constants.spacing
+    readonly property int max_height: (result_item_height * page_size) + (spacing * page_size-1)
     readonly property string default_app_icon: "application-x-executable"
 
     spacing: Constants.spacing
@@ -122,7 +122,7 @@ ColumnLayout {
         Layout.fillWidth: true
         implicitHeight: spotlight.max_height
 
-        spacing: Constants.padding
+        spacing: Constants.spacing
         clip: true
         currentIndex: 0
         keyNavigationEnabled: false

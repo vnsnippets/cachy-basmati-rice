@@ -222,9 +222,11 @@ ColumnLayout {
                             StyledText {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                                text: network.ssid
+                                text: (Constants.network_hide_ssid) ? "Names are being hidden" : network.ssid
                                 color: network.connected ? network.accent : Constants.network_color_ink_default
                                 elide: Text.ElideRight
+                                font.italic: Constants.network_hide_ssid
+                                opacity: (Constants.network_hide_ssid) ? 0.75 : 1
                             }
 
                             StyledText {
