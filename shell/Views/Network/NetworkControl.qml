@@ -11,34 +11,42 @@ import qs.Components
 ClickableWithIcon {
     id: root
 
-    property var datamap: switch (NetworkService.activeNetwork?.device.type) {
-        case (DeviceType.Wired): return {
-            icon:           "ethernet.svg",
-            label:          "Ethernet",
+    property var datamap: {
+        if (!Networking.wifiEnabled) return {
+            icon:          "wifi-disconnect.svg",
             highlighted:    false,
-            accent:         Constants.network_color_default
+            accent:         Constants.network_device_color_disabled
         }
-
-        case (DeviceType.Wifi):
-            const icons =       [ "wifi-empty.svg", "wifi-low.svg", "wifi-medium.svg", "wifi-high.svg", "wifi-full.svg" ];
-            const targetIndex = Math.floor(NetworkService.activeNetwork.signalStrength * icons.length);
-            const safeIndex =   Math.min(Math.max(0, targetIndex), icons.length - 1);
-            const iscritical =  NetworkService.activeNetwork.signalStrength <= Constants.network_threshold_critical
-            const iswarning =   NetworkService.activeNetwork.signalStrength <= Constants.network_threshold_warning
-            return {
-                icon:           icons[safeIndex],
-                label:          NetworkService.activeNetwork.name,
-                highlighted:    (iscritical || iswarning),
-                accent:         (iscritical) ? Constants.network_color_critical :
-                                    (iswarning) ? Constants.network_color_warning :
-                                        Constants.network_color_default
+        
+        switch (NetworkService.activeNetwork?.device.type) {
+            case (DeviceType.Wired): return {
+                icon:           "ethernet.svg",
+                label:          "Ethernet",
+                highlighted:    false,
+                accent:         Constants.network_color_default
             }
 
-        default: return {
-            icon:          "wifi-disconnect.svg",
-            label:         "Not Connected",
-            highlighted:    false,
-            accent:         Constants.network_color_default
+            case (DeviceType.Wifi):
+                const icons =       [ "wifi-empty.svg", "wifi-low.svg", "wifi-medium.svg", "wifi-high.svg", "wifi-full.svg" ];
+                const targetIndex = Math.floor(NetworkService.activeNetwork.signalStrength * icons.length);
+                const safeIndex =   Math.min(Math.max(0, targetIndex), icons.length - 1);
+                const iscritical =  NetworkService.activeNetwork.signalStrength <= Constants.network_threshold_critical
+                const iswarning =   NetworkService.activeNetwork.signalStrength <= Constants.network_threshold_warning
+                
+                return {
+                    icon:           icons[safeIndex],
+                    label:          NetworkService.activeNetwork.name,
+                    highlighted:    (iscritical || iswarning),
+                    accent:         (iscritical) ? Constants.network_color_critical :
+                                        (iswarning) ? Constants.network_color_warning :
+                                            Constants.network_color_default
+                }
+
+            default: return {
+                icon:          "wifi-disconnect.svg",
+                highlighted:    false,
+                accent:         Constants.network_color_default
+            }
         }
     }
 
@@ -60,7 +68,7 @@ ClickableWithIcon {
     palette.buttonText: (hovered || active) ? Constants.network_control_color_text_active : datamap.accent
 
     font.family: Constants.font_family
-    text: datamap.label
+    text: datamap?.label ?? ""
 
     radius: (active) ? Constants.icon_size : Constants.radius
     Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }

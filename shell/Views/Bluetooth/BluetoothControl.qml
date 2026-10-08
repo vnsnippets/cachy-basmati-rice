@@ -40,10 +40,8 @@ ClickableWithIcon {
             accent: Constants.bluetooth_color_default
         }
     }
-
-    readonly property int size: Constants.icon_size + (Constants.padding * 2)
-    implicitWidth: size
-    implicitHeight: size
+    
+    size: Constants.icon_size
     
     padding: Constants.padding
     iconname: "bluetooth.svg"

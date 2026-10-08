@@ -63,6 +63,35 @@ ColumnLayout {
 
             onClicked: root.device.scannerEnabled = !root.is_scanning;
         }
+
+        // Power Toggle Button
+        ClickableWithIcon {
+            readonly property color accent: Constants.network_device_color_action_connect
+
+            implicitHeight: Constants.size - (Constants.padding / 2)
+            implicitWidth: Constants.size - (Constants.padding / 2)
+            
+            padding: Constants.padding
+
+            active: Networking.wifiEnabled
+
+            styles.background_color_idle: Constants.color_transparent
+            styles.background_color_active: accent
+
+            styles.icon_color_idle: accent
+            styles.icon_color_active: Constants.network_device_color_action_text_active
+
+            styles.border_width: 1
+            styles.border_color_idle: Qt.alpha(accent, 0.5)
+            styles.border_color_active: accent
+
+            iconname: "power.svg"
+
+            onClicked: Networking.wifiEnabled = !Networking.wifiEnabled
+            
+            radius: (active) ? Constants.icon_size : Constants.radius
+            Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
+        }
     }
 
     Loader {
