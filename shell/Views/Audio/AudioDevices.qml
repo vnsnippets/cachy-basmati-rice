@@ -10,7 +10,6 @@ import qs.Services
 
 ContentTabContainer {
     id: container
-
     title: "Audio Devices"
 
     Component {

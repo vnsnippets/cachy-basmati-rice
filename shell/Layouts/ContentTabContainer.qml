@@ -10,7 +10,7 @@ import qs.Components
 
 ColumnLayout {
     id: container
-    spacing: Constants.spacing * 1.5
+    spacing: Constants.padding
     
     property string title: ""
     property Component toolbar: null
@@ -22,10 +22,13 @@ ColumnLayout {
     implicitHeight: tab_bar_flickable.implicitHeight + swipe_view.implicitHeight + spacing
     
     RowLayout {
+        Layout.topMargin: Constants.padding * 1.5
+
         StyledText {
             visible: container.title.trim().length > 0
             text: container.title.toUpperCase()
-            color: Constants.color_text
+            color: Constants.tab_color_ink_muted
+            font.weight: 600
         }
 
         Item { Layout.fillWidth: true }
@@ -42,6 +45,8 @@ ColumnLayout {
         id: tab_bar_flickable
 
         Layout.fillWidth: true
+        Layout.topMargin: Constants.padding
+
         implicitHeight: tab_row.implicitHeight
 
         contentWidth: tab_row.implicitWidth
@@ -75,7 +80,7 @@ ColumnLayout {
                         styles.color_idle: Constants.tab_color_ink_inactive
                         styles.color_active: Constants.tab_color_ink_active
                         active: tab_item.is_selected
-                        font.bold: true
+                        font.weight: (active) ? 800 : 600
                     }
 
                     onClicked: {

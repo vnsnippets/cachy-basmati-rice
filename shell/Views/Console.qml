@@ -22,7 +22,7 @@ StyledBox {
     readonly property int _gap: Constants.spacing / 1.5
     readonly property int _padding: Constants.padding * 3
     readonly property Component default_content: Launchpad {
-        page_size: 8
+        page_size: 6
     }
     property Component active_content: default_content
 

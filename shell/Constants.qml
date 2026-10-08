@@ -98,6 +98,7 @@ Singleton {
 
     readonly property color  tab_color_ink_active: color_text
     readonly property color  tab_color_ink_inactive: color_overlay
+    readonly property color  tab_color_ink_muted: color_subtext
 
     readonly property color  control_color_background_default: default_background
     readonly property color  control_color_border_default: Qt.alpha(color_surface, 0.50)

@@ -22,6 +22,7 @@ ColumnLayout {
     readonly property int capped_height: (item_height * page_size) + (Constants.spacing * Math.max(0, page_size - 1))
 
     RowLayout {
+        Layout.topMargin: Constants.padding
         Layout.fillWidth: true
         spacing: Constants.spacing
 
