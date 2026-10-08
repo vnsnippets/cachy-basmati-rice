@@ -21,9 +21,7 @@ StyledBox {
     id: root
     readonly property int _gap: Constants.spacing / 1.5
     readonly property int _padding: Constants.padding * 3
-    readonly property Component default_content: Launchpad {
-        page_size: 7
-    }
+    readonly property Component default_content: Launchpad { page_size: 7 }
 
     property Component content: navigation_stack[root.navigation_stack.length - 1] ?? default_content
     property list<Component> navigation_stack: [ default_content ]
@@ -33,8 +31,8 @@ StyledBox {
 
     radius: Constants.radius * 2
     
-    implicitWidth: content.implicitWidth
-    implicitHeight: content.implicitHeight
+    implicitWidth: content_layout.implicitWidth
+    implicitHeight: content_layout.implicitHeight + (root._padding * 2)
 
     Behavior on implicitHeight {
         NumberAnimation {
@@ -66,15 +64,19 @@ StyledBox {
     }
 
     ColumnLayout {
-        id: content
-        anchors.fill: parent
+        id: content_layout
+
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+
         spacing: root._gap * 2
         visible: root.opacity > 0.1
         
         // --- Header Row ---
         RowLayout {
             Layout.fillWidth: true
-            Layout.topMargin: root._padding
+
             Layout.leftMargin: root._padding
             Layout.rightMargin: root._padding
             spacing: root._gap
@@ -173,7 +175,6 @@ StyledBox {
             Layout.preferredHeight: implicitHeight
             Layout.leftMargin: root._padding
             Layout.rightMargin: root._padding
-            Layout.bottomMargin: root._padding
             
             content: root.navigation_stack.length > 0 ? root.navigation_stack[root.navigation_stack.length - 1] : root.default_content
         }
@@ -187,7 +188,8 @@ StyledBox {
             Layout.fillWidth: true
             Layout.leftMargin: root._padding
             Layout.rightMargin: root._padding
-            Layout.bottomMargin: root._padding
+            Layout.topMargin: root._padding / 2
+
             spacing: root._gap
 
             ClickableWithIcon {

@@ -48,6 +48,7 @@ PanelWindow {
         id: centerconsole
         anchors.centerIn: parent
         implicitWidth: Constants.console_width
+        
         Keys.onEscapePressed: EventOrchestrator.consoleDismissContentEvent();
 
         opacity: container.expanded ? 1.0 : 0.0
