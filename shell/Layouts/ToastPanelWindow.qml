@@ -32,7 +32,7 @@ PanelWindow {
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
     readonly property int _animationDuration: Constants.animation_duration
-    readonly property int _padding: Constants.osd_offset / 2
+    readonly property int _padding: Constants.toast_offset / 2
 
     property string activeKey: ""
     property string pendingKey: ""
@@ -94,7 +94,7 @@ PanelWindow {
 
     Timer {
         id: timeout_toast
-        interval: Constants.osd_timeout
+        interval: Constants.toast_timeout
         onTriggered: {
             toast_item.state = "hidden";
         }
@@ -127,7 +127,7 @@ PanelWindow {
             anchors.fill: parent
         }
 
-        transform: Translate { id: animation_toast_offset; y: Constants.osd_offset * 1.5 }
+        transform: Translate { id: animation_toast_offset; y: Constants.toast_offset * 1.5 }
 
         state: "hidden"
 
@@ -140,7 +140,7 @@ PanelWindow {
             State {
                 name: "hidden"
                 PropertyChanges { toast_item.opacity: 0 }
-                PropertyChanges { animation_toast_offset.y: Constants.osd_offset * 1.5 }
+                PropertyChanges { animation_toast_offset.y: Constants.toast_offset * 1.5 }
             }
         ]
 
@@ -202,16 +202,16 @@ PanelWindow {
     Component {
         id: component_audio_osd
 
-        AudioVolumeControl {
+        VolumeControl {
             radius: Constants.radius
             border.width: 1
 
-            styles.background_color: Constants.osd_color_background
-            styles.border_color: Constants.osd_color_border
-            styles.track_color: Constants.audio_control_color_track
-            styles.accent_color: Constants.default_color_accent
+            styles.background_color: Constants.toast_color_background
+            styles.border_color: Constants.toast_color_border
+            styles.track_color: Constants.volume_control_color_track
+            styles.accent_color: Constants.toast_color_ink_active
             
-            implicitWidth: Constants.osd_width
+            implicitWidth: Constants.toast_width
         }
     }
 
@@ -222,12 +222,12 @@ PanelWindow {
             radius: Constants.radius
             border.width: 1
 
-            styles.background_color: Constants.osd_color_background
-            styles.border_color: Constants.osd_color_border
+            styles.background_color: Constants.toast_color_background
+            styles.border_color: Constants.toast_color_border
             styles.track_color: Constants.display_control_color_track
-            styles.accent_color: Constants.default_color_accent
+            styles.accent_color: Constants.toast_color_ink_active
             
-            implicitWidth: Constants.osd_width
+            implicitWidth: Constants.toast_width
         }
     }
 
@@ -237,8 +237,8 @@ PanelWindow {
         DisplayOSDControl {
             id: display_osd
             border.width: 1
-            border.color: Constants.osd_color_border
-            color: Constants.osd_color_background
+            border.color: Constants.toast_color_border
+            color: Constants.toast_color_background
             radius: Constants.radius
 
             Binding {

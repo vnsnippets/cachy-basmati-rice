@@ -37,10 +37,10 @@ Rectangle {
 
         ClickableWithIcon {
             id: brightnessIcon
-            size: Constants.osd_icon_size
+            size: Constants.toast_icon_size
             iconname: "brightness.svg"
-            styles.icon_color_idle: Constants.display_control_color_icon
-            styles.icon_color_active: Constants.display_control_color_icon_active
+            styles.icon_color_idle: Constants.display_control_color_ink_default
+            styles.icon_color_active: Constants.display_control_color_ink_active
         }
         
         StyledSlider {
@@ -97,7 +97,7 @@ Rectangle {
             visible: opacity > 0
             Layout.alignment: Qt.AlignVCenter
             text: Math.round(slide.value) + "%"
-            color: Constants.display_control_color_text
+            color: Constants.display_control_color_ink_default
             Behavior on opacity { NumberAnimation { duration: control._animationDuration } }
         }
     }

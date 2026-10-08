@@ -17,13 +17,13 @@ ClickableWithIcon {
     iconname: "toggle.svg"
 
     styles.background_color_idle: Constants.control_color_background_default
-    styles.background_color_active: Constants.keep_awake_control_color_background_active
-    styles.icon_color_idle: Constants.keep_awake_control_color_text
-    styles.icon_color_active: Constants.keep_awake_control_color_text_active
+    styles.background_color_active: Constants.keepawake_color_active
+    styles.icon_color_idle: Constants.keepawake_color_ink_default
+    styles.icon_color_active: Constants.keepawake_color_ink_active
 
     styles.border_width: 1
     styles.border_color_idle: Constants.control_color_border_default
-    styles.border_color_active: Constants.keep_awake_control_color_background_active
+    styles.border_color_active: Constants.keepawake_color_active
 
     onClicked: inhibitor.enabled = !inhibitor.enabled
 

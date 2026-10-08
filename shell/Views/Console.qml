@@ -93,17 +93,34 @@ StyledBox {
             Layout.rightMargin: root._padding
             spacing: root._gap
 
-            AudioVolumeControl {
+            Clickable {
+                id: volume_wrapper
                 Layout.fillWidth: true
-                radius: Constants.radius
+                implicitHeight: volume_control.implicitHeight
 
-                styles.background_color: Constants.control_color_background_default
-                styles.border_color: Constants.control_color_border_default
+                readonly property bool active: root.active_content === audio_devices
 
-                styles.track_color: Constants.audio_control_color_track
-                styles.accent_color: Constants.default_color_accent
+                VolumeControl {
+                    id: volume_control
+                    radius: Constants.radius
 
-                border.width: 1
+                    readonly property bool hovered: volume_wrapper.containsMouse
+
+                    styles.background_color: Constants.control_color_background_default
+                    styles.border_color: (hovered || volume_wrapper.active) ? 
+                        Qt.alpha(Constants.volume_control_color_ink_default, 0.20) : 
+                            Constants.control_color_border_default
+
+                    styles.track_color: Constants.volume_control_color_track
+                    styles.accent_color: Constants.volume_control_color_ink_active
+
+                    border.width: 1
+
+                    Behavior on styles.border_color { ColorAnimation { duration: Constants.animation_duration }}
+                }
+
+                onClicked: root.active_content = (active) ? root.default_content : audio_devices
+                Component { id: audio_devices; AudioDevices { } }
             }
 
             BrightnessControl {
@@ -114,7 +131,7 @@ StyledBox {
                 styles.border_color: Constants.control_color_border_default
 
                 styles.track_color: Constants.display_control_color_track
-                styles.accent_color: Constants.default_color_accent
+                styles.accent_color: Constants.display_control_color_ink_active
 
                 border.width: 1
             }

@@ -12,6 +12,13 @@ Slider {
     component Styles: QtObject {
         property color track_color: "#FAFAFA"
         property color accent_color: "#0A0A0A"
+
+        Behavior on accent_color { 
+            ColorAnimation { 
+                duration: 200
+                easing.type: Easing.InOutQuad
+            } 
+        }
     }
 
     property int size: 16
@@ -29,7 +36,7 @@ Slider {
 
         radius: control.availableHeight/4
         border.width: 0
-        color: control.styles.accent_color
+        color: "transparent"
         scale: control.pressed ? 0.8 : 1
 
         Behavior on scale { NumberAnimation { duration: 100; easing: Easing.InOutQuad; } }

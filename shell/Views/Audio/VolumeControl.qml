@@ -37,7 +37,7 @@ Rectangle {
 
         ClickableWithIcon {
             id: mutetoggle
-            size: Constants.osd_icon_size
+            size: Constants.toast_icon_size
             iconname: {
                 if (PipewireService.defaultSink?.audio.muted) return "volume-muted.svg";
 
@@ -52,8 +52,8 @@ Rectangle {
                 return icons[safeIndex];
             }
             
-            styles.icon_color_idle: Constants.audio_control_color_icon
-            styles.icon_color_active: Constants.audio_control_color_icon_active
+            styles.icon_color_idle: Constants.volume_control_color_ink_default
+            styles.icon_color_active: Constants.volume_control_color_ink_active
 
             onClicked: PipewireService.defaultSink.audio.muted = !PipewireService.defaultSink?.audio.muted
         }
@@ -70,7 +70,9 @@ Rectangle {
             stepSize: 5
 
             styles.track_color: control.styles.track_color
-            styles.accent_color: control.styles.accent_color
+            styles.accent_color: (PipewireService.defaultSink.audio.muted) ? 
+                Qt.alpha(control.styles.accent_color, 0.25) : control.styles.accent_color
+                
             size: 12
 
             value: 0
@@ -116,7 +118,7 @@ Rectangle {
 
             Layout.alignment: Qt.AlignVCenter
             text: Math.round(slide.value) + "%"
-            color: Constants.audio_control_color_text
+            color: Constants.volume_control_color_ink_default
 
             Behavior on opacity { NumberAnimation { duration: control._animationDuration } }
         }

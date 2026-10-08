@@ -43,22 +43,14 @@ Singleton {
     readonly property color  color_lavender: "#b4befe"
 
     readonly property color  color_text: "#cdd6f4"
-    // readonly property color color_subtext1: "#bac2de"
-    // readonly property color color_subtext0: "#a6adc8"
     readonly property color  color_subtext: "#9399b2"
-    // readonly property color color_overlay2: "#9399b2"
-    // readonly property color color_overlay1: "#7f849c"
     readonly property color  color_overlay: "#6c7086"
-    // readonly property color color_surface2: "#585b70"
-    // readonly property color color_surface1: "#45475a"
     readonly property color  color_surface: "#313244"
     readonly property color  color_base: "#1e1e2e"
     readonly property color  color_mantle: "#181825"
     readonly property color  color_crust: "#11111b"
 
-    readonly property color  default_color_accent: color_yellow
     readonly property color  default_background: color_base
-    readonly property color  default_border: Qt.alpha(color_surface, 0.50)
 
     readonly property real   roundness: 0.25
     readonly property int    radius: roundness * 24
@@ -72,19 +64,21 @@ Singleton {
     readonly property int    animation_duration: 250
 
     // On Screen Displays    
-    readonly property int    osd_width: 320
-    readonly property int    osd_timeout: 2000
-    readonly property int    osd_offset: 48
-    readonly property int    osd_icon_size: 20
-    readonly property color  osd_color_background: default_background
-    readonly property color  osd_color_border: color_surface
+    readonly property int    toast_width:                           320
+    readonly property int    toast_timeout:                         2000
+    readonly property int    toast_offset:                          48
+    readonly property int    toast_icon_size:                       20
+
+    readonly property color  toast_color_background:                default_background
+    readonly property color  toast_color_border:                    color_surface
+    readonly property color  toast_color_ink_active:                color_yellow
 
     // Notifications
     readonly property int    notification_width: 320
     readonly property int    notification_offset: 16
     readonly property int    notification_timeout: 15000
     readonly property color  notification_color_background: default_background
-    readonly property color  notification_color_border: default_border
+    readonly property color  notification_color_border: Qt.alpha(color_surface, 0.50)
     readonly property color  notification_color_border_active: color_overlay
     readonly property color  notification_color_text: color_text
     readonly property color  notification_color_subtext: color_subtext
@@ -97,7 +91,7 @@ Singleton {
     readonly property bool   console_backdrop_enabled: true
     
     readonly property color  console_color_background: color_mantle
-    readonly property color  console_color_border: default_border
+    readonly property color  console_color_border: Qt.alpha(color_surface, 0.50)
 
     readonly property color  console_color_backdrop_active: Qt.alpha(color_crust, 0.6)
     readonly property color  console_color_backdrop_inactive: Qt.alpha(color_crust, 0)
@@ -106,7 +100,7 @@ Singleton {
     readonly property color  tab_color_ink_inactive: color_overlay
 
     readonly property color  control_color_background_default: default_background
-    readonly property color  control_color_border_default: default_border
+    readonly property color  control_color_border_default: Qt.alpha(color_surface, 0.50)
 
 
     // System : Clock
@@ -151,22 +145,20 @@ Singleton {
     readonly property bool   power_option_show_description: false
 
     // System : Keep Awake Control
-    readonly property color  keep_awake_control_color_background_active: color_peach
-    readonly property color  keep_awake_control_color_text: color_text
-    readonly property color  keep_awake_control_color_text_active: color_base
+    readonly property color  keepawake_color_active:                color_peach
+    readonly property color  keepawake_color_ink_default:           color_text
+    readonly property color  keepawake_color_ink_active:            color_base
 
     // Widgets : Audio
-    readonly property color  audio_control_color_track: color_surface
-    readonly property color  audio_control_color_text: color_text
-    readonly property color  audio_control_color_icon: color_text
-    readonly property color  audio_control_color_icon_active: default_color_accent
+    readonly property color  volume_control_color_track:            color_surface
+    readonly property color  volume_control_color_ink_default:      color_text
+    readonly property color  volume_control_color_ink_active:       color_yellow
 
     // Widgets: Brightness
-    readonly property color  display_control_color_track: color_surface
-    readonly property color  display_control_color_text: color_text
-    readonly property color  display_control_color_icon: color_text
-    readonly property color  display_control_color_icon_muted: color_overlay
-    readonly property color  display_control_color_icon_active: default_color_accent
+    readonly property color  display_control_color_track:           color_surface
+    readonly property color  display_control_color_ink_default:     color_text
+    readonly property color  display_control_color_ink_active:      color_yellow
+    readonly property color  display_control_color_ink_muted:       color_overlay
 
     // Network
     readonly property real   network_threshold_warning:             0.50

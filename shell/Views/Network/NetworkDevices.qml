@@ -7,7 +7,6 @@ import Quickshell.Networking
 
 import qs
 import qs.Layouts
-import qs.Components
 
 ContentTabContainer {
     id: container
