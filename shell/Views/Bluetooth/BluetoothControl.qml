@@ -25,19 +25,19 @@ ClickableWithIcon {
         }
         case (BluetoothAdapterState.Disabled): return {
             label:  "Bluetooth",
-            accent: Constants.bluetooth_color_subtext
+            accent: Constants.bluetooth_color_ink_muted
         }
         case (BluetoothAdapterState.Enabled): return {
             label:  "Bluetooth",
-            accent: Constants.bluetooth_color_enabled
+            accent: Constants.bluetooth_color_active
         }
         case (BluetoothAdapterState.Blocked): return {
             label:  "Bluetooth",
-            accent: Constants.bluetooth_color_blocked
+            accent: Constants.bluetooth_color_destruct
         }
         default: return {
             label:  "Bluetooth",
-            accent: Constants.bluetooth_color_text
+            accent: Constants.bluetooth_color_ink_default
         }
     }
     
@@ -50,14 +50,14 @@ ClickableWithIcon {
     styles.background_color_active: datamap.accent
 
     styles.icon_color_idle: datamap.accent
-    styles.icon_color_active: Constants.bluetooth_color_text_active
+    styles.icon_color_active: Constants.bluetooth_color_ink_active
 
     styles.border_width: 1
     styles.border_color_idle: Constants.bluetooth_color_border
     styles.border_color_active: datamap.accent
 
     styles.text_color_idle: datamap.accent
-    styles.text_color_active: Constants.bluetooth_color_text_active
+    styles.text_color_active: Constants.bluetooth_color_ink_active
 
     font.family: Constants.font_family
 
