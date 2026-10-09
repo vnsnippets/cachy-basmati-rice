@@ -182,12 +182,13 @@ Singleton {
 
     // Widgets: Brightness
     readonly property color  display_control_color_track:           color_surface
+    readonly property color  display_control_color_active:          color_yellow
+    readonly property color  display_control_color_muted:           color_overlay
     readonly property color  display_control_color_ink_default:     color_text
-    readonly property color  display_control_color_ink_active:      color_yellow
-    readonly property color  display_control_color_ink_muted:       color_overlay
+    readonly property color  display_control_color_ink_active:      color_base
 
     // Network
-    readonly property bool   network_hide_ssid:                     false
+    readonly property bool   network_scramble_ssid:                     true
     readonly property real   network_threshold_warning:             0.50
     readonly property real   network_threshold_critical:            0.25
 

@@ -6,8 +6,9 @@ import QtQuick.Layouts
 import Quickshell.Wayland
 
 import qs
-import qs.Components
 import qs.Layouts
+import qs.Utilities
+import qs.Components
 import qs.Views.Power
 import qs.Views.Audio
 import qs.Views.System
@@ -159,7 +160,7 @@ StyledBox {
                 styles.border_color: Constants.control_color_border_default
 
                 styles.track_color: Constants.display_control_color_track
-                styles.accent_color: Constants.display_control_color_ink_active
+                styles.accent_color: Constants.display_control_color_active
 
                 border.width: 1
             }
@@ -180,11 +181,6 @@ StyledBox {
         }
 
         RowLayout {
-            visible: (opacity) > 0
-            opacity: (root.navigation_stack.length > 1) ? 1 : 0
-
-            Behavior on opacity { NumberAnimation { duration: 200 } }
-
             Layout.fillWidth: true
             Layout.leftMargin: root._padding
             Layout.rightMargin: root._padding
@@ -193,6 +189,10 @@ StyledBox {
             spacing: root._gap
 
             ClickableWithIcon {
+                visible: (opacity) > 0
+                opacity: (root.navigation_stack.length > 1) ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+
                 size: Constants.icon_size
                 padding: Constants.padding
                 radius: Constants.icon_size
@@ -218,6 +218,10 @@ StyledBox {
             }
 
             Item { Layout.fillWidth: true }
+
+            DisplayControl {
+                onClicked: Debug.log("Display Control Clicked")
+            }
         }
     }
 }

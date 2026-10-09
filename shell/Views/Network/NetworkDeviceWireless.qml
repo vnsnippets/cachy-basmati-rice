@@ -8,6 +8,7 @@ import Quickshell.Networking
 
 import qs
 import qs.Components
+import qs.Services
 
 ColumnLayout {
     id: root
@@ -50,9 +51,9 @@ ColumnLayout {
 
             readonly property color accent:
                 (!Networking.wifiEnabled) ? Constants.network_color_inactive :
-                    (root.is_scanning) ? Constants.network_color_critical : 
-                        Constants.network_color_active
-            
+                                            (root.is_scanning) ? Constants.network_color_critical :
+                                                                 Constants.network_color_active
+
             styles.background_color_idle: Qt.alpha(accent, 0.05)
             styles.background_color_active: accent
 
@@ -77,7 +78,7 @@ ColumnLayout {
 
             implicitHeight: Constants.size - (Constants.padding / 2)
             implicitWidth: Constants.size - (Constants.padding / 2)
-            
+
             padding: Constants.padding
 
             active: Networking.wifiEnabled
@@ -98,7 +99,7 @@ ColumnLayout {
                 if (root.device) root.device.scannerEnabled = false;
                 Networking.wifiEnabled = !Networking.wifiEnabled;
             }
-            
+
             radius: (active) ? Constants.icon_size : Constants.radius
             Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
         }
@@ -169,12 +170,12 @@ ColumnLayout {
 
                 readonly property color accent:
                     (network.is_critical) ? Constants.network_color_critical :
-                        (network.is_warning) ? Constants.network_color_warning :
-                            Constants.network_color_active
+                                            (network.is_warning) ? Constants.network_color_warning :
+                                                                   Constants.network_color_active
 
                 function forget() { modelData.forget(); }
                 function disconnect() { modelData.disconnect(); }
-                
+
                 function handleConnect() {
                     if (network.connected) {
                         network.disconnect();
@@ -222,11 +223,9 @@ ColumnLayout {
                             StyledText {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                                text: (Constants.network_hide_ssid) ? "Names are being hidden" : network.ssid
+                                text: (Constants.network_scramble_ssid) ? NetworkService.scramble(network.ssid) : network.ssid
                                 color: network.connected ? network.accent : Constants.network_color_ink_default
                                 elide: Text.ElideRight
-                                font.italic: Constants.network_hide_ssid
-                                opacity: (Constants.network_hide_ssid) ? 0.75 : 1
                             }
 
                             StyledText {
@@ -346,7 +345,7 @@ ColumnLayout {
 
                                 ClickableWithIcon {
                                     readonly property color accent: Constants.network_color_critical
-                                    
+
                                     size: (Constants.icon_size * 1.5) - (padding * 2)
                                     padding: Constants.padding / 1.5
 
@@ -402,7 +401,8 @@ ColumnLayout {
                                         styles.border_color_idle: Qt.alpha(accent, 0.5)
                                         styles.border_color_active: Qt.alpha(accent, 1)
 
-                                        palette.buttonText: (hovered || active) ? Constants.network_color_ink_active : accent
+                                        styles.text_color_idle: accent
+                                        styles.text_color_active: Constants.network_color_ink_active
 
                                         font.family: Constants.font_family
                                         text: (network.connected) ? "Disconnect" : (network.pskInputOngoing ? "Submit" : "Connect")
