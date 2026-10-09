@@ -4,10 +4,10 @@
 /usr/lib/xdg-desktop-portal-wlr &
 
 # Set the wallpaper using swaybg
-swaybg -i "$HOME/Pictures/Wallpapers/robot-wallpaper-3840x2160-abandoned-untamed-26625.jpg" -m fill &
+swaybg -i "$HOME/Pictures/Wallpapers/wallhaven-4d38m0.jpg" -m fill &
 
 # Launch Elephant and Walker service
 # elephant &
 # walker --gapplication-service &
 
-quickshell -p ~/.config/quickshell/Shell.qml &
+quickshell -p ~/.config/shell/Shell.qml &
