@@ -71,8 +71,8 @@ Rectangle {
                     size: Constants.size - Constants.padding * 2
                     iconname: item.modelData.connected ? "desktop-on.svg" : "desktop-off.svg"
                     active: item.modelData.connected
-                    styles.icon_color_idle: Constants.display_control_color_ink_muted
-                    styles.icon_color_active: Constants.display_control_color_ink_active
+                    styles.icon_color_idle: Constants.display_control_color_muted
+                    styles.icon_color_active: Constants.display_control_color_active
                 }
 
                 StyledText {
@@ -86,7 +86,7 @@ Rectangle {
                         return makeModel.length > 0 ? makeModel : (scr.name || "Display");
                     }
                     active: item.modelData.connected
-                    styles.color_idle: Constants.display_control_color_ink_muted
+                    styles.color_idle: Constants.display_control_color_muted
                     styles.color_active: Constants.display_control_color_ink_default
                     horizontalAlignment: Text.AlignLeft
                 }

@@ -40,7 +40,7 @@ Rectangle {
             size: Constants.toast_icon_size
             iconname: "brightness.svg"
             styles.icon_color_idle: Constants.display_control_color_ink_default
-            styles.icon_color_active: Constants.display_control_color_ink_active
+            styles.icon_color_active: Constants.display_control_color_active
         }
         
         StyledSlider {

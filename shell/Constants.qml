@@ -8,7 +8,7 @@ Singleton {
     readonly property SystemClock clock:                            SystemClock { precision: SystemClock.Minutes }
 
     readonly property string namespace:                             "shell.basmati.rice"
-    readonly property string icons_directory:                       "./Assets"
+    readonly property string icons_directory:                       "/Assets"
 
     readonly property int    font_size:                             14
     readonly property int    font_size_lg:                          font_size + 2
@@ -182,12 +182,13 @@ Singleton {
 
     // Widgets: Brightness
     readonly property color  display_control_color_track:           color_surface
+    readonly property color  display_control_color_active:          color_yellow
+    readonly property color  display_control_color_muted:           color_overlay
     readonly property color  display_control_color_ink_default:     color_text
-    readonly property color  display_control_color_ink_active:      color_yellow
-    readonly property color  display_control_color_ink_muted:       color_overlay
+    readonly property color  display_control_color_ink_active:      color_base
 
     // Network
-    readonly property bool   network_hide_ssid:                     false
+    readonly property bool   network_scramble_ssid:                     true
     readonly property real   network_threshold_warning:             0.50
     readonly property real   network_threshold_critical:            0.25
 
@@ -219,6 +220,8 @@ Singleton {
     readonly property color  bluetooth_color_active:                color_sapphire
     readonly property color  bluetooth_color_inactive:              color_surface
     readonly property color  bluetooth_color_critical:              color_red
+    readonly property color  bluetooth_color_saved:                 color_blue
+    readonly property color  bluetooth_color_secure:                color_green
     readonly property color  bluetooth_color_busy:                  color_yellow
 
     // Application Launchpad / Spotlight
