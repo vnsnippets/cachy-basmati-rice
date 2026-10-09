@@ -220,6 +220,7 @@ Singleton {
     readonly property color  bluetooth_color_active:                color_sapphire
     readonly property color  bluetooth_color_inactive:              color_surface
     readonly property color  bluetooth_color_critical:              color_red
+    readonly property color  bluetooth_color_success:               color_green
     readonly property color  bluetooth_color_busy:                  color_yellow
 
     // Application Launchpad / Spotlight

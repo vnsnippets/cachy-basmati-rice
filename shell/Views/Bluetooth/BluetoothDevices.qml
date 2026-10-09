@@ -2,11 +2,9 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Effects
 import QtQuick.Controls
 
 import Quickshell
-import Quickshell.Widgets
 import Quickshell.Bluetooth
 
 import qs
@@ -178,17 +176,20 @@ ColumnLayout {
                         device.connect();
                     } else {
                         device.modelData.trusted = true
-                        device.pair();
-                        // Quickshell.execDetached([
-                        //     "foot", "sh", "-c", 
-                        //     `(echo 'agent on'; echo 'default-agent'; echo 'pair ${device.address}'; cat) | bluetoothctl`
-                        // ]);
+                        // device.pair();
+                        Quickshell.execDetached([
+                            "foot", "sh", "-c", 
+                            `(echo 'agent on'; echo 'default-agent'; echo 'pair ${device.address}'; cat) | bluetoothctl`
+                        ]);
                     }
                 }
 
                 color: Constants.bluetooth_color_background
-                border.color: (connected) ? Qt.alpha(accent, 0.5) : Constants.bluetooth_color_border
+                border.color:  (modelData.blocked) ? Qt.alpha(Constants.bluetooth_color_critical, 0.5) :
+                    (connected) ? Qt.alpha(accent, 0.5) : Constants.bluetooth_color_border
                 border.width: 1
+
+                Behavior on border.color { ColorAnimation { duration: Constants.animation_duration } }
 
                 RowLayout {
                     id: device_content
@@ -200,11 +201,11 @@ ColumnLayout {
 
                     spacing: Constants.spacing
 
-                    IconControl {
-                        size: Constants.icon_size * 1.25
-                        source: device.icon + ".svg"
-                        tint: (device.connected) ? Constants.bluetooth_color_active : Constants.bluetooth_color_ink_muted
-                    }
+                    // IconControl {
+                    //     size: Constants.icon_size * 1.25
+                    //     source: "bluetooth/" + device.icon + ".svg"
+                    //     tint: (device.connected) ? Constants.bluetooth_color_active : Constants.bluetooth_color_ink_muted
+                    // }
 
                     Column {
                         spacing: 1
@@ -222,17 +223,15 @@ ColumnLayout {
                         StyledText {
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                            text: device.connection_state
+                            text: device.connection_state + (device.modelData.batteryAvailable ? ` | Battery: ${(device.modelData.battery * 100).toFixed(0)}%` : "") 
                             color: Constants.bluetooth_color_ink_muted
                             font.pixelSize: Constants.font_size - 1
                             visible: device.connection_state !== ""
                         }
                     }
-                    
-                    RowLayout {
+
+                    Row {
                         spacing: Constants.spacing
-                        Layout.fillHeight: true
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 
                         StyledText {
                             text: "Bonded: " + device.modelData.bonded
@@ -240,27 +239,56 @@ ColumnLayout {
                             font.pixelSize: Constants.font_size - 1
                             visible: device.connection_state !== ""
                         }
-                        StyledText {
-                            text: "Trusted: " + device.modelData.trusted
-                            color: Constants.bluetooth_color_ink_muted
-                            font.pixelSize: Constants.font_size - 1
-                            visible: device.connection_state !== ""
-                        }
-                        StyledText {
-                            text: "Blocked: " + device.modelData.blocked
-                            color: Constants.bluetooth_color_ink_muted
-                            font.pixelSize: Constants.font_size - 1
-                            visible: device.connection_state !== ""
-                        }
+                        
                         StyledText {
                             text: "Wake: " + device.modelData.wakeAllowed
                             color: Constants.bluetooth_color_ink_muted
                             font.pixelSize: Constants.font_size - 1
                             visible: device.connection_state !== ""
                         }
+
+                        ClickableWithIcon {
+                            Layout.fillHeight: true
+                            implicitWidth: implicitHeight
+
+                            active: device.modelData.blocked
+
+                            styles.border_color_idle: Qt.alpha(Constants.bluetooth_color_ink_muted, 0.5)
+                            styles.border_color_active: Constants.bluetooth_color_critical
+
+                            styles.icon_color_idle: Qt.alpha(Constants.bluetooth_color_ink_muted, 0.5)
+                            styles.icon_color_active: Constants.bluetooth_color_critical
+
+                            styles.border_width: 0
+                            radius: Constants.radius
+
+                            iconname: "block.svg"
+
+                            onClicked: device.modelData.blocked = !device.modelData.blocked
+                        }
+
+                        ClickableWithIcon {
+                            Layout.fillHeight: true
+                            implicitWidth: implicitHeight
+
+                            active: device.modelData.trusted
+
+                            styles.border_color_idle: Qt.alpha(Constants.bluetooth_color_ink_muted, 0.5)
+                            styles.border_color_active: Constants.bluetooth_color_success
+
+                            styles.icon_color_idle: Qt.alpha(Constants.bluetooth_color_ink_muted, 0.5)
+                            styles.icon_color_active: Constants.bluetooth_color_success
+
+                            styles.border_width: 0
+                            radius: Constants.radius
+
+                            iconname: "shield.svg"
+
+                            onClicked: device.modelData.trusted = !device.modelData.trusted
+                        }
                     }
 
-                    RowLayout {
+                    Row {
                         spacing: Constants.spacing
                         Layout.fillHeight: true
                         Layout.topMargin: device._padding * 2
