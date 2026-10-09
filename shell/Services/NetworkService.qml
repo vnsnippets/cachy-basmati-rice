@@ -68,8 +68,6 @@ Singleton {
             "sh", "-c",
             "nmcli -t -f SSID,FREQ dev wifi list"
         ], (e) => {
-            Debug.log(e);
-
             const lines = (e.output || "").split("\n");
             const networkMap = {};
 

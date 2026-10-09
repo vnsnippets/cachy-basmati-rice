@@ -203,7 +203,7 @@ StyledBox {
 
                 styles.border_width: 1
                 styles.border_color_idle: Constants.control_color_border_default
-                styles.border_color_active: Qt.alpha(Constants.control_color_ink_default, 0.20)
+                styles.border_color_active: Constants.control_color_ink_active
 
                 styles.icon_color_idle: Constants.control_color_ink_default
                 styles.icon_color_active: Constants.control_color_ink_active
