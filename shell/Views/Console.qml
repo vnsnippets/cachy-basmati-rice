@@ -20,11 +20,13 @@ import qs.Views.Applications
 
 StyledBox {
     id: root
+    property bool _ready: false
+
     readonly property int _gap: Constants.spacing / 1.5
     readonly property int _padding: Constants.padding * 3
     readonly property Component default_content: Launchpad { page_size: 8 }
 
-    property Component content: navigation_stack[root.navigation_stack.length - 1] ?? default_content
+    property Component content: root.navigation_stack.length > 0 ? root.navigation_stack[root.navigation_stack.length - 1] : root.default_content
     property list<Component> navigation_stack: [ default_content ]
 
     colors.background: Constants.console_color_background
@@ -35,18 +37,10 @@ StyledBox {
     implicitWidth: content_layout.implicitWidth
     implicitHeight: content_layout.implicitHeight + (root._padding * 2)
 
-    Behavior on implicitHeight {
-        NumberAnimation {
-            duration: Constants.animation_duration
-            easing.type: Easing.OutCubic
-        }
-    }
-
     function navigate(_content) {
         // Toggling back to default if re-selecting current content
         if (_content === root.content) {
             root.navigation_stack = [ root.default_content ];
-            root.content = root.default_content;
             return;
         }
 
@@ -61,7 +55,6 @@ StyledBox {
 
         // Reassign array to trigger QML property binding updates
         root.navigation_stack = filteredStack;
-        root.content = _content;
     }
 
     ColumnLayout {
@@ -172,12 +165,13 @@ StyledBox {
 
         // --- Main Container ---
         ContentContainer {
+            id: main_container
             Layout.fillWidth: true
-            Layout.preferredHeight: implicitHeight
+            Layout.preferredHeight: main_container.implicitHeight
             Layout.leftMargin: root._padding
             Layout.rightMargin: root._padding
             
-            content: root.navigation_stack.length > 0 ? root.navigation_stack[root.navigation_stack.length - 1] : root.default_content
+            content: (!root._ready) ? null : root.content
         }
 
         RowLayout {
@@ -210,9 +204,8 @@ StyledBox {
 
                 onClicked: {
                     if (root.navigation_stack.length > 1) {
-                        const newStack = root.navigation_stack.slice(0, -1);
-                        root.navigation_stack = newStack;
-                        root.content = newStack[newStack.length - 1];
+                        const updated_stack = root.navigation_stack.slice(0, -1);
+                        root.navigation_stack = updated_stack;
                     }
                 }
             }
@@ -224,4 +217,6 @@ StyledBox {
             }
         }
     }
+
+    Component.onCompleted: _ready = true
 }
