@@ -231,21 +231,10 @@ ColumnLayout {
                     }
 
                     Row {
+                        id: device_status
                         spacing: Constants.spacing
 
-                        StyledText {
-                            text: "Bonded: " + device.modelData.bonded
-                            color: Constants.bluetooth_color_ink_muted
-                            font.pixelSize: Constants.font_size - 1
-                            visible: device.connection_state !== ""
-                        }
-                        
-                        StyledText {
-                            text: "Wake: " + device.modelData.wakeAllowed
-                            color: Constants.bluetooth_color_ink_muted
-                            font.pixelSize: Constants.font_size - 1
-                            visible: device.connection_state !== ""
-                        }
+                        readonly property color muted: Qt.alpha(Constants.bluetooth_color_ink_muted, 0.5)
 
                         ClickableWithIcon {
                             Layout.fillHeight: true
@@ -253,10 +242,7 @@ ColumnLayout {
 
                             active: device.modelData.blocked
 
-                            styles.border_color_idle: Qt.alpha(Constants.bluetooth_color_ink_muted, 0.5)
-                            styles.border_color_active: Constants.bluetooth_color_critical
-
-                            styles.icon_color_idle: Qt.alpha(Constants.bluetooth_color_ink_muted, 0.5)
+                            styles.icon_color_idle: device_status.muted
                             styles.icon_color_active: Constants.bluetooth_color_critical
 
                             styles.border_width: 0
@@ -271,13 +257,42 @@ ColumnLayout {
                             Layout.fillHeight: true
                             implicitWidth: implicitHeight
 
+                            active: device.modelData.bonded
+
+                            styles.icon_color_idle: (active) ? Constants.bluetooth_color_saved : device_status.muted
+
+                            styles.border_width: 0
+                            radius: Constants.radius
+
+                            iconname: "bookmark-filled.svg"                            
+                            enabled: false
+                        }
+
+                        ClickableWithIcon {
+                            Layout.fillHeight: true
+                            implicitWidth: implicitHeight
+
+                            active: device.modelData.wakeAllowed
+
+                            styles.icon_color_idle: device_status.muted
+                            styles.icon_color_active: Constants.bluetooth_color_busy
+
+                            styles.border_width: 0
+                            radius: Constants.radius
+
+                            iconname: "bolt.svg"
+
+                            onClicked: device.modelData.wakeAllowed = !device.modelData.wakeAllowed
+                        }
+
+                        ClickableWithIcon {
+                            Layout.fillHeight: true
+                            implicitWidth: implicitHeight
+
                             active: device.modelData.trusted
 
-                            styles.border_color_idle: Qt.alpha(Constants.bluetooth_color_ink_muted, 0.5)
-                            styles.border_color_active: Constants.bluetooth_color_success
-
-                            styles.icon_color_idle: Qt.alpha(Constants.bluetooth_color_ink_muted, 0.5)
-                            styles.icon_color_active: Constants.bluetooth_color_success
+                            styles.icon_color_idle: device_status.muted
+                            styles.icon_color_active: Constants.bluetooth_color_secure
 
                             styles.border_width: 0
                             radius: Constants.radius

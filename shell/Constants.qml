@@ -8,7 +8,7 @@ Singleton {
     readonly property SystemClock clock:                            SystemClock { precision: SystemClock.Minutes }
 
     readonly property string namespace:                             "shell.basmati.rice"
-    readonly property string icons_directory:                       "./Assets"
+    readonly property string icons_directory:                       "/Assets"
 
     readonly property int    font_size:                             14
     readonly property int    font_size_lg:                          font_size + 2
@@ -220,7 +220,8 @@ Singleton {
     readonly property color  bluetooth_color_active:                color_sapphire
     readonly property color  bluetooth_color_inactive:              color_surface
     readonly property color  bluetooth_color_critical:              color_red
-    readonly property color  bluetooth_color_success:               color_green
+    readonly property color  bluetooth_color_saved:                 color_blue
+    readonly property color  bluetooth_color_secure:                color_green
     readonly property color  bluetooth_color_busy:                  color_yellow
 
     // Application Launchpad / Spotlight

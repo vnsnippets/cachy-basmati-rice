@@ -3,6 +3,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 
+import Quickshell
+
 import qs
 
 Button {
@@ -12,7 +14,7 @@ Button {
     required property string source
     required property color tint
 
-    readonly property string _path: (`../${Constants.icons_directory}/${source}`).replace("//", "/")
+    readonly property string _path: (`${Quickshell.shellDir}/${Constants.icons_directory}/${source}`).replace("//", "/")
 
     hoverEnabled: true
     antialiasing: true

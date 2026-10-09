@@ -1,11 +1,9 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls
 
 import Quickshell
 import Quickshell.Io
-import Quickshell.Networking
 
 import qs.Layouts
 import qs.Services
@@ -13,6 +11,8 @@ import qs.Utilities
 
 ShellRoot {
     id: shell
+
+    Component.onCompleted: Quickshell.env("")
 
     IpcHandler {
         target: "console"

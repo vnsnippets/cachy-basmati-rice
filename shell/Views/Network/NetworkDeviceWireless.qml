@@ -8,7 +8,6 @@ import Quickshell.Networking
 
 import qs
 import qs.Services
-import qs.Utilities
 import qs.Components
 
 ColumnLayout {
