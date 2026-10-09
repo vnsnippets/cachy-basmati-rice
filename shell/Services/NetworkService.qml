@@ -5,8 +5,11 @@ import QtQuick
 import Quickshell
 import Quickshell.Networking
 
+import qs.Utilities
+
 Singleton {
     id: root
+    property var channels: ({})
 
     // --- Hardwired / Ethernet Adapters ---
     
@@ -50,7 +53,50 @@ Singleton {
         return null;
     }
 
+    Component.onCompleted: root.refreshChannels()
+
+    Connections {
+        target: Networking.devices
+
+        // Triggers when network interfaces or state objects change
+        function onValuesChanged() { root.refreshChannels(); }
+    }
+
     // Utilities
+    function refreshChannels() {
+        Daemon.execute([
+            "sh", "-c",
+            "nmcli -t -f SSID,FREQ dev wifi list"
+        ], (e) => {
+            Debug.log(e);
+
+            const lines = (e.output || "").split("\n");
+            const networkMap = {};
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                const parts = line.split(":");
+                if (parts.length < 2) continue;
+
+                const ssid = parts[0].trim();
+                const freqStr = parts[1].trim();
+                const rawMHz = parseInt(freqStr.replace(/[^0-9]/g, "")) || 0;
+
+                if (ssid !== "" && rawMHz > 0) {
+                    const ghz = parseFloat((rawMHz / 1000).toFixed(2));
+                    if (!networkMap[ssid]) {
+                        networkMap[ssid] = ghz;
+                    }
+                }
+            }
+
+            // Reassign map to trigger QML bindings
+            root.channels = networkMap;
+        });
+    }
+
     function scramble(_ssid) {
         if (!_ssid) return "Hidden Network";
 

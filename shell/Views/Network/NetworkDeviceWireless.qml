@@ -7,8 +7,9 @@ import QtQuick.Controls
 import Quickshell.Networking
 
 import qs
-import qs.Components
 import qs.Services
+import qs.Utilities
+import qs.Components
 
 ColumnLayout {
     id: root
@@ -147,6 +148,8 @@ ColumnLayout {
                 readonly property bool is_critical: signal <= Constants.network_threshold_critical
                 readonly property bool is_warning: signal <= Constants.network_threshold_warning
 
+                property string channel: NetworkService.channels[ssid] ?? ""
+
                 // qmllint disable
                 readonly property bool requires_psk: [
                     WifiSecurityType.WpaPsk,
@@ -259,6 +262,14 @@ ColumnLayout {
 
                                 Behavior on opacity { NumberAnimation { duration: Constants.animation_duration } }
                                 Behavior on scale { NumberAnimation { duration: Constants.animation_duration; easing.type: Easing.OutCubic } }
+
+                                StyledText {
+                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                                    text: `${network.channel} GHz`
+                                    color: Constants.network_color_ink_muted
+                                    visible: network.channel.length > 0
+                                }
 
                                 ClickableWithIcon {
                                     size: Constants.font_size_lg
