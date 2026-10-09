@@ -12,7 +12,9 @@ import qs.Components
 import qs.Views.Audio
 import qs.Views.Display
 
+// qmllint disable
 PanelWindow {
+// qmllint enable
     id: container
 
     anchors.bottom: true
