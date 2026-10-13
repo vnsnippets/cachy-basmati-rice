@@ -257,21 +257,6 @@ ColumnLayout {
                             Layout.fillHeight: true
                             implicitWidth: implicitHeight
 
-                            active: device.modelData.bonded
-
-                            styles.icon_color_idle: (active) ? Constants.bluetooth_color_saved : device_status.muted
-
-                            styles.border_width: 0
-                            radius: Constants.radius
-
-                            iconname: "bookmark-filled.svg"                            
-                            enabled: false
-                        }
-
-                        ClickableWithIcon {
-                            Layout.fillHeight: true
-                            implicitWidth: implicitHeight
-
                             active: device.modelData.wakeAllowed
 
                             styles.icon_color_idle: device_status.muted
@@ -300,6 +285,21 @@ ColumnLayout {
                             iconname: "shield.svg"
 
                             onClicked: device.modelData.trusted = !device.modelData.trusted
+                        }
+
+                        ClickableWithIcon {
+                            Layout.fillHeight: true
+                            implicitWidth: implicitHeight
+
+                            active: device.modelData.bonded
+
+                            styles.icon_color_idle: (active) ? Constants.bluetooth_color_saved : device_status.muted
+
+                            styles.border_width: 0
+                            radius: Constants.radius
+
+                            iconname: "tag.svg"                            
+                            enabled: false
                         }
                     }
 
