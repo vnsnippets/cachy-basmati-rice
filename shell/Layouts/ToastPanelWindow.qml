@@ -11,6 +11,7 @@ import qs.Utilities
 import qs.Components
 import qs.Views.Audio
 import qs.Views.Display
+import qs.Views.Toasts
 
 // qmllint disable
 PanelWindow {
@@ -63,6 +64,15 @@ PanelWindow {
                 container.showPendingToast();
             }
         }
+
+        function onOsdDismissEvent() {
+            if (toast_item.state === "visible") {
+                timeout_toast.stop();
+                toast_item.state = "hidden";
+            } else if (toast_item.state === "hidden" && !transition_exit.running) {
+                container.showPendingToast();
+            }
+        }
     }
 
     function showPendingToast() {
@@ -83,14 +93,11 @@ PanelWindow {
 
     function getComponentForKey(key) {
         switch (key) {
-            case EventOrchestrator._AUDIO_OSD_EVENT_KEY:
-                return component_audio_osd;
-            case EventOrchestrator._BACKLIGHT_OSD_EVENT_KEY:
-                return component_backlight_osd
-            case EventOrchestrator._SCREEN_OSD_EVENT_KEY:
-                return component_display_osd
-            default:
-                return null;
+            case EventOrchestrator._VOLUME_CHANGE_EVENT:    return component_audio_osd;
+            case EventOrchestrator._BACKLIGHT_CHANGE_EVENT: return component_backlight_osd
+            case EventOrchestrator._DISPLAY_CHANGE_EVENT:   return component_display_osd
+            case EventOrchestrator._SCREEN_CAPTURE_EVENT:   return component_screen_capture_osd;
+            default:                                        return null;
         }
     }
 
@@ -192,7 +199,7 @@ PanelWindow {
                             container.showPendingToast();
                         } else {
                             toast_component.sourceComponent = null;
-                            EventOrchestrator.osdDismissEvent();
+                            EventOrchestrator.osdDismissCompleted();
                             Debug.log(container.screen.name, "[OSD]", "-", "Closed");
                         }
                     }
@@ -236,11 +243,10 @@ PanelWindow {
     Component {
         id: component_display_osd
 
-        DisplayOSDControl {
+        DisplayStatusToast {
             id: display_osd
-            border.width: 1
-            border.color: Constants.toast_color_border
-            color: Constants.toast_color_background
+            colors.border: Constants.toast_color_border
+            colors.background: Constants.toast_color_background
             radius: Constants.radius
 
             Binding {
@@ -248,6 +254,16 @@ PanelWindow {
                 property: "payload"
                 value: container.activePayload
             }
+        }
+    }
+
+    Component {
+        id: component_screen_capture_osd
+
+        ScreenCaptureToast {
+            colors.border: Constants.toast_color_border
+            colors.background: Constants.toast_color_background
+            radius: Constants.radius
         }
     }
 }

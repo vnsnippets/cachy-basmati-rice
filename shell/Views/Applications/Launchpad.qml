@@ -113,7 +113,7 @@ ColumnLayout {
         HoverHandler { cursorShape: Qt.IBeamCursor }
     }
 
-    ListApplications {
+    Applications {
         id: apps
         model: results        
         spacing: root.spacing
