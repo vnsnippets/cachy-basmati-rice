@@ -15,7 +15,7 @@ Singleton {
     readonly property string _POLKIT_REQUEST_EVENT: "POLKIT_REQUEST"
 
     signal osdDismissCompleted();
-    signal osdTriggerEvent(string key, var data);
+    signal osdTriggerEvent(string key, bool dismissive, var data);
     signal osdDismissEvent();
     
     signal notificationEvent(int timestamp, var data)

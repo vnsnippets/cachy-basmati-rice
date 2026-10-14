@@ -240,4 +240,5 @@ Singleton {
     // Screen Capture
     readonly property string screen_capture_command_region:         "$HOME/.config/mango/scripts/satty.sh --region --save"
     readonly property string screen_capture_command_full:           "$HOME/.config/mango/scripts/satty.sh --full --save"
+    readonly property string screen_capture_command_clipboard:      "$HOME/.config/mango/scripts/satty.sh --clipboard"
 }
