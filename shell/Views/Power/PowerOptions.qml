@@ -116,7 +116,7 @@ RowLayout {
                         elide: Text.ElideRight
                         maximumLineCount: 2
                         text: item.desc
-                        styles.color_idle: Qt.alpha(Constants.power_color_subtext, 0.75)
+                        styles.color_idle: Constants.power_color_ink_muted
                         styles.color_active: Constants.power_color_ink_default
                         active: item.active
                     }

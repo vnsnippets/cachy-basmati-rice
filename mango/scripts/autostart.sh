@@ -10,4 +10,4 @@ swaybg -i "$HOME/Pictures/Wallpapers/wallhaven-4d38m0.jpg" -m fill &
 # elephant &
 # walker --gapplication-service &
 
-quickshell -p ~/.config/shell/Shell.qml &
+QS_ICON_THEME="Adwaita" quickshell -p ~/.config/shell/Shell.qml &

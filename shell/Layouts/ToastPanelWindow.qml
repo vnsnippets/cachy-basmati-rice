@@ -11,6 +11,7 @@ import qs.Utilities
 import qs.Components
 import qs.Views.Audio
 import qs.Views.Display
+import qs.Views.Toasts
 
 // qmllint disable
 PanelWindow {
@@ -46,8 +47,13 @@ PanelWindow {
 
     Connections {
         target: EventOrchestrator
-        function onOsdTriggerEvent(key, payload) {
-            if (toast_item.state === "visible" && container.activeKey === key) {
+        function onOsdTriggerEvent(key, dismissive, payload) {
+            if (container.activeKey === key && dismissive) {
+                container.dismiss_current_toast();
+                return;
+            }
+
+            if (toast_item.state === "visible" && container.activeKey === key && !dismissive) {
                 container.activePayload = payload;
                 timeout_toast.restart();
                 return;
@@ -56,16 +62,22 @@ PanelWindow {
             container.pendingKey = key;
             container.pendingPayload = payload;
 
-            if (toast_item.state === "visible") {
-                timeout_toast.stop();
-                toast_item.state = "hidden";
-            } else if (toast_item.state === "hidden" && !transition_exit.running) {
-                container.showPendingToast();
-            }
+            container.dismiss_current_toast();
+        }
+
+        function onOsdDismissEvent() { container.dismiss_current_toast(); }
+    }
+
+    function dismiss_current_toast() {
+        if (toast_item.state === "visible") {
+            timeout_toast.stop();
+            toast_item.state = "hidden";
+        } else if (toast_item.state === "hidden" && !transition_exit.running) {
+            container.show_next_toast();
         }
     }
 
-    function showPendingToast() {
+    function show_next_toast() {
         if (!container.pendingKey) return;
 
         container.activeKey = container.pendingKey;
@@ -74,23 +86,20 @@ PanelWindow {
         container.pendingKey = "";
         container.pendingPayload = null;
 
-        toast_component.sourceComponent = container.getComponentForKey(container.activeKey);
+        toast_component.sourceComponent = container.get_component(container.activeKey);
         toast_item.state = "visible";
         timeout_toast.restart();
 
         Debug.log(container.screen.name, "[OSD]", "-", "Open", `(${container.activeKey.toUpperCase()})`);
     }
 
-    function getComponentForKey(key) {
+    function get_component(key) {
         switch (key) {
-            case EventOrchestrator._AUDIO_OSD_EVENT_KEY:
-                return component_audio_osd;
-            case EventOrchestrator._BACKLIGHT_OSD_EVENT_KEY:
-                return component_backlight_osd
-            case EventOrchestrator._SCREEN_OSD_EVENT_KEY:
-                return component_display_osd
-            default:
-                return null;
+            case EventOrchestrator._VOLUME_CHANGE_EVENT:    return component_audio_osd;
+            case EventOrchestrator._BACKLIGHT_CHANGE_EVENT: return component_backlight_osd
+            case EventOrchestrator._DISPLAY_CHANGE_EVENT:   return component_display_osd
+            case EventOrchestrator._SCREEN_CAPTURE_EVENT:   return component_screen_capture_osd;
+            default:                                        return null;
         }
     }
 
@@ -189,10 +198,10 @@ PanelWindow {
                         container.activePayload = null;
                         
                         if (container.pendingKey !== "") {
-                            container.showPendingToast();
+                            container.show_next_toast();
                         } else {
                             toast_component.sourceComponent = null;
-                            EventOrchestrator.osdDismissEvent();
+                            EventOrchestrator.osdDismissCompleted();
                             Debug.log(container.screen.name, "[OSD]", "-", "Closed");
                         }
                     }
@@ -236,11 +245,10 @@ PanelWindow {
     Component {
         id: component_display_osd
 
-        DisplayOSDControl {
+        DisplayStatusToast {
             id: display_osd
-            border.width: 1
-            border.color: Constants.toast_color_border
-            color: Constants.toast_color_background
+            colors.border: Constants.toast_color_border
+            colors.background: Constants.toast_color_background
             radius: Constants.radius
 
             Binding {
@@ -248,6 +256,16 @@ PanelWindow {
                 property: "payload"
                 value: container.activePayload
             }
+        }
+    }
+
+    Component {
+        id: component_screen_capture_osd
+
+        ScreenCaptureToast {
+            colors.border: Constants.toast_color_border
+            colors.background: Constants.toast_color_background
+            radius: Constants.radius
         }
     }
 }

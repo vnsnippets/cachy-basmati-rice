@@ -3,6 +3,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 
+import Quickshell
+
 import qs
 
 Button {
@@ -35,7 +37,7 @@ Button {
     property Styles styles: Styles {}
 
     readonly property int _animationDuration: Constants.animation_duration
-    readonly property string _icon_path: (`../${Constants.icons_directory}/${iconname}`).replace("//", "/")
+    readonly property string _icon_path: (`${Quickshell.shellDir}/${Constants.icons_directory}/${iconname}`).replace("//", "/")
 
     padding: 0
     hoverEnabled: true
