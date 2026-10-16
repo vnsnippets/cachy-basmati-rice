@@ -63,14 +63,16 @@ Item {
             delegate: Clickable {
                 id: monitor
 
+                property point click_offset: Qt.point(0, 0)
+
                 required property var modelData
                 
                 readonly property string name: modelData?.name ?? "Unknown Port"
                 readonly property string model: modelData?.model ?? "Unknown Model"
                 readonly property bool is_enabled: modelData?.enabled ?? false
 
-                readonly property int pos_x: modelData?.position?.x ?? (modelData?.x ?? 0)
-                readonly property int pos_y: modelData?.position?.y ?? (modelData?.y ?? 0)
+                readonly property int pos_x: (is_dragging) ? dragged_x : modelData?.position?.x ?? (modelData?.x ?? 0)
+                readonly property int pos_y: (is_dragging) ? dragged_y : modelData?.position?.y ?? (modelData?.y ?? 0)
 
                 // Single call to helper functions (scale is already factored inside them)
                 readonly property real base_width: root.get_monitor_width(modelData)
@@ -81,6 +83,44 @@ Item {
 
                 width: base_width * root.scale_factor
                 height: base_height * root.scale_factor
+
+                property bool is_dragging: false
+                property int dragged_x: pos_x
+                property int dragged_y: pos_y
+
+                acceptedButtons: Qt.LeftButton
+                        
+                onPressed: (mouse) => {
+                    is_dragging = true;
+                    let mouse_position = mapToItem(canvas, mouse.x, mouse.y);
+                    click_offset = Qt.point(mouse_position.x - monitor.x, mouse_position.y - monitor.y);
+                }
+
+                onPositionChanged: (mouse) => {
+                    if (!is_dragging) return;
+                    
+                    let mouse_position = mapToItem(canvas, mouse.x, mouse.y);
+                    let new_pos_x = mouse_position.x - click_offset.x;
+                    let new_pox_y = mouse_position.y - click_offset.y;
+
+                    // Convert canvas pixels back to logical coordinates
+                    let logical_x = root.bounds.min_x + (new_pos_x - root.offset_x) / root.scale_factor;
+                    let logical_y = root.bounds.min_y + (new_pox_y - root.offset_y) / root.scale_factor;
+
+                    dragged_x = Math.round(logical_x);
+                    dragged_y = Math.round(logical_y);
+                }
+
+                onReleased: {
+                    if (!is_dragging) return;
+                    
+                    if (!modelData.position) modelData.position = {};
+                    modelData.position.x = dragged_x;
+                    modelData.position.y = dragged_y;
+
+                    is_dragging = false;
+                    root.monitors = [...root.monitors];
+                }
 
                 Rectangle {
                     anchors.fill: parent
