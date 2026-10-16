@@ -212,8 +212,10 @@ StyledBox {
 
             Item { Layout.fillWidth: true }
 
-            DisplayControl {
-                onClicked: Debug.log("Display Control Clicked")
+            DisplayControl {                
+                active: root.content === display_management
+                onClicked: root.navigate(display_management)
+                Component { id: display_management; DisplayManagement { implicitHeight: 400; } }
             }
         }
     }
