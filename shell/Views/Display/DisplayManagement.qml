@@ -113,13 +113,16 @@ Item {
 
                 onReleased: {
                     if (!is_dragging) return;
-                    
-                    if (!modelData.position) modelData.position = {};
-                    modelData.position.x = dragged_x;
-                    modelData.position.y = dragged_y;
-
                     is_dragging = false;
-                    root.monitors = [...root.monitors];
+
+                    root.monitors = root.monitors.map(m => {
+                        if (m === modelData || (m.name && m.name === modelData.name)) {
+                            return Object.assign({}, m, {
+                                position: { x: dragged_x, y: dragged_y }
+                            });
+                        }
+                        return m;
+                    });
                 }
 
                 Rectangle {
