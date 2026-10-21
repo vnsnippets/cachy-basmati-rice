@@ -35,7 +35,7 @@ ClickableWithIcon {
                 
                 return {
                     icon:           icons[safeIndex],
-                    label:          (Constants.network_hide_ssid) ? "" : NetworkService.activeNetwork.name,
+                    label:          (Constants.network_scramble_ssid) ? NetworkService.scramble(NetworkService.activeNetwork.name) : NetworkService.activeNetwork.name,
                     highlighted:    (iscritical || iswarning),
                     accent:         (iscritical) ? Constants.network_color_critical :
                                         (iswarning) ? Constants.network_color_warning :
@@ -65,7 +65,8 @@ ClickableWithIcon {
     styles.border_color_idle: Constants.control_color_border_default
     styles.border_color_active: datamap.accent
 
-    palette.buttonText: (hovered || active) ? Constants.network_color_ink_active : datamap.accent
+    styles.text_color_idle: datamap.accent
+    styles.text_color_active: Constants.network_color_ink_active
 
     font.family: Constants.font_family
     text: datamap?.label ?? ""

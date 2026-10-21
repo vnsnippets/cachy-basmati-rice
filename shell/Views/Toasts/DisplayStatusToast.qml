@@ -6,7 +6,7 @@ import QtQuick.Layouts
 import qs
 import qs.Components
 
-Rectangle {
+StyledBox {
     id: control
 
     property var payload: null
@@ -67,12 +67,10 @@ Rectangle {
                 spacing: Constants.spacing
 
                 // Static icon using ClickableWithIcon
-                ClickableWithIcon {
+                IconControl {
                     size: Constants.size - Constants.padding * 2
-                    iconname: item.modelData.connected ? "desktop-on.svg" : "desktop-off.svg"
-                    active: item.modelData.connected
-                    styles.icon_color_idle: Constants.display_control_color_ink_muted
-                    styles.icon_color_active: Constants.display_control_color_ink_active
+                    source: item.modelData.connected ? "desktop-on.svg" : "desktop-off.svg"
+                    tint: (item.modelData.connected) ? Constants.display_control_color_active : Constants.display_control_color_muted
                 }
 
                 StyledText {
@@ -86,7 +84,7 @@ Rectangle {
                         return makeModel.length > 0 ? makeModel : (scr.name || "Display");
                     }
                     active: item.modelData.connected
-                    styles.color_idle: Constants.display_control_color_ink_muted
+                    styles.color_idle: Constants.display_control_color_muted
                     styles.color_active: Constants.display_control_color_ink_default
                     horizontalAlignment: Text.AlignLeft
                 }

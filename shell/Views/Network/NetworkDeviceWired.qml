@@ -62,7 +62,7 @@ ColumnLayout {
                 readonly property string connection_state: (modelData?.state) ? ConnectionState.toString(modelData.state) : ""
                 // qmllint enable
 
-                readonly property color accent_color: Constants.network_color_active
+                readonly property color accent: Constants.network_color_active
 
                 function forget() { modelData.forget(); }
                 function disconnect() { modelData.disconnect(); }
@@ -77,7 +77,7 @@ ColumnLayout {
                 }
 
                 color: Constants.network_color_background
-                border.color: (connected) ? Qt.alpha(accent_color, 0.5) : Constants.network_color_border
+                border.color: (connected) ? Qt.alpha(accent, 0.5) : Constants.network_color_border
                 border.width: 1
 
                 ColumnLayout {
@@ -99,7 +99,7 @@ ColumnLayout {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                                 text: network.name
-                                color: network.connected ? network.accent_color : Constants.network_color_ink_default
+                                color: network.connected ? network.accent : Constants.network_color_ink_default
                                 elide: Text.ElideRight
                             }
 
@@ -163,23 +163,24 @@ ColumnLayout {
                                         implicitWidth: 96
                                         Layout.fillHeight: true
 
-                                        readonly property color accent_color: (network.connected) ? Constants.network_color_critical : Constants.network_color_active
+                                        readonly property color accent: (network.connected) ? Constants.network_color_critical : Constants.network_color_active
 
                                         padding: Constants.padding / 1.5
                                         leftPadding: Constants.padding
                                         rightPadding: Constants.padding
 
-                                        styles.background_color_idle: Qt.alpha(accent_color, 0.2)
-                                        styles.background_color_active: Qt.alpha(accent_color, 1)
+                                        styles.background_color_idle: Qt.alpha(accent, 0.2)
+                                        styles.background_color_active: Qt.alpha(accent, 1)
 
-                                        styles.icon_color_idle: accent_color
+                                        styles.icon_color_idle: accent
                                         styles.icon_color_active: Constants.network_color_ink_active
 
                                         styles.border_width: 1
-                                        styles.border_color_idle: Qt.alpha(accent_color, 0.5)
-                                        styles.border_color_active: Qt.alpha(accent_color, 1)
+                                        styles.border_color_idle: Qt.alpha(accent, 0.5)
+                                        styles.border_color_active: Qt.alpha(accent, 1)
 
-                                        palette.buttonText: (hovered || active) ? Constants.network_color_ink_active : accent_color
+                                        styles.text_color_idle: accent
+                                        styles.text_color_active: Constants.network_color_ink_active
 
                                         font.family: Constants.font_family
                                         text: (network.connected) ? "Disconnect" : "Connect"

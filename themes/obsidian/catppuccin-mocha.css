@@ -1,0 +1,340 @@
+/* Catppuccin Mocha Theme for Obsidian */
+
+.theme-dark {
+  /* --- Core Palette (Mocha) --- */
+  --ctp-rosewater: #f5e0dc;
+  --ctp-flamingo: #f2cdcd;
+  --ctp-pink: #f5c2e7;
+  --ctp-mauve: #cba6f7;
+  --ctp-red: #f38ba8;
+  --ctp-maroon: #eba0ac;
+  --ctp-peach: #fab387;
+  --ctp-yellow: #f9e2af;
+  --ctp-green: #a6e3a1;
+  --ctp-teal: #94e2d5;
+  --ctp-sky: #89dceb;
+  --ctp-sapphire: #74c7ec;
+  --ctp-blue: #89b4fa;
+  --ctp-lavender: #b4befe;
+
+  --ctp-text: #cdd6f4;
+  --ctp-subtext1: #bac2de;
+  --ctp-subtext0: #a6adc8;
+  --ctp-overlay2: #9399b2;
+  --ctp-overlay1: #7f849c;
+  --ctp-overlay0: #6c7086;
+  --ctp-surface2: #585b70;
+  --ctp-surface1: #45475a;
+  --ctp-surface0: #313244;
+  --ctp-base: #1e1e2e;
+  --ctp-mantle: #181825;
+  --ctp-crust: #11111b;
+
+  --ink-accent: var(--ctp-mauve);
+
+  /* --- Obsidian UI Color Mapping --- */
+  --background-primary: var(--ctp-base);
+  --background-primary-alt: var(--ctp-mantle);
+  --background-secondary: var(--ctp-mantle);
+  --background-secondary-alt: var(--ctp-crust);
+  --background-modifier-border: var(--ctp-surface0);
+  --background-modifier-form-field: var(--ctp-surface0);
+
+  /* Text & Headers */
+  --text-normal: var(--ctp-text);
+  --text-muted: var(--ctp-subtext0);
+  --text-faint: var(--ctp-overlay0);
+
+  --heading-formatting: var(--ctp-overlay1);
+  --h1-color: var(--ctp-red);
+  --h2-color: var(--ctp-peach);
+  --h3-color: var(--ctp-yellow);
+  --h4-color: var(--ctp-green);
+  --h5-color: var(--ctp-blue);
+  --h6-color: var(--ctp-lavender);
+
+  /* Links & Accents */
+  --accent-h: 267;
+  --accent-s: 84%;
+  --accent-l: 81%;
+  --color-accent: var(--ink-accent);
+  --color-accent-hover: var(--ctp-pink);
+
+  --link-color: var(--ctp-sapphire);
+  --link-color-hover: var(--ctp-sky);
+  --link-external-color: var(--ctp-teal);
+  --link-external-color-hover: var(--ctp-green);
+
+  /* Code & Syntax */
+  --code-background: var(--ctp-surface0);
+  --code-normal: var(--ctp-text);
+  --code-comment: var(--ctp-overlay0);
+  --code-function: var(--ctp-blue);
+  --code-keyword: var(--ink-accent);
+  --code-operator: var(--ctp-sky);
+  --code-property: var(--ctp-lavender);
+  --code-string: var(--ctp-green);
+  --code-value: var(--ctp-peach);
+
+  /* Selection & Controls */
+  --text-selection: rgba(180, 190, 254, 0.25);
+  --interactive-normal: var(--ctp-surface0);
+  --interactive-hover: var(--ctp-surface1);
+  --interactive-accent: var(--ink-accent);
+  --interactive-accent-hover: var(--ctp-pink);
+
+  /* Form Controls */
+  --input-bg: var(--ctp-surface0);
+  --input-shadow-insert: inset 0 0 0 1px var(--ctp-surface1);
+  --dropdown-background: var(--ctp-surface0);
+}
+
+/* --- Base UI Adjustments --- */
+.workspace-leaf-header-title {
+  color: var(--ctp-subtext1);
+}
+
+.markdown-rendered code,
+.cm-s-obsidian span.cm-inline-code {
+  color: var(--ctp-rosewater);
+}
+
+/* --- Scrollbars --- */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- Modals & Settings Container --- */
+.modal {
+  border-radius: 10px;
+  border: 1.5px solid var(--ctp-surface0);
+  box-shadow: none !important;
+}
+
+.modal.mod-settings {
+  background-color: var(--ctp-base);
+  scrollbar-width: 10px; /* Firefox support */
+}
+
+/* Close Button in Settings Header */
+.modal-close-button {
+  color: var(--ctp-overlay0);
+}
+
+.modal-close-button:hover {
+  color: var(--ctp-red);
+}
+
+/* --- Settings Navigation Tabs --- */
+
+/* Sidebar background inside Settings modal */
+.modal.mod-settings .vertical-tabs-container {
+  background-color: var(--ctp-mantle);
+  border-right: none !important;
+}
+
+/* Tab Category Headers */
+.vertical-tab-header-group-title {
+  color: var(--ctp-subtext0);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+/* Default / Inactive Tab Buttons */
+.vertical-tab-nav-item {
+  color: var(--ctp-subtext1);
+  border-radius: 4px;
+  margin: 2px 4px;
+  padding: 8px 8px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Hovered Tab */
+.vertical-tab-nav-item:hover {
+  background-color: var(--ctp-surface0);
+  color: var(--ctp-text);
+}
+
+/* Active Tab */
+.vertical-tab-nav-item.is-active {
+  background-color: var(--ctp-surface0) !important;
+  color: var(--ink-accent);
+  font-weight: 500;
+}
+
+.vertical-tab-nav-item.is-active:hover {
+  background-color: var(--ctp-surface2);
+  color: var(--ctp-pink);
+}
+
+/* --- Buttons --- */
+
+/* Standard Buttons in Settings */
+.setting-item-control button,
+.modal button {
+  background-color: var(--ctp-base);
+  color: var(--ctp-text);
+  border: none;
+  box-shadow: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.setting-item-control button:hover,
+.modal button:hover {
+  background-color: var(--ctp-surface0);
+  border-color: var(--ctp-overlay0);
+  color: var(--ctp-text);
+}
+
+/* Primary / CTA Buttons */
+.setting-item-control button.mod-cta,
+.modal button.mod-cta {
+  background-color: var(--ink-accent);
+  color: var(--ctp-crust);
+  border: none;
+  font-weight: 600;
+}
+
+.setting-item-control button.mod-cta:hover,
+.modal button.mod-cta:hover {
+  background-color: var(--ctp-pink);
+  color: var(--ctp-crust);
+}
+
+/* Destructive Buttons */
+.setting-item-control button.mod-warning,
+.modal button.mod-warning {
+  background-color: var(--ctp-red);
+  color: var(--ctp-crust);
+  border: none;
+}
+
+.setting-item-control button.mod-warning:hover,
+.modal button.mod-warning:hover {
+  background-color: var(--ctp-maroon);
+}
+
+/* --- Toggle Switches --- */
+.checkbox-container {
+  background-color: var(--ctp-surface0);
+}
+
+.checkbox-container.is-enabled {
+  background-color: var(--ink-accent);
+}
+
+.checkbox-container:after {
+  background-color: var(--ctp-crust);
+}
+
+/* --- Dropdowns & Inputs --- */
+.setting-item-control select,
+.setting-item-control input[type="text"],
+.setting-item-control input[type="search"] {
+  background-color: var(--ctp-base) !important;
+  color: var(--ctp-text) !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 4px;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.setting-item-control select:hover,
+.setting-item-control input[type="text"]:focus,
+.setting-item-control input[type="search"]:focus {
+  border-color: var(--ink-accent);
+}
+
+.setting-item-control select:focus,
+.setting-item-control select:focus-visible,
+.setting-item-control select:active,
+.setting-item-control input[type="text"]:focus,
+.setting-item-control input[type="search"]:focus {
+  box-shadow: none !important;
+  outline: none !important;
+  border: none !important;
+  background-color: var(--ctp-surface0) !important;
+}
+
+/* --- Sliders (Tracks & Handles) --- */
+input[type="range"] {
+  background-color: var(--ctp-surface0) !important;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 16px;
+  border-radius: 4px;
+  background-color: var(--color-accent);
+  cursor: pointer;
+  border: 2px solid var(--ctp-base);
+  box-shadow: 0 2px 4px rgba(17, 17, 27, 0.4);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  background-color: var(--ctp-pink) !important;
+}
+
+/* --- Canvas --- */
+.canvas-card-menu {
+  padding: 8px;
+  gap: 4px !important;
+  height: auto !important;
+  border: 1px solid var(--background-modifier-border) !important;
+}
+
+.canvas-card-menu .canvas-card-menu-button {
+  --icon-size: 20px !important;
+  border-radius: 4px;
+  padding: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.canvas-card-menu .canvas-card-menu-button:hover {
+  /* background-color: color-mix(in srgb, var(--background-modifier-hover), transparent 70%); */
+  background-color: var(--background-modifier-hover);
+}
+
+.canvas-card-menu .canvas-card-menu-button.mod-draggable {
+  cursor: pointer;
+}
+
+.canvas-card-menu .canvas-card-menu-button.mod-draggable:hover svg {
+  transform: none;
+}
+
+.canvas-card-menu .canvas-card-menu-button svg {
+    fill: none !important;
+}
+
+/* .canvas-card-menu .clickable-icon {
+  padding: 4px !important;
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 4px;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+} */
+
+/* .canvas-card-menu .clickable-icon svg {
+  width: 12px !important;
+  height: 12px !important;
+} */
+
+/* 2. Remove the upward translation (bounce) on hover */
+/* .canvas-card-menu .clickable-icon:hover {
+  transform: none !important; 
+} */
+
+/* 3. Add a light background shade on hover */
+/* Uses Obsidian's native variable for theme-agnostic styling */
+/* .canvas-card-menu .clickable-icon:hover {
+  background-color: var(--background-modifier-hover) !important;
+  color: var(--text-normal) !important;
+} */

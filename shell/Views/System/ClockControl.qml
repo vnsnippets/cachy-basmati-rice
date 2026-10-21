@@ -6,7 +6,7 @@ import qs.Components
 
 ColumnLayout {
     id: content
-    spacing: 2
+    spacing: 0
     
     StyledText {
         verticalAlignment: Text.AlignVCenter

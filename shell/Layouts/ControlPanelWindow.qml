@@ -70,13 +70,6 @@ PanelWindow {
             }
         }
 
-        Behavior on implicitHeight { 
-            NumberAnimation { 
-                duration: Constants.animation_duration / 2
-                easing.type: Easing.Linear 
-            } 
-        }
-
         TapHandler {
             gesturePolicy: TapHandler.WithinBounds
             onTapped: (event) => event.accepted = true
