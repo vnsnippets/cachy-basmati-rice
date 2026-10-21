@@ -8,6 +8,7 @@ import Quickshell.Io
 import qs.Layouts
 import qs.Services
 import qs.Utilities
+import qs.Widgets
 
 ShellRoot {
     id: shell
@@ -75,6 +76,9 @@ ShellRoot {
             ToastPanelWindow { screen: scope.screen; visible: scope.osd_active; }
             NotificationPanelWindow { screen: scope.screen; }
             // PolkitControl { screen: scope.screen; }
+
+            // --- Desktop Background Clock ---
+            DesktopDateWidget { screen: scope.screen }
 
             // --- Central Console Loader ---
             LazyLoader {

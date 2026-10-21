@@ -4,7 +4,8 @@
 /usr/lib/xdg-desktop-portal-wlr &
 
 # Set the wallpaper using swaybg
-swaybg -i "$HOME/Pictures/Wallpapers/wallhaven-4d38m0.jpg" -m fill &
+# swaybg -i "$HOME/Pictures/Wallpapers/wallhaven-4d38m0.jpg" -m fill &
+swaybg -i "$HOME/Pictures/Wallpapers/gardens-interactive-statues.jpg" -m fill &
 
 # Launch Elephant and Walker service
 # elephant &
