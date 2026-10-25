@@ -3,8 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 
-import Quickshell.Wayland
-
 import qs
 import qs.Layouts
 import qs.Utilities
@@ -159,7 +157,7 @@ StyledBox {
             }
 
             KeepAwakeControl {
-                inhibitor: IdleInhibitor { id: component_idle_inhibitor }
+                inhibitor: Daemon.idle_inhibitor
             }
         }
 

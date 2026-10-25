@@ -22,11 +22,11 @@ wlr-randr --output eDP-1 --off
 wlr-randr --output eDP-1 --on --pos 0,0 --mode 1920x1080 --output HDMI-A-1 --on --pos 0,0 --mode 1920x1080
 
 # Idling and wake
-swayidle -w \\
-  timeout 15 'brightnessctl --save --exponent=4 set 10%' \\
-    resume 'brightnessctl --restore --exponent=2' \\
-  timeout 30 '~/.config/mango/scripts/sleep.sh --sleep' \\
-    resume '~/.config/mango/scripts/sleep.sh --wake'\
+swayidle -w \                                                          
+  timeout 5 'brightnessctl --save --exponent=4 set 10%' \
+    resume 'brightnessctl --restore' \
+  timeout 10 '$HOME/.config/mango/scripts/screen-ctl.sh --sleep' \
+    resume '$HOME/.config/mango/scripts/screen-ctl.sh --wake'
 
 # Symbolic Linking
 ln -sf <source-path> <target-path>

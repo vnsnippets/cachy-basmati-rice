@@ -7,6 +7,7 @@ import Quickshell
 import Quickshell.Wayland
 
 import qs
+import qs.Utilities
 import qs.Components
 
 // qmllint disable
@@ -38,10 +39,9 @@ PanelWindow {
 
         StyledText {
             id: timeText
-            text: Qt.formatDateTime(Constants.clock.date, "dddd, MMMM dd")
+            text: Qt.formatDateTime(Daemon.clock.date, "dddd, MMMM dd")
             font.pixelSize: 36
             color: Constants.color_light
-            // Optional: add subtle shadow/outline for readability against wallpapers
         }
     }
 

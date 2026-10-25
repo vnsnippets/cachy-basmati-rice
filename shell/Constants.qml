@@ -5,8 +5,6 @@ import QtQuick
 import Quickshell
 
 Singleton {
-    readonly property SystemClock clock:                            SystemClock { precision: SystemClock.Minutes }
-
     readonly property string namespace:                             "shell.basmati.rice"
     readonly property string icons_directory:                       "/Assets"
 

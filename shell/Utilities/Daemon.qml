@@ -1,12 +1,20 @@
 pragma ComponentBehavior: Bound
 pragma Singleton
 
+import Quickshell.Wayland
+
 import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Services
+import qs.Utilities
+
 Singleton {
     id: daemon
+
+    readonly property IdleInhibitor idle_inhibitor: IdleInhibitor { }
+    readonly property SystemClock clock: SystemClock { precision: SystemClock.Minutes }
 
     property var threads: []
 
@@ -27,16 +35,13 @@ Singleton {
         Process {
             id: thread
             property var callback: null
-            property int _exitCode: 0
             
             readonly property alias _stdoutCollector: stdoutColl
             readonly property alias _stderrCollector: stderrColl
 
-            environment: ({ LANG: "C.UTF-8", LC_ALL: "C.UTF-8" })
             stdout: StdioCollector { id: stdoutColl }
             stderr: StdioCollector { id: stderrColl }
 
-            onExited: (code) => { _exitCode = code; }
 
             onRunningChanged: {
                 if (running) return;
@@ -48,14 +53,16 @@ Singleton {
                     }
                 }
 
+                const log = _stdoutCollector.text.trim();
+                const err = _stderrCollector.text.trim();
+
                 if (callback) {
-                    const result = { 
-                        success: _exitCode === 0, 
-                        output: _stdoutCollector.text.trim(), 
-                        error: _stderrCollector.text.trim(), 
-                        exitCode: _exitCode 
+                    const result = {
+                        success: !(err && err.length > 0), 
+                        output: log, 
+                        error: err, 
                     };
-                    callback(result, _exitCode);
+                    callback(result);
                 }
 
                 thread.destroy(); 
