@@ -88,7 +88,16 @@ StyledBox {
                 Layout.maximumWidth: Constants.network_control_max_width
                 active: root.content === network_devices
                 onClicked: root.navigate(network_devices)
-                Component { id: network_devices; NetworkDevices { } }
+
+                Component { 
+                    id: network_devices
+                    NetworkDevices { onOptionsViewClicked: root.navigate(network_options) }
+                }
+
+                Component {
+                    id: network_options
+                    NetworkDeviceSaved { Layout.fillWidth: true }
+                }
             }
 
             BatteryControl {

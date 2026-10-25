@@ -11,7 +11,7 @@ import qs.Components
 
 ColumnLayout {
     id: root
-    spacing: Constants.spacing
+    spacing: Constants.padding
 
     property var networks: []
     property bool isLoading: false
@@ -66,10 +66,13 @@ ColumnLayout {
 
     Component.onCompleted: root.getnetworks();
 
+    
     StyledText {
-        text: "PREVIOUSLY SAVED (" + root.networks.length + ")"
+        Layout.topMargin: (Constants.padding * 1.5)
+        Layout.alignment: Qt.AlignVCenter
+        text: "PREVIOUSLY SAVED NETWORKS"
         color: Constants.tab_color_ink_muted
-        font.pixelSize: Constants.font_size_sm
+        font.weight: 600
     }
 
     // --- Content Loader ---
