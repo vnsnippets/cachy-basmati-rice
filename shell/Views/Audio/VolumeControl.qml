@@ -40,12 +40,12 @@ Rectangle {
             id: mutetoggle
             size: Constants.toast_icon_size
             iconname: {
-                if (PipewireService.defaultSink?.audio.muted) return "volume-muted.svg";
+                if (PipewireService.defaultSink?.audio.muted) return "Volume-Muted.svg";
 
                 const volume = PipewireService.defaultSink?.audio.volume;
-                if (!volume || volume === 0) return "volume-off.svg";
+                if (!volume || volume === 0) return "Volume-Off.svg";
 
-                const icons = [ "volume-low.svg", "volume-high.svg" ];
+                const icons = [ "Volume-Low.svg", "Volume-High.svg" ];
 
                 const targetIndex = Math.floor(volume * icons.length);
                 const safeIndex = Math.min(Math.max(0, targetIndex), icons.length - 1);

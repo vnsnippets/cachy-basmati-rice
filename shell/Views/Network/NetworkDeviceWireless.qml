@@ -93,7 +93,7 @@ ColumnLayout {
             styles.border_color_idle: Qt.alpha(accent, 0.5)
             styles.border_color_active: accent
 
-            iconname: "power.svg"
+            iconname: "Power.svg"
 
             onClicked: {
                 if (root.device) root.device.scannerEnabled = false;

@@ -69,7 +69,7 @@ StyledBox {
                 // Static icon using ClickableWithIcon
                 IconControl {
                     size: Constants.size - Constants.padding * 2
-                    source: item.modelData.connected ? "desktop-on.svg" : "desktop-off.svg"
+                    source: item.modelData.connected ? "Desktop-On.svg" : "Desktop-Off.svg"
                     tint: (item.modelData.connected) ? Constants.display_control_color_active : Constants.display_control_color_muted
                 }
 

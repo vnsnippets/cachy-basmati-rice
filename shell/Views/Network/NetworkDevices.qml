@@ -31,7 +31,7 @@ ColumnLayout {
             Layout.alignment: Qt.AlignVCenter
             padding: 0
             size: Constants.icon_size
-            iconname: "settings.svg"
+            iconname: "Settings.svg"
 
             styles.icon_color_idle: Constants.color_subtext
             styles.icon_color_active: Constants.color_text

@@ -74,7 +74,7 @@ ColumnLayout {
             size: 20
             padding: 12
             anchors.verticalCenter: parent.verticalCenter
-            iconname: "search.svg"
+            iconname: "Search.svg"
             enabled: false
             icon_color: Qt.alpha(Constants.spotlight_color_ink_muted, (search_text_field.activeFocus) ? 0.60: 0.20)
         }

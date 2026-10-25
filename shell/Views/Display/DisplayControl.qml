@@ -10,7 +10,7 @@ ClickableWithIcon {
     padding: Constants.padding
     radius: Constants.icon_size
 
-    iconname: "desktop.svg"
+    iconname: "Desktop.svg"
 
     styles.background_color_idle: Constants.control_color_background_default
 

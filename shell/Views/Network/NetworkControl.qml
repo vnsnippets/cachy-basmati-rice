@@ -31,7 +31,7 @@ ClickableWithIcon {
             if (!Networking.wifiEnabled) return "WiFi-Off.svg";
 
             const type = NetworkService.activeNetwork?.device.type;
-            if (type === DeviceType.Wired) return "ethernet.svg";
+            if (type === DeviceType.Wired) return "Ethernet.svg";
 
             if (type === DeviceType.Wifi) {
                 const targetIndex = Math.floor(NetworkService.activeNetwork.signalStrength * icons.length);

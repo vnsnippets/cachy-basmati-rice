@@ -96,7 +96,7 @@ ColumnLayout {
             styles.border_color_idle: Constants.bluetooth_color_active
             styles.border_color_active: Constants.bluetooth_color_active
 
-            iconname: "power.svg"
+            iconname: "Power.svg"
 
             onClicked: if (root.adapter) {
                 root.adapter.discovering = false;
