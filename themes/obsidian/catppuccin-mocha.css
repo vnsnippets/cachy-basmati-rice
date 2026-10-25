@@ -82,6 +82,7 @@
   --interactive-hover: var(--ctp-surface1);
   --interactive-accent: var(--ink-accent);
   --interactive-accent-hover: var(--ctp-pink);
+  --nav-item-radius: 2px;
 
   /* Form Controls */
   --input-bg: var(--ctp-surface0);
@@ -92,6 +93,14 @@
 /* --- Base UI Adjustments --- */
 .workspace-leaf-header-title {
   color: var(--ctp-subtext1);
+}
+
+.workspace-leaf.mod-active .tree-item-self.has-focus {
+  box-shadow: 0 0 0 1px var(--background-modifier-border-focus) !important;
+}
+
+.workspace-leaf.mod-active .tree-item-self.has-focus:focus-within {
+  box-shadow: 0 0 0 1px var(--interactive-accent) !important;
 }
 
 .markdown-rendered code,
