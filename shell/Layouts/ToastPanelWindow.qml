@@ -90,7 +90,7 @@ PanelWindow {
         toast_item.state = "visible";
         timeout_toast.restart();
 
-        Debug.log(container.screen.name, "[OSD]", "-", "Open", `(${container.activeKey.toUpperCase()})`);
+        Debug.log(`[${container.screen.name}][OSD]`, "\t", `(${container.activeKey.toUpperCase()})`);
     }
 
     function get_component(key) {
@@ -202,7 +202,6 @@ PanelWindow {
                         } else {
                             toast_component.sourceComponent = null;
                             EventOrchestrator.osdDismissCompleted();
-                            Debug.log(container.screen.name, "[OSD]", "-", "Closed");
                         }
                     }
                 }

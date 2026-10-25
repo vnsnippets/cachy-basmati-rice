@@ -21,7 +21,6 @@ ShellRoot {
             MangoIPCService.current_monitor((e) => {
                 const targetscreen = Quickshell.screens.find((s) => s.name === e.monitor);
                 if (!targetscreen) return false;
-                Debug.log("-----");
                 EventOrchestrator.consoleToggleEvent(targetscreen);
             });
         }
@@ -53,20 +52,20 @@ ShellRoot {
                 // --- Console Events ---
                 function onConsoleToggleEvent(targetscreen) {
                     if (scope.console_open) {
-                        Debug.log(`[${targetscreen.name}] -> [${scope.screen.name}]`, "Scope ::", "Console Toggle Event : Closing");
+                        Debug.log(`[${targetscreen.name}] Scope \t`, "Console Toggle Event : Closing");
                         EventOrchestrator.consoleDismissContentEvent();
                         return;
                     }
 
                     if (targetscreen === scope.screen) {
-                        Debug.log(`[${targetscreen.name}] -> [${scope.screen.name}]`, "Scope ::", "Console Toggle Event : Opening");
+                        Debug.log(`[${targetscreen.name}] Scope \t`, "Console Toggle Event : Opening");
                         scope.console_open = true;
                     }
                 }
 
                 function onConsoleCloseCompleted(targetscreen) {
                     if (targetscreen === scope.screen) {
-                        Debug.log(`[${targetscreen.name}] -> [${scope.screen.name}]`, "Scope ::", "Console Toggle Event : Closed");
+                        Debug.log(`[${targetscreen.name}] Scope \t`, "Console Toggle Event : Closed");
                         scope.console_open = false;
                         gc();
                     }

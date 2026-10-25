@@ -126,7 +126,8 @@ Singleton {
     readonly property int    notification_timeout:                  15000
 
     readonly property color  notification_color_background:         color_mantle
-    readonly property color  notification_color_border:             color_overlay
+    readonly property color  notification_color_border_muted:       Qt.alpha(color_overlay, 0.75)
+    readonly property color  notification_color_border:             Qt.alpha(default_color_accent, 0.6)
 
     readonly property color  notification_color_ink_default:        color_text
     readonly property color  notification_color_ink_critical:       color_red

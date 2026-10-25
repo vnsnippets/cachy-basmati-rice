@@ -70,7 +70,7 @@ Rectangle {
             stepSize: 5
 
             styles.track_color: control.styles.track_color
-            styles.accent_color: (PipewireService.defaultSink.audio.muted) ? 
+            styles.accent_color: (PipewireService.defaultSink?.audio.muted) ? 
                 Qt.alpha(control.styles.accent_color, 0.25) : control.styles.accent_color
                 
             size: 12

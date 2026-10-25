@@ -64,10 +64,7 @@ Singleton {
 
     // Utilities
     function refreshChannels() {
-        Daemon.execute([
-            "sh", "-c",
-            "nmcli -t -f SSID,FREQ dev wifi list"
-        ], (e) => {
+        Daemon.execute(["sh", "-c", "nmcli -t -f SSID,FREQ dev wifi list"], (e) => {
             const lines = (e.output || "").split("\n");
             const networkMap = {};
 
