@@ -7,7 +7,7 @@ import Quickshell.Networking
 
 import qs
 import qs.Layouts
-import qs.Components
+import qs.Services
 
 ContentTabContainer {
     id: container
@@ -80,6 +80,6 @@ ContentTabContainer {
 
     Component {
         id: network_options_component
-        Item {}
+        NetworkDeviceSaved { Layout.fillWidth: true }
     }
 }

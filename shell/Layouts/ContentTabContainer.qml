@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs
+import qs.Layouts
 import qs.Services
 import qs.Components
 
@@ -21,14 +22,16 @@ ColumnLayout {
     component Options: QtObject {
         property string icon: "settings.svg"
         property Component view: null
+        property bool active: false
     }
 
     property Options options: Options {}
 
-    implicitHeight: tab_bar_flickable.implicitHeight + swipe_view.implicitHeight + spacing
-    
     RowLayout {
-        Layout.topMargin: Constants.padding * 1.5
+        id: title_bar
+        Layout.topMargin: (Constants.padding * 1.5)
+
+        readonly property int offset: implicitHeight + Layout.topMargin
 
         StyledText {
             Layout.alignment: Qt.AlignVCenter
@@ -48,173 +51,194 @@ ColumnLayout {
             size: Constants.icon_size
             iconname: root.options.icon
 
+            active: root.options.active
+
             styles.icon_color_idle: Constants.color_subtext
             styles.icon_color_active: Constants.color_text
 
-            onClicked: {}
+            onClicked: {
+                root.options.active = !root.options.active
+            }
         }
     }
 
-    // --- TAB BAR ---
-    Flickable {
-        id: tab_bar_flickable
-
+    ContentContainer {
+        id: main_container
         Layout.fillWidth: true
-        Layout.topMargin: Constants.padding
+        readonly property bool show_options: (root.options.view !== null && root.options.active)     
+        content: (show_options) ? root.options.view : tab_view_component
+    }
 
-        implicitHeight: tab_row.implicitHeight
+    Component {
+        id: tab_view_component
 
-        contentWidth: tab_row.implicitWidth
-        contentHeight: tab_row.implicitHeight
+        ColumnLayout {
+            spacing: Constants.padding
 
-        boundsBehavior: Flickable.StopAtBounds
-        flickableDirection: Flickable.HorizontalFlick
-        clip: true
+            // --- TAB BAR ---
+            Flickable {
+                id: tab_bar_flickable
 
-        Row {
-            id: tab_row
-            spacing: Constants.spacing
+                Layout.fillWidth: true
+                Layout.topMargin: Constants.padding
 
-            Repeater {
-                model: root.tabs
+                implicitHeight: tab_row.implicitHeight
 
-                delegate: Clickable {
-                    id: tab_item
-                    required property int index
-                    required property string name
+                contentWidth: tab_row.implicitWidth
+                contentHeight: tab_row.implicitHeight
 
-                    readonly property bool is_selected: root.currentIndex === index
+                boundsBehavior: Flickable.StopAtBounds
+                flickableDirection: Flickable.HorizontalFlick
+                clip: true
 
-                    implicitWidth: tab_text.implicitWidth
-                    implicitHeight: tab_text.implicitHeight
+                Row {
+                    id: tab_row
+                    spacing: Constants.spacing
 
-                    StyledText {
-                        id: tab_text
-                        anchors.centerIn: parent
-                        text: tab_item.name.toUpperCase() ?? ""
-                        styles.color_idle: Constants.tab_color_ink_inactive
-                        styles.color_active: Constants.tab_color_ink_active
-                        active: tab_item.is_selected
-                        font.weight: (active) ? 800 : 600
-                    }
+                    Repeater {
+                        model: root.tabs
 
-                    onClicked: {
-                        if (root.currentIndex !== index && !tabTransitionAnim.running) {
-                            root._pendingIndex = index;
-                            tabTransitionAnim.start();
+                        delegate: Clickable {
+                            id: tab_item
+                            required property int index
+                            required property string name
+
+                            readonly property bool is_selected: root.currentIndex === index
+
+                            implicitWidth: tab_text.implicitWidth
+                            implicitHeight: tab_text.implicitHeight
+
+                            StyledText {
+                                id: tab_text
+                                anchors.centerIn: parent
+                                text: tab_item.name.toUpperCase() ?? ""
+                                styles.color_idle: Constants.tab_color_ink_inactive
+                                styles.color_active: Constants.tab_color_ink_active
+                                active: tab_item.is_selected
+                                font.weight: (active) ? 800 : 600
+                            }
+
+                            onClicked: {
+                                if (root.currentIndex !== index && !tabTransitionAnim.running) {
+                                    root._pendingIndex = index;
+                                    tabTransitionAnim.start();
+                                }
+                            }
                         }
                     }
                 }
             }
-        }
-    }
 
-    // --- SWIPE VIEW ---
-    SwipeView {
-        id: swipe_view
+            // --- SWIPE VIEW ---
+            SwipeView {
+                id: swipe_view
 
-        Layout.fillWidth: true
-        clip: true
+                Layout.fillWidth: true
+                clip: true
 
-        interactive: false
-        currentIndex: 0
+                interactive: false
+                currentIndex: 0
 
-        Behavior on implicitHeight {
-            NumberAnimation {
-                duration: Constants.animation_duration
-                easing.type: Easing.OutCubic
+                Behavior on implicitHeight {
+                    NumberAnimation {
+                        duration: Constants.animation_duration
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                Repeater {
+                    model: root.tabs
+
+                    delegate: Loader {
+                        id: tab_content
+                        
+                        required property int index
+                        required property Component template
+                        required property var context
+
+                        // Load active and pending targets
+                        active: swipe_view.currentIndex === index || root._pendingIndex === index
+                        sourceComponent: template
+                        
+                        // Pass properties cleanly to the loaded component
+                        Binding {
+                            target: tab_content.item
+                            property: "context"
+                            value: tab_content.context ?? null
+                            when: tab_content.status === Loader.Ready && tab_content.item !== null
+                        }
+                    }
+                }
             }
-        }
 
-        Repeater {
-            model: root.tabs
+            // --- SEQUENCED TAB TRANSITION (Gives clean gap between tabs) ---
+            SequentialAnimation {
+                id: tabTransitionAnim
 
-            delegate: Loader {
-                id: tab_content
-                
-                required property int index
-                required property Component template
-                required property var context
+                // Step 1: Fade and slightly slide OUT current tab
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: swipe_view
+                        property: "opacity"
+                        to: 0.0
+                        duration: Constants.animation_duration / 2
+                        easing.type: Easing.InCubic
+                    }
+                    NumberAnimation {
+                        target: swipe_view
+                        property: "scale"
+                        to: 0.98
+                        duration: Constants.animation_duration / 2
+                        easing.type: Easing.InCubic
+                    }
+                }
 
-                // Load active and pending targets
-                active: swipe_view.currentIndex === index || root._pendingIndex === index
-                sourceComponent: template
-                
-                // Pass properties cleanly to the loaded component
-                Binding {
-                    target: tab_content.item
-                    property: "context"
-                    value: tab_content.context ?? null
-                    when: tab_content.status === Loader.Ready && tab_content.item !== null
+                // Step 2: Swap tab index instantly while hidden
+                ScriptAction {
+                    script: {
+                        if (root._pendingIndex !== -1) {
+                            root.currentIndex = root._pendingIndex;
+                            swipe_view.currentIndex = root._pendingIndex;
+                            root._pendingIndex = -1;
+                        }
+                    }
+                }
+
+                // Step 3: Fade and slide IN new tab
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: swipe_view
+                        property: "opacity"
+                        to: 1.0
+                        duration: Constants.animation_duration
+                        easing.type: Easing.OutCubic
+                    }
+                    NumberAnimation {
+                        target: swipe_view
+                        property: "scale"
+                        to: 1.0
+                        duration: Constants.animation_duration
+                        easing.type: Easing.OutCubic
+                    }
                 }
             }
         }
     }
 
-    // --- SEQUENCED TAB TRANSITION (Gives clean gap between tabs) ---
-    SequentialAnimation {
-        id: tabTransitionAnim
-
-        // Step 1: Fade and slightly slide OUT current tab
-        ParallelAnimation {
-            NumberAnimation {
-                target: swipe_view
-                property: "opacity"
-                to: 0.0
-                duration: Constants.animation_duration / 2
-                easing.type: Easing.InCubic
-            }
-            NumberAnimation {
-                target: swipe_view
-                property: "scale"
-                to: 0.98
-                duration: Constants.animation_duration / 2
-                easing.type: Easing.InCubic
-            }
-        }
-
-        // Step 2: Swap tab index instantly while hidden
-        ScriptAction {
-            script: {
-                if (root._pendingIndex !== -1) {
-                    root.currentIndex = root._pendingIndex;
-                    swipe_view.currentIndex = root._pendingIndex;
-                    root._pendingIndex = -1;
-                }
-            }
-        }
-
-        // Step 3: Fade and slide IN new tab
-        ParallelAnimation {
-            NumberAnimation {
-                target: swipe_view
-                property: "opacity"
-                to: 1.0
-                duration: Constants.animation_duration
-                easing.type: Easing.OutCubic
-            }
-            NumberAnimation {
-                target: swipe_view
-                property: "scale"
-                to: 1.0
-                duration: Constants.animation_duration
-                easing.type: Easing.OutCubic
-            }
-        }
-    }
+    
 
     // --- DISMISSAL HANDLING ---
     Connections {
         target: EventOrchestrator
         function onConsoleDismissContentEvent() {
-            dismissAnimation.start();
+            is_dismissing.start();
         }
     }
 
     SequentialAnimation {
-        id: dismissAnimation
+        id: is_dismissing
         NumberAnimation {
-            target: swipe_view
+            target: root
             property: "opacity"
             to: 0.0
             duration: Constants.animation_duration
