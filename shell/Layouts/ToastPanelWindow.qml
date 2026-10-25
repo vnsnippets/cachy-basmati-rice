@@ -90,7 +90,7 @@ PanelWindow {
         toast_item.state = "visible";
         timeout_toast.restart();
 
-        Debug.log(`[${container.screen.name}][Toast]`, "\t", `${container.activeKey.toUpperCase()}`);
+        Debug.log([container.screen.name, "Toast"], container.activeKey.toUpperCase());
     }
 
     function get_component(key) {

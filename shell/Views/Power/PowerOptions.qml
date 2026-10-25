@@ -125,7 +125,7 @@ RowLayout {
             }
 
             onClicked: {
-                Debug.log("[Power Menu] Executing System Action: " + command)
+                Debug.log(["Power Menu"], "Executing System Action: " + command)
                 Quickshell.execDetached({ command: command });
             }
         }

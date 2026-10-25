@@ -33,7 +33,7 @@ Singleton {
     function sleep_monitor(name) {
         if (!name) return;
 
-        Debug.log("[Mango IPC][Monitor] \tSleep", name);
+        Debug.log(["Mango IPC", "Monitor"], "Sleep", name);
         Daemon.execute(["mmsg", "dispatch", "sleep_monitor,", name]);
         // Daemon.execute(["wlr-randr", "--output", name, "--dpms", "off"]);
     }
@@ -41,7 +41,7 @@ Singleton {
     function wake_monitor(name) {
         if (!name) return;
 
-        Debug.log("[Mango IPC][Monitor] \tWake", name);
+        Debug.log(["Mango IPC", "Monitor"], "Wake", name);
         Daemon.execute(["mmsg", "dispatch", "wakeup_monitor,", name]);
         // Daemon.execute(["wlr-randr", "--output", name, "--dpms", "on"]);
     }
@@ -70,7 +70,6 @@ Singleton {
     //     connected: true
 
     //     onConnectedChanged: {
-    //         Debug.log("[Mango IPC]", `(${Quickshell.env("MANGO_INSTANCE_SIGNATURE")})`, connected ? "Connected." : "Connection Dropped.");
     //         if (connected) {
     //             this.write("watch all-monitors\n")
     //         }
@@ -79,7 +78,6 @@ Singleton {
     //     parser: SplitParser {
     //         splitMarker: "\n"
     //         onRead: (msg) => {
-    //             Debug.log("[Watch All Monitors] Triggered.")
     //         }
     //     }
     // }

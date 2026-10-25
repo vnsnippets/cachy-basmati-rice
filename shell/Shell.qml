@@ -52,20 +52,20 @@ ShellRoot {
                 // --- Console Events ---
                 function onConsoleToggleEvent(targetscreen) {
                     if (scope.console_open) {
-                        Debug.log(`[${targetscreen.name}][Console] \t`, "Event Trigger: Closing");
+                        Debug.log([targetscreen.name, "Console"], "Event: Closing");
                         EventOrchestrator.consoleDismissContentEvent();
                         return;
                     }
 
                     if (targetscreen === scope.screen) {
-                        Debug.log(`[${targetscreen.name}][Console] \t`, "Event Trigger: Opening");
+                        Debug.log([targetscreen.name, "Console"], "Event: Opening");
                         scope.console_open = true;
                     }
                 }
 
                 function onConsoleCloseCompleted(targetscreen) {
                     if (targetscreen === scope.screen) {
-                        Debug.log(`[${targetscreen.name}][Console] \t`, "Event Trigger: Close Completed");
+                        Debug.log([targetscreen.name, "Console"], "Event: Closed");
                         scope.console_open = false;
                         gc();
                     }

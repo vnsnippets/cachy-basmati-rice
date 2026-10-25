@@ -89,7 +89,7 @@ PanelWindow {
             onClicked: {
                 dismiss_timeout.stop();
                 const defaultAction = modelData.actions.find(a => a && (a.identifier === "default" || a.id === "default"));
-                Debug.log(`[${container.screen.name}][Notification] \t`, delegate_item.modelData.appName, "", "Default Action");
+                Debug.log([container.screen.name, "Notification"], delegate_item.modelData.appName, "", "Default Action");
 
                 if (defaultAction) {
                     MangoIPCService.clients((clients) => {
@@ -99,10 +99,10 @@ PanelWindow {
                                 MangoIPCService.dispatch(["focusid", `client, ${target.id}`]);
                                 defaultAction.invoke();
                             } else {
-                                Debug.log(`[${container.screen.name}][Notification] \t`, "Could not match notification to an active Mango client");
+                                Debug.log([container.screen.name, "Notification"], "Could not match notification to an active Mango client");
                             }
                         } catch (err) {
-                            Debug.log(`[${container.screen.name}][Notification] \t`, "Failed open target client:", err);
+                            Debug.log([container.screen.name, "Notification"], "Failed open target client:", err);
                         }
                     });
                     return;
@@ -355,7 +355,7 @@ PanelWindow {
             ]
 
             Component.onCompleted: {
-                Debug.log(`[${container.screen.name}][Notification] \t`, delegate_item.modelData.appName, "| ID:", delegate_item.modelData.id);
+                Debug.log([container.screen.name, "Notification"], delegate_item.modelData.appName, "| ID:", delegate_item.modelData.id);
                 state = "visible"
             }
         }

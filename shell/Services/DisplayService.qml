@@ -38,7 +38,7 @@ Singleton {
                     const parsed = JSON.parse(res.output);
                     result = Array.isArray(parsed) ? parsed : [];
                 } catch (e) {
-                    Debug.log("[WLR-RANDR] \t", "Failed to parse JSON:", e);
+                    Debug.log([ "WLR-RANDR" ], "Failed to parse JSON:", e);
                 }
             }
 

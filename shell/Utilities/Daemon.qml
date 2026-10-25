@@ -89,7 +89,7 @@ Singleton {
         readonly property int low_brightness_level: 10
 
         onIsIdleChanged: {
-            Debug.log("[Idle Monitor] \t", (isIdle) ? `Lowering brightness to ${low_brightness_level}%` : `Restoring brightness to ${cached_brightness}%`);
+            Debug.log(["Idle Monitor"], (isIdle) ? `Lowering brightness to ${low_brightness_level}%` : `Restoring brightness to ${cached_brightness}%`);
 
             if (isIdle) {
                 cached_brightness = (brightness_is_cached) ? cached_brightness : BacklightService.brightness;
@@ -108,7 +108,7 @@ Singleton {
         enabled: !daemon.idle_inhibitor.enabled
 
         onIsIdleChanged: {
-            Debug.log("[Idle Monitor] \t", (isIdle) ? "Sleeping monitors" : "Waking Monitors");
+            Debug.log(["Idle Monitor"], (isIdle) ? "Sleeping monitors" : "Waking Monitors");
 
             if (isIdle) 
                 Quickshell.screens.map((e) => {
