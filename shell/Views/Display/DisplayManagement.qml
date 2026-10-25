@@ -167,7 +167,7 @@ Item {
             padding: (root.zoomed) ? Constants.padding : (Constants.padding / 1.5)
 
             size: 32
-            iconname: "capture-screen.svg"
+            iconname: "Capture-Screen.svg"
             radius: Constants.radius
 
             styles.icon_color_idle: Constants.color_subtext

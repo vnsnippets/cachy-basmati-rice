@@ -17,7 +17,7 @@ StyledBox {
 
     readonly property list<var> options: [
         { 
-            vector: "capture-region.svg",
+            vector: "Capture-Region.svg",
             disabled: false,
             command: () => {
                 EventOrchestrator.osdDismissEvent(); 
@@ -27,7 +27,7 @@ StyledBox {
             } 
         },
         { 
-            vector: "capture-screen.svg",
+            vector: "Capture-Screen.svg",
             disabled: false,
             command: () => {
                 EventOrchestrator.osdDismissEvent(); 
@@ -37,7 +37,7 @@ StyledBox {
             } 
         },
         { 
-            vector: "capture-image.svg",
+            vector: "Capture-Image.svg",
             disabled: !control.clipboard_holds_image,
             command: () => {
                 EventOrchestrator.osdDismissEvent(); 
@@ -47,7 +47,7 @@ StyledBox {
             } 
         },
         { 
-            vector: "dismiss.svg",
+            vector: "Dismiss.svg",
             disabled: false,
             command: () => { 
                 EventOrchestrator.osdDismissEvent(); 

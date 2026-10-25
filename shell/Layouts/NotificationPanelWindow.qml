@@ -214,7 +214,7 @@ PanelWindow {
 
                         ClickableWithIcon {
                             size: 16
-                            iconname: "dismiss.svg"
+                            iconname: "Dismiss.svg"
                             styles.icon_color_idle: Constants.notification_color_ink_muted
                             styles.icon_color_active: Constants.notification_color_ink_critical
 

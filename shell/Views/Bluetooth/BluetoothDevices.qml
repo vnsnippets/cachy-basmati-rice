@@ -416,7 +416,7 @@ ColumnLayout {
                             styles.icon_color_idle: accent
                             styles.icon_color_active: Constants.bluetooth_color_ink_active
 
-                            iconname: "dismiss.svg"
+                            iconname: "Dismiss.svg"
                             radius: Constants.radius
 
                             onClicked: device.forget()

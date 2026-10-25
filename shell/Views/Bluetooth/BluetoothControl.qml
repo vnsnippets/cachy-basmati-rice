@@ -16,34 +16,34 @@ ClickableWithIcon {
 
     component DatamapModel: QtObject {
         property string label: "Bluetooth"
-        property string icon: "bluetooth-off.svg"
+        property string icon: "Bluetooth-Off.svg"
         property color accent: Constants.bluetooth_color_critical
     }
 
     QtObject {
         id: states
         property DatamapModel enabling: DatamapModel {
-            icon: "bluetooth-on.svg"
+            icon: "Bluetooth-On.svg"
             accent: Constants.bluetooth_color_busy
         }
         property DatamapModel disabling: DatamapModel {
-            icon: "bluetooth-off.svg"
+            icon: "Bluetooth-Off.svg"
             accent: Constants.bluetooth_color_busy
         }
         property DatamapModel disabled: DatamapModel {
-            icon: "bluetooth-off.svg"
+            icon: "Bluetooth-Off.svg"
             accent: Constants.bluetooth_color_ink_default
         }
         property DatamapModel enabled: DatamapModel {
-            icon: "bluetooth-on.svg"
+            icon: "Bluetooth-On.svg"
             accent: Constants.bluetooth_color_active
         }
         property DatamapModel blocked: DatamapModel {
-            icon: "bluetooth-off.svg"
+            icon: "Bluetooth-Error.svg"
             accent: Constants.bluetooth_color_critical
         }
         property DatamapModel unknown: DatamapModel {
-            icon: "bluetooth-error.svg"
+            icon: "Bluetooth-Error.svg"
             accent: Constants.bluetooth_color_critical
         }
     }

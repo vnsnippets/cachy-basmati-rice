@@ -15,21 +15,24 @@ ClickableWithIcon {
     readonly property real batterypercentage: root.device.percentage
 
     component DatamapModel: QtObject {
-        property string icon:   "battery-empty.svg"
+        property string icon:   "Battery-Empty.svg"
         property color accent:  Constants.battery_color_charging
     }
 
     property DatamapModel datamap: DatamapModel {
         readonly property list<string> icons: [
-            "battery-empty.svg",
-            "battery-low.svg",
-            "battery-medium.svg",
-            "battery-high.svg",
-            "battery-full.svg"
+            "Battery-Empty.svg",
+            "Battery-01.svg",
+            "Battery-02.svg",
+            "Battery-03.svg",
+            "Battery-04.svg",
+            "Battery-05.svg",
+            "Battery-06.svg",
+            "Battery-Full.svg",
         ]
 
         icon: {
-            if (root.charging) return "battery-charge.svg";
+            if (root.charging) return "Battery-Charge.svg";
             const targetIndex = Math.floor(root.batterypercentage * icons.length);
             const safeIndex = Math.min(Math.max(0, targetIndex), icons.length - 1);
             return icons[safeIndex];

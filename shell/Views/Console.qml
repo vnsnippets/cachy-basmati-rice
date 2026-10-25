@@ -202,7 +202,7 @@ StyledBox {
                 padding: Constants.padding
                 radius: Constants.icon_size
 
-                iconname: "arrow-left.svg"
+                iconname: "Arrow-Left.svg"
 
                 styles.background_color_idle: Constants.control_color_background_default
 

@@ -12,7 +12,7 @@ ClickableWithIcon {
     id: root
 
     component DatamapModel: QtObject {
-        property string icon: "wifi-error.svg"
+        property string icon: "WiFi-Empty.svg"
         property string label: ""
         property bool highlighted: false
         property color accent: Constants.network_color_ink_default
@@ -20,15 +20,15 @@ ClickableWithIcon {
 
     property DatamapModel datamap: DatamapModel {
         readonly property list<string> icons: [
-            "wifi-empty.svg",
-            "wifi-low.svg",
-            "wifi-medium.svg",
-            "wifi-high.svg",
-            "wifi-full.svg"
+            "WiFi-Empty.svg",
+            "WiFi-Low.svg",
+            "WiFi-Medium.svg",
+            "WiFi-High.svg",
+            "WiFi-Full.svg"
         ]
 
         icon: {
-            if (!Networking.wifiEnabled) return "wifi-disconnect.svg";
+            if (!Networking.wifiEnabled) return "WiFi-Off.svg";
 
             const type = NetworkService.activeNetwork?.device.type;
             if (type === DeviceType.Wired) return "ethernet.svg";
@@ -39,7 +39,7 @@ ClickableWithIcon {
                 return icons[safeIndex];
             }
 
-            return "wifi-disconnect.svg";
+            return "WiFi-Empty.svg";
         }
 
         label: {
@@ -105,5 +105,6 @@ ClickableWithIcon {
     text: datamap?.label ?? ""
 
     radius: (active) ? Constants.icon_size : Constants.radius
+    
     Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 }

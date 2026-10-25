@@ -369,7 +369,7 @@ ColumnLayout {
                                     styles.border_color_idle: Qt.alpha(accent, 0.5)
                                     styles.border_color_active: Qt.alpha(accent, 1)
 
-                                    iconname: "dismiss.svg"
+                                    iconname: "Dismiss.svg"
                                     radius: Constants.radius
 
                                     onClicked: network.pskInputOngoing = false;
