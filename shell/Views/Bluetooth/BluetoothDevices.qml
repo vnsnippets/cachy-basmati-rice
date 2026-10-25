@@ -248,7 +248,7 @@ ColumnLayout {
                             styles.border_width: 0
                             radius: Constants.radius
 
-                            iconname: "block.svg"
+                            iconname: "Block.svg"
 
                             onClicked: device.modelData.blocked = !device.modelData.blocked
                         }
@@ -265,7 +265,7 @@ ColumnLayout {
                             styles.border_width: 0
                             radius: Constants.radius
 
-                            iconname: "bolt.svg"
+                            iconname: "Bolt.svg"
 
                             onClicked: device.modelData.wakeAllowed = !device.modelData.wakeAllowed
                         }
@@ -282,7 +282,7 @@ ColumnLayout {
                             styles.border_width: 0
                             radius: Constants.radius
 
-                            iconname: "shield.svg"
+                            iconname: "Shield.svg"
 
                             onClicked: device.modelData.trusted = !device.modelData.trusted
                         }
@@ -298,7 +298,7 @@ ColumnLayout {
                             styles.border_width: 0
                             radius: Constants.radius
 
-                            iconname: "tag.svg"                            
+                            iconname: "Tag.svg"                            
                             enabled: false
                         }
                     }
