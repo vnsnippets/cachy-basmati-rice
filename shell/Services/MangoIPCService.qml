@@ -30,31 +30,39 @@ Singleton {
         });
     }
 
-    QtObject {
-        id: monitors
-        function current(callback) {
-            if (!callback) return false;
+    function sleep_monitor(name) {
+        if (!name) return;
 
-            Daemon.execute(["mmsg", "get", "last_open_surface"], (e) => {
-                // E.g. {"monitor":"eDP-1","last_open_surface":"quickshell"}
-                const result = JSON.parse(e?.output?.trim());
-                callback(result ?? null);
-            });
-        }
-
-        function all(callback) {
-            if (!callback) return false;
-
-            Daemon.execute(["mmsg", "get", "all-monitors"], (e) => {
-                try {
-                    const result = JSON.parse(e?.output?.trim() ?? "[]");
-                    callback(result ?? []);
-                } catch (err) {
-                    callback([]);
-                }
-            });
-        }
+        Debug.log("[Mango IPC][Monitor] \tSleep", name);
+        Daemon.execute(["mmsg", "dispatch", "sleep_monitor,", name]);
+        // Daemon.execute(["wlr-randr", "--output", name, "--dpms", "off"]);
     }
+
+    function wake_monitor(name) {
+        if (!name) return;
+
+        Debug.log("[Mango IPC][Monitor] \tWake", name);
+        Daemon.execute(["mmsg", "dispatch", "wakeup_monitor,", name]);
+        // Daemon.execute(["wlr-randr", "--output", name, "--dpms", "on"]);
+    }
+    
+    function dispatch(args) {
+        if (!args || args.length === 0) return;
+        Daemon.execute(["mmsg", "dispatch", ...args]);
+    }
+
+    // function all_monitors(callback) {
+    //     if (!callback) return false;
+
+    //     Daemon.execute(["mmsg", "get", "all-monitors"], (e) => {
+    //         try {
+    //             const result = JSON.parse(e?.output?.trim() ?? "[]");
+    //             callback(result ?? []);
+    //         } catch (err) {
+    //             callback([]);
+    //         }
+    //     });
+    // }
 
     // Socket {
     //     id: monitorwatch

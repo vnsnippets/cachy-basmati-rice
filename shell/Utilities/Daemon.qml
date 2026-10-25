@@ -79,4 +79,45 @@ Singleton {
         }
         threads = [];
     }
+
+    // 15 Seconds Dim
+    IdleMonitor {
+        timeout: 15
+        enabled: !daemon.idle_inhibitor.enabled
+        property int cached_brightness: -1
+        readonly property bool brightness_is_cached: cached_brightness > -1
+        readonly property int low_brightness_level: 10
+
+        onIsIdleChanged: {
+            Debug.log("[Idle Monitor] \t", (isIdle) ? `Lowering brightness to ${low_brightness_level}%` : `Restoring brightness to ${cached_brightness}%`);
+
+            if (isIdle) {
+                cached_brightness = (brightness_is_cached) ? cached_brightness : BacklightService.brightness;
+                BacklightService.set(low_brightness_level);
+            }
+            else {
+                BacklightService.set(cached_brightness);
+                cached_brightness = -1;
+            }
+        }
+    }
+
+    // 30 Seconds Sleep
+    IdleMonitor {
+        timeout: 30
+        enabled: !daemon.idle_inhibitor.enabled
+
+        onIsIdleChanged: {
+            Debug.log("[Idle Monitor] \t", (isIdle) ? "Sleeping monitors" : "Waking Monitors");
+
+            if (isIdle) 
+                Quickshell.screens.map((e) => {
+                    MangoIPCService.sleep_monitor(e.name);
+                })
+            else 
+                Quickshell.screens.map((e) => {
+                    MangoIPCService.wake_monitor(e.name);
+                })
+        }
+    }
 }
