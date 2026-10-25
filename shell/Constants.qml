@@ -74,6 +74,7 @@ Singleton {
 
     readonly property real   roundness:                             0.25
     readonly property int    radius:                                roundness * 24
+    readonly property int    radius_active:                         icon_size
 
     readonly property int    animation_duration:                    250
 

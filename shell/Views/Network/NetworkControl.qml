@@ -104,7 +104,7 @@ ClickableWithIcon {
     font.family: Constants.font_family
     text: datamap?.label ?? ""
 
-    radius: (active) ? Constants.icon_size : Constants.radius
+    radius: (active) ? Constants.radius_active : Constants.radius
     
     Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 }

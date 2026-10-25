@@ -103,7 +103,7 @@ ColumnLayout {
                 root.adapter.enabled = !root.adapter.enabled;
             }
             
-            radius: (active) ? Constants.icon_size : Constants.radius
+            radius: (active) ? Constants.radius_active : Constants.radius
             Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
         }
     }
@@ -298,7 +298,7 @@ ColumnLayout {
                             styles.border_width: 0
                             radius: Constants.radius
 
-                            iconname: "Tag.svg"                            
+                            iconname: (active) ? "Tag-Filled.svg" : "Tag-Outline.svg"                          
                             enabled: false
                         }
                     }

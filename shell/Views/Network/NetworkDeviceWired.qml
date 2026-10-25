@@ -127,7 +127,7 @@ ColumnLayout {
                                 enabled: network.is_known
                                 styles.icon_color_idle: Constants.network_color_ink_muted
                                 styles.icon_color_active: (enabled) ? Constants.network_color_ink_default : Constants.network_color_ink_muted
-                                iconname: (enabled) ? "bookmark-filled.svg" : "bookmark-outline.svg"
+                                iconname: (enabled) ? "Tag-Filled.svg" : "Tag-Outline.svg"
                                 opacity: enabled ? 1 : 0.4
                                 onClicked: network.forget()
                             }

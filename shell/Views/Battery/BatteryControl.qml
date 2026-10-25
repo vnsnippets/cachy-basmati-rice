@@ -67,6 +67,6 @@ ClickableWithIcon {
     text: Math.floor(root.batterypercentage * 100) + "%"
     iconname: datamap.icon
 
-    radius: (active) ? Constants.icon_size : Constants.radius
+    radius: (active) ? Constants.radius_active : Constants.radius
     Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 }
