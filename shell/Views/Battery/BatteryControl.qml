@@ -14,23 +14,33 @@ ClickableWithIcon {
     readonly property bool charging: root.device.state === UPowerDeviceState.Charging || root.device.state === UPowerDeviceState.PendingCharge
     readonly property real batterypercentage: root.device.percentage
 
-    property var datamap: {
-        if (root.charging) return {
-            icon:   "battery-charge.svg",
-            accent: Constants.battery_color_charging
-        };
+    component DatamapModel: QtObject {
+        property string icon:   "battery-empty.svg"
+        property color accent:  Constants.battery_color_charging
+    }
 
-        const icons = [ "battery-empty.svg", "battery-low.svg", "battery-medium.svg", "battery-high.svg", "battery-full.svg" ];
+    property DatamapModel datamap: DatamapModel {
+        readonly property list<string> icons: [
+            "battery-empty.svg",
+            "battery-low.svg",
+            "battery-medium.svg",
+            "battery-high.svg",
+            "battery-full.svg"
+        ]
 
-        const targetIndex = Math.floor(root.batterypercentage * icons.length);
-        const safeIndex =   Math.min(Math.max(0, targetIndex), icons.length - 1);
+        icon: {
+            if (root.charging) return "battery-charge.svg";
+            const targetIndex = Math.floor(root.batterypercentage * icons.length);
+            const safeIndex = Math.min(Math.max(0, targetIndex), icons.length - 1);
+            return icons[safeIndex];
+        }
 
-        return {
-            icon:   icons[safeIndex],
-            accent: (root.batterypercentage <= Constants.battery_threshold_critical) ? Constants.battery_color_critical :
-                    (root.batterypercentage <= Constants.battery_threshold_warning) ? Constants.battery_color_warning :
-                        Constants.battery_color_ink_default
-        };
+        accent: {
+            if (root.charging) return Constants.battery_color_charging;
+            if (root.batterypercentage <= Constants.battery_threshold_critical) return Constants.battery_color_critical;
+            if (root.batterypercentage <= Constants.battery_threshold_warning) return Constants.battery_color_warning;
+            return Constants.battery_color_ink_default;
+        }
     }
 
     size: Constants.icon_size
