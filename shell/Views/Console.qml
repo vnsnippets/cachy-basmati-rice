@@ -134,6 +134,8 @@ StyledBox {
                     styles.track_color: Constants.volume_control_color_track
                     styles.accent_color: Constants.volume_control_color_ink_active
 
+                    styles.animate_on_start: true
+
                     border.width: 1
 
                     Behavior on styles.border_color { ColorAnimation { duration: Constants.animation_duration }}
@@ -152,6 +154,8 @@ StyledBox {
 
                 styles.track_color: Constants.display_control_color_track
                 styles.accent_color: Constants.display_control_color_active
+
+                styles.animate_on_start: true
 
                 border.width: 1
             }
