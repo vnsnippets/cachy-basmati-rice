@@ -12,10 +12,10 @@ ClickableWithIcon {
     id: root
 
     component DatamapModel: QtObject {
-        property string icon: "wifi-disconnect.svg"
+        property string icon: "wifi-error.svg"
         property string label: ""
         property bool highlighted: false
-        property color accent: Constants.network_color_ink_muted
+        property color accent: Constants.network_color_ink_default
     }
 
     property DatamapModel datamap: DatamapModel {

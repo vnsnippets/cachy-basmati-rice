@@ -7,6 +7,7 @@ import Quickshell.Networking
 
 import qs
 import qs.Layouts
+import qs.Components
 
 ContentTabContainer {
     id: container
@@ -71,7 +72,14 @@ ContentTabContainer {
         return (a.name ?? "").localeCompare(b.name ?? "");
     }).map(dev => ({
         name: dev.name.toUpperCase(),
-        delegate: component_network_device,
+        template: component_network_device,
         context: { "device": dev }
     }))
+
+    options.view: network_options_component
+
+    Component {
+        id: network_options_component
+        Item {}
+    }
 }

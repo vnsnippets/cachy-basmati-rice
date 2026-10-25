@@ -9,15 +9,21 @@ import qs.Services
 import qs.Components
 
 ColumnLayout {
-    id: container
+    id: root
     spacing: Constants.padding
     
     property string title: ""
-    property Component toolbar: null
     property var tabs: []
 
     property int currentIndex: 0
     property int _pendingIndex: -1
+
+    component Options: QtObject {
+        property string icon: "settings.svg"
+        property Component view: null
+    }
+
+    property Options options: Options {}
 
     implicitHeight: tab_bar_flickable.implicitHeight + swipe_view.implicitHeight + spacing
     
@@ -25,18 +31,27 @@ ColumnLayout {
         Layout.topMargin: Constants.padding * 1.5
 
         StyledText {
-            visible: container.title.trim().length > 0
-            text: container.title.toUpperCase()
+            Layout.alignment: Qt.AlignVCenter
+            visible: root.title.trim().length > 0
+            text: root.title.toUpperCase()
             color: Constants.tab_color_ink_muted
             font.weight: 600
         }
 
         Item { Layout.fillWidth: true }
 
-        Loader {
-            active: container.toolbar !== null
-            visible: active
-            sourceComponent: container.toolbar
+        ClickableIcon {
+            id: special_view_toggle
+            Layout.alignment: Qt.AlignVCenter   
+            visible: root.options.view !== null
+            padding: 0
+            size: Constants.icon_size
+            iconname: root.options.icon
+
+            styles.icon_color_idle: Constants.color_subtext
+            styles.icon_color_active: Constants.color_text
+
+            onClicked: {}
         }
     }
 
@@ -61,14 +76,14 @@ ColumnLayout {
             spacing: Constants.spacing
 
             Repeater {
-                model: container.tabs
+                model: root.tabs
 
                 delegate: Clickable {
                     id: tab_item
                     required property int index
                     required property string name
 
-                    readonly property bool is_selected: container.currentIndex === index
+                    readonly property bool is_selected: root.currentIndex === index
 
                     implicitWidth: tab_text.implicitWidth
                     implicitHeight: tab_text.implicitHeight
@@ -84,8 +99,8 @@ ColumnLayout {
                     }
 
                     onClicked: {
-                        if (container.currentIndex !== index && !tabTransitionAnim.running) {
-                            container._pendingIndex = index;
+                        if (root.currentIndex !== index && !tabTransitionAnim.running) {
+                            root._pendingIndex = index;
                             tabTransitionAnim.start();
                         }
                     }
@@ -112,23 +127,24 @@ ColumnLayout {
         }
 
         Repeater {
-            model: container.tabs
+            model: root.tabs
 
             delegate: Loader {
                 id: tab_content
                 
                 required property int index
-                required property var modelData
+                required property Component template
+                required property var context
 
                 // Load active and pending targets
-                active: swipe_view.currentIndex === index || container._pendingIndex === index
-                sourceComponent: modelData.delegate
+                active: swipe_view.currentIndex === index || root._pendingIndex === index
+                sourceComponent: template
                 
                 // Pass properties cleanly to the loaded component
                 Binding {
                     target: tab_content.item
                     property: "context"
-                    value: tab_content.modelData.context ?? null
+                    value: tab_content.context ?? null
                     when: tab_content.status === Loader.Ready && tab_content.item !== null
                 }
             }
@@ -160,10 +176,10 @@ ColumnLayout {
         // Step 2: Swap tab index instantly while hidden
         ScriptAction {
             script: {
-                if (container._pendingIndex !== -1) {
-                    container.currentIndex = container._pendingIndex;
-                    swipe_view.currentIndex = container._pendingIndex;
-                    container._pendingIndex = -1;
+                if (root._pendingIndex !== -1) {
+                    root.currentIndex = root._pendingIndex;
+                    swipe_view.currentIndex = root._pendingIndex;
+                    root._pendingIndex = -1;
                 }
             }
         }
