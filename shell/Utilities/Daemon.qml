@@ -13,7 +13,7 @@ import qs.Utilities
 Singleton {
     id: daemon
 
-    readonly property IdleInhibitor idle_inhibitor: IdleInhibitor { }
+    readonly property IdleInhibitor idle_inhibitor: IdleInhibitor { enabled: Debug._DEBUG_MODE_ ?? false }
     readonly property SystemClock clock: SystemClock { precision: SystemClock.Minutes }
 
     property var threads: []

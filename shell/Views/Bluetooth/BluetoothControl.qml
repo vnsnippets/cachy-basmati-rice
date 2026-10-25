@@ -42,18 +42,22 @@ ClickableWithIcon {
             icon: "bluetooth-off.svg"
             accent: Constants.bluetooth_color_critical
         }
+        property DatamapModel unknown: DatamapModel {
+            icon: "bluetooth-error.svg"
+            accent: Constants.bluetooth_color_critical
+        }
     }
 
-    property DatamapModel datamap: {
-        switch (adapter.state ?? BluetoothAdapterState.Blocked) {
+    property DatamapModel statemap: switch (adapter.state ?? BluetoothAdapterState.Blocked) {
         case BluetoothAdapterState.Enabling: return states.enabling;
         case BluetoothAdapterState.Disabling: return states.disabling;
         case BluetoothAdapterState.Disabled: return states.disabled;
         case BluetoothAdapterState.Enabled: return states.enabled;
         case BluetoothAdapterState.Blocked: return states.blocked;
-        default: return states.blocked;
-        }
+        default: return states.unknown;
     }
+
+    property DatamapModel datamap: statemap ?? states.unknown
 
     size: Constants.icon_size
 
