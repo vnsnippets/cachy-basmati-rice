@@ -37,16 +37,15 @@ PanelWindow {
     readonly property int _animationDuration: Constants.animation_duration
     readonly property int _padding: Constants.toast_offset / 2
 
-    property string activeKey: ""
+    property string activeKey:  ""
     property string pendingKey: ""
 
-    property var activePayload: null
+    property var activePayload:  null
     property var pendingPayload: null
-
-    property bool isDismissing: false
-
+    
     Connections {
         target: EventOrchestrator
+
         function onOsdTriggerEvent(key, dismissive, payload) {
             if (container.activeKey === key && dismissive) {
                 container.dismiss_current_toast();

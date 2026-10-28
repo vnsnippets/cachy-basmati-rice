@@ -4,6 +4,7 @@ pragma Singleton
 import QtQuick
 
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.Notifications
 
 import qs.Utilities
@@ -27,10 +28,7 @@ Singleton {
         }
     }
 
-    function push(title, message) {
-        // notify-send -u critical -i dialog-warning -a "System Monitor" "Thermal Warning" "CPU temperature has exceeded 85°C"
-        Quickshell.execDetached(["notify-send", "-u critical", "-i dialog-warning", `-a "${title}"`, `"${message}"`]);
-    }
+    function push(title, body) { notification_process.send(title, body); }
 
     function target(clients, notification) {
         if (!notification || !Array.isArray(clients) || clients.length === 0) return null;
@@ -114,5 +112,13 @@ Singleton {
         }
 
         return null;
+    }
+
+    Process {
+        id: notification_process
+        function send(title, body) {
+            command = ["notify-send", "-u", "critical", "-a", title, body];
+            running = true;
+        }
     }
 }

@@ -4,7 +4,9 @@ import QtQuick
 
 import Quickshell
 import Quickshell.Io
+import Quickshell.Services.UPower
 
+import qs
 import qs.Layouts
 import qs.Services
 import qs.Utilities
@@ -99,6 +101,45 @@ ShellRoot {
             }
 
             Component.onCompleted: DisplayService.init();
+        }
+
+        Connections {
+            target: UPower.displayDevice ?? null
+
+            property bool notified_warning: false
+            property bool notified_critical: false
+
+            function onPercentageChanged() {
+                const val = UPower.displayDevice.percentage * 100;
+
+                if (UPower.displayDevice.percentage < Constants.battery_threshold_critical && !notified_critical) {
+                    NotificationService.push(
+                        "Battery Critical",
+                        `Battery is at ${Math.round(val)}%. Please plug in your charger.`
+                    );
+                    notified_critical = true;
+                    return;
+                }
+
+                if (UPower.displayDevice.percentage < Constants.battery_threshold_warning && !notified_warning) {
+                    NotificationService.push(
+                        "Battery Low",
+                        `Battery is at ${Math.round(val)}%. Please plug in your charger.`
+                    );
+                    notified_warning = true;
+                    return;
+                }
+
+                if (UPower.displayDevice.percentage > Constants.battery_threshold_critical && notified_critical) {
+                    notified_critical = false;
+                    return;
+                }
+
+                if (UPower.displayDevice.percentage > Constants.battery_threshold_warning && notified_warning) {
+                    notified_warning = false;
+                    return;
+                }
+            }
         }
 
         // Audio change listeners

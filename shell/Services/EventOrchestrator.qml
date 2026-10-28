@@ -17,7 +17,7 @@ Singleton {
     signal osdDismissCompleted();
     signal osdTriggerEvent(string key, bool dismissive, var data);
     signal osdDismissEvent();
-    
+
     signal notificationEvent(int timestamp, var data)
     
     signal consoleToggleEvent(ShellScreen screen);

@@ -1,5 +1,26 @@
 /* Catppuccin Mocha Theme for Obsidian */
 
+.cm-s-obsidian {
+  --nav-item-radius: 2px;
+  --tag-radius: 2px;
+  --tag-padding-xr: 0.3em;
+  --tag-padding-x: 0.5em;
+  --tag-padding-y: 0.4em;
+  --property-field-min-height: 2.25em;
+
+  /* Markdown */
+  --list-bullet-size: 0.4em;
+  --list-bullet-radius: 20%;
+  --blockquote-color: var(--text-muted);
+
+  --h1-line-height: 3.0;
+  --h2-line-height: 2.5;
+  --h3-line-height: 2.3;
+  --h4-line-height: 2.3;
+  --h5-line-height: var(--line-height-normal);
+  --h6-line-height: var(--line-height-normal);
+}
+
 .theme-dark {
   /* --- Core Palette (Mocha) --- */
   --ctp-rosewater: #f5e0dc;
@@ -60,8 +81,8 @@
   --color-accent: var(--ink-accent);
   --color-accent-hover: var(--ctp-pink);
 
-  --link-color: var(--ctp-sapphire);
-  --link-color-hover: var(--ctp-sky);
+  --link-color: var(--ctp-mauve);
+  --link-color-hover: var(--ctp-sapphire);
   --link-external-color: var(--ctp-teal);
   --link-external-color-hover: var(--ctp-green);
 
@@ -82,7 +103,6 @@
   --interactive-hover: var(--ctp-surface1);
   --interactive-accent: var(--ink-accent);
   --interactive-accent-hover: var(--ctp-pink);
-  --nav-item-radius: 2px;
 
   /* Form Controls */
   --input-bg: var(--ctp-surface0);
@@ -323,27 +343,49 @@ input[type="range"]::-webkit-slider-thumb:hover {
     fill: none !important;
 }
 
-/* .canvas-card-menu .clickable-icon {
-  padding: 4px !important;
-  width: 12px !important;
-  height: 12px !important;
-  border-radius: 4px;
-  transition: background-color 0.15s ease, transform 0.15s ease;
-} */
+.multi-select-pill-remove-button {
+    margin-inline-end: var(--tag-padding-xr);
+}
 
-/* .canvas-card-menu .clickable-icon svg {
-  width: 12px !important;
-  height: 12px !important;
-} */
+.metadata-property-value .multi-select-pill {
+    --pill-radius: 0.2em;
+    --pill-border-width: 1px;
+    --pill-padding-x: 0.6em;
+    --pill-padding-y: 0.4em;
+}
 
-/* 2. Remove the upward translation (bounce) on hover */
-/* .canvas-card-menu .clickable-icon:hover {
-  transform: none !important; 
-} */
+.metadata-property {
+  min-height: var(--property-field-min-height);
+}
 
-/* 3. Add a light background shade on hover */
-/* Uses Obsidian's native variable for theme-agnostic styling */
-/* .canvas-card-menu .clickable-icon:hover {
-  background-color: var(--background-modifier-hover) !important;
-  color: var(--text-normal) !important;
-} */
+.metadata-property-key {
+    align-items: center;
+}
+
+.metadata-property-value .metadata-link .metadata-link-inner.internal-link {
+  text-decoration-line: none;
+  --font-weight: var(--link-weight);
+  color: var(--metadata-input-text-color);
+  padding: var(--pill-padding-y) var(--pill-padding-x);
+  border: var(--pill-border-width) solid var(--pill-border-color);
+  border-radius: 0.25em;
+  transition: all var(--anim-duration-fast) ease-in-out;
+}
+
+.metadata-property-value .metadata-link .metadata-link-inner.internal-link:hover {
+  border: var(--pill-border-width) solid var(--pill-border-color-hover);
+  color: var(--pill-color-hover);
+}
+
+.cm-underline {
+  text-decoration: none !important;
+}
+
+.cm-table-widget .table-cell-wrapper {
+  padding: var(--size-4-2) var(--size-4-3) !important;
+}
+
+.cm-formatting-list-ul, .cm-formatting-list-ol {
+  padding-inline-start: calc(var(--list-padding-inline-start) / 2);
+  padding-inline-end: var(--list-padding-inline-start);
+}
