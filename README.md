@@ -12,6 +12,36 @@ You will need to set the `QML_IMPORT_PATH` environment variable to point to wher
 In all transparency, I make no claims on the plugin's quality.   
 Use at your own risk.
 
+---
+
+#### Test Scripts
+```bash
+# Launch in DEBUG mode
+DEBUG=1 quickshell -p ~/.config/shell/Shell.qml
+
+# Screen utilities
+wlr-randr --output eDP-1 --off
+wlr-randr --output eDP-1 --on --pos 0,0 --mode 1920x1080 --output HDMI-A-1 --on --pos 0,0 --mode 1920x1080
+
+# Idling and wake
+swayidle -w \                                                          
+  timeout 5 'brightnessctl --save --exponent=4 set 10%' \
+    resume 'brightnessctl --restore' \
+  timeout 10 '$HOME/.config/mango/scripts/screen-ctl.sh --sleep' \
+    resume '$HOME/.config/mango/scripts/screen-ctl.sh --wake'
+
+# Symbolic Linking
+ln -sf <source-path> <target-path>
+ln -sf $HOME/.local/apps/obsidian.desktop ./.local/share/applications/obsidian.desktop
+
+# Simulate notifications
+notify-send -i discord -a "Discord" "Jane Doe" "Hey\n Are we still jumping on that raid tonight?"; sleep 2; notify-send -u critical -i dialog-warning -a "System Monitor" "Thermal Warning" "CPU temperature has exceeded 85°C"; sleep 2; notify-send -h string:transient:true -i Security "YubiKey" "Touch your security key..."; sleep 2; notify-send -h string:x-canonical-private-synchronous:volume -h int:value:40 -i audio-volume-medium "Volume" "40%"; sleep 2; notify-send -h string:x-canonical-private-synchronous:volume -h int:value:65 -i audio-volume-high "Volume" "65%"
+
+# Simulate privilege
+pkexec bash
+```
+---
+
 ### Additional Packages
 For some of my utilities, additional packages were required:
 | Utility | Packages |
@@ -25,14 +55,56 @@ For some of my utilities, additional packages were required:
 | File Manager | `nautilus` |
 | Telegram | `telegram-desktop` with themes from https://github.com/catppuccin/telegram |
 
+---
+
 ### Manual Configurations
 Fixing some quirks or personalizing some stuff.
+
+#### Controlling Laptop Lid Events
+| Event             | Condition                           | Sleep/Wake | Screen         |
+| :---------------- | : --------------------------------- | :--------- | :------------- | 
+| Laptop Lid Closed | Default                             | Sleep      | Turn off EDP-1 |
+|                   | Connected to external power or dock | Ignore     | Turn off EDP-1 |
+| Laptop Lid Opened | -                                   | Wake       | Turn on EDP-1  |
+
+Edit **systemd-logind**
+```bash
+sudoedit /etc/systemd/logind.conf
+```
+
+  Ensure the following configurations are set.
+  ```toml
+  [Login]
+  # Sets default behaviour on lid close/open as suspend/wake
+  HandleLidSwitch=suspend
+  
+  # Overrides default lid behaviour to not suspend when
+  # External Power or Dock detected
+  HandleLidSwitchExternalPower=ignore
+  HandleLidSwitchDocked=ignore
+  ```
+
+Edit Mango configurations to enable/disable laptop screen
+```bash
+micro ~/.config/mango/config.conf
+```
+
+  Set the following commands.
+  ```toml
+  # Disable screen when lid is closed
+  switchbind=fold,spawn,wlr-randr --output eDP-1 --off
+  
+  # Enable screen when lid is opened
+  switchbind=unfold,spawn,wlr-randr --output eDP-1 --on
+  ```
+
 
 #### ZSH
 The `setup.sh` script here configures everything I need for ZSH and configurations point ZSH to use my configurations - but cleanup of default files is still required manually:   
 ```bash
 rm ~/.zshrc ~/.zcompdump ~/.zsh_history
 ```
+
 
 #### Network Manager
 - Waking from sleep, Network Manager would hang - so I created a script to restart it clean on wake:
@@ -48,6 +120,7 @@ rm ~/.zshrc ~/.zcompdump ~/.zsh_history
   esac
   ```
 
+
 #### File Manager (Nautilus/Dolphin)
 - Dedicated storage partition (in BTRFS) would not appear in File Manager, requiring a manual fix.
   ```
@@ -62,8 +135,10 @@ rm ~/.zshrc ~/.zcompdump ~/.zsh_history
   xdg-user-dirs-update
   ```
 
+
 #### Firefox
 Importing passwords and bookmarks.
+
 
 #### Visual Studio Code
 - Setting custom font (with Nerd Symbols) required changing the preset font family.
@@ -77,6 +152,7 @@ Importing passwords and bookmarks.
   - `Catppuccin for VSCode` and `Catppuccin Icons for VSCode` as primary themes
   - `Dracula Theme Official` and `GitHub Theme` as alternate themes
   - `Qt Extension Pack` for QT / Quickshell development
+
 
 #### GitHub SSH
 Did you really think I will lay out my GitHub SSH credentials here?

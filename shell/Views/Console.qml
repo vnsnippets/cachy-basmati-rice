@@ -3,11 +3,10 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 
-import Quickshell.Wayland
-
 import qs
-import qs.Components
 import qs.Layouts
+import qs.Utilities
+import qs.Components
 import qs.Views.Power
 import qs.Views.Audio
 import qs.Views.System
@@ -19,11 +18,13 @@ import qs.Views.Applications
 
 StyledBox {
     id: root
+    property bool _ready: false
+
     readonly property int _gap: Constants.spacing / 1.5
     readonly property int _padding: Constants.padding * 3
     readonly property Component default_content: Launchpad { page_size: 8 }
 
-    property Component content: navigation_stack[root.navigation_stack.length - 1] ?? default_content
+    property Component content: root.navigation_stack.length > 0 ? root.navigation_stack[root.navigation_stack.length - 1] : root.default_content
     property list<Component> navigation_stack: [ default_content ]
 
     colors.background: Constants.console_color_background
@@ -34,10 +35,10 @@ StyledBox {
     implicitWidth: content_layout.implicitWidth
     implicitHeight: content_layout.implicitHeight + (root._padding * 2)
 
-    Behavior on implicitHeight {
-        NumberAnimation {
-            duration: Constants.animation_duration
-            easing.type: Easing.OutCubic
+    function back() {
+        if (root.navigation_stack.length > 1) {
+            const updated_stack = root.navigation_stack.slice(0, -1);
+            root.navigation_stack = updated_stack;
         }
     }
 
@@ -45,7 +46,6 @@ StyledBox {
         // Toggling back to default if re-selecting current content
         if (_content === root.content) {
             root.navigation_stack = [ root.default_content ];
-            root.content = root.default_content;
             return;
         }
 
@@ -60,7 +60,6 @@ StyledBox {
 
         // Reassign array to trigger QML property binding updates
         root.navigation_stack = filteredStack;
-        root.content = _content;
     }
 
     ColumnLayout {
@@ -96,7 +95,16 @@ StyledBox {
                 Layout.maximumWidth: Constants.network_control_max_width
                 active: root.content === network_devices
                 onClicked: root.navigate(network_devices)
-                Component { id: network_devices; NetworkDevices { } }
+
+                Component { 
+                    id: network_devices
+                    NetworkDevices { onOptionsViewClicked: root.navigate(network_options) }
+                }
+
+                Component {
+                    id: network_options
+                    NetworkDeviceSaved { Layout.fillWidth: true }
+                }
             }
 
             BatteryControl {
@@ -142,6 +150,8 @@ StyledBox {
                     styles.track_color: Constants.volume_control_color_track
                     styles.accent_color: Constants.volume_control_color_ink_active
 
+                    styles.animate_on_start: true
+
                     border.width: 1
 
                     Behavior on styles.border_color { ColorAnimation { duration: Constants.animation_duration }}
@@ -159,32 +169,30 @@ StyledBox {
                 styles.border_color: Constants.control_color_border_default
 
                 styles.track_color: Constants.display_control_color_track
-                styles.accent_color: Constants.display_control_color_ink_active
+                styles.accent_color: Constants.display_control_color_active
+
+                styles.animate_on_start: true
 
                 border.width: 1
             }
 
             KeepAwakeControl {
-                inhibitor: IdleInhibitor { id: component_idle_inhibitor }
+                inhibitor: Daemon.idle_inhibitor
             }
         }
 
         // --- Main Container ---
         ContentContainer {
+            id: main_container
             Layout.fillWidth: true
-            Layout.preferredHeight: implicitHeight
+            Layout.preferredHeight: main_container.implicitHeight
             Layout.leftMargin: root._padding
             Layout.rightMargin: root._padding
             
-            content: root.navigation_stack.length > 0 ? root.navigation_stack[root.navigation_stack.length - 1] : root.default_content
+            content: (!root._ready) ? null : root.content
         }
 
         RowLayout {
-            visible: (opacity) > 0
-            opacity: (root.navigation_stack.length > 1) ? 1 : 0
-
-            Behavior on opacity { NumberAnimation { duration: 200 } }
-
             Layout.fillWidth: true
             Layout.leftMargin: root._padding
             Layout.rightMargin: root._padding
@@ -193,31 +201,64 @@ StyledBox {
             spacing: root._gap
 
             ClickableWithIcon {
+                visible: (opacity) > 0
+                opacity: (root.navigation_stack.length > 1) ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+
                 size: Constants.icon_size
                 padding: Constants.padding
                 radius: Constants.icon_size
 
-                iconname: "arrow-left.svg"
+                iconname: "Arrow-Left.svg"
 
                 styles.background_color_idle: Constants.control_color_background_default
 
                 styles.border_width: 1
                 styles.border_color_idle: Constants.control_color_border_default
-                styles.border_color_active: Qt.alpha(Constants.control_color_ink_default, 0.20)
+                styles.border_color_active: Constants.control_color_ink_active
 
                 styles.icon_color_idle: Constants.control_color_ink_default
                 styles.icon_color_active: Constants.control_color_ink_active
 
-                onClicked: {
-                    if (root.navigation_stack.length > 1) {
-                        const newStack = root.navigation_stack.slice(0, -1);
-                        root.navigation_stack = newStack;
-                        root.content = newStack[newStack.length - 1];
-                    }
-                }
+                onClicked: root.back()
             }
 
             Item { Layout.fillWidth: true }
+            
+            ClickableWithIcon {
+                size: Constants.icon_size
+                padding: Constants.padding
+                radius: Constants.icon_size
+
+                iconname: "Applications.svg"
+
+                styles.background_color_idle: Constants.control_color_background_default
+
+                styles.border_width: 1
+                styles.border_color_idle: Constants.control_color_border_default
+                styles.border_color_active: Constants.control_color_ink_active
+
+                styles.icon_color_idle: Constants.control_color_ink_default
+                styles.icon_color_active: Constants.control_color_ink_active
+               
+                active: root.content === app_installer
+                onClicked: root.navigate(app_installer)
+                Component { 
+                    id: app_installer
+                    WizardTarball { 
+                        implicitHeight: 400
+                        onCompleted: root.back()
+                    } 
+                }
+            }
+
+            DisplayControl {                
+                active: root.content === display_management
+                onClicked: root.navigate(display_management)
+                Component { id: display_management; DisplayManagement { implicitHeight: 400; } }
+            }
         }
     }
+
+    Component.onCompleted: _ready = true
 }

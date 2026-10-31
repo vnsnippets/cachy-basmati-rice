@@ -21,28 +21,28 @@ RowLayout {
             {
                 title: "Shutdown",
                 desc: "Turn computer off",
-                vector: "power.svg",
+                vector: "Power.svg",
                 accent: Constants.power_color_shutdown,
                 command: ["systemctl", "poweroff"]
             },
             {
                 title: "Reboot",
                 desc: "Restart the machine",
-                vector: "reboot.svg",
+                vector: "Reboot.svg",
                 accent: Constants.power_color_reboot,
                 command: ["systemctl", "reboot"]
             },
             {
                 title: "Suspend",
                 desc: "Low power state",
-                vector: "sleep.svg",
+                vector: "Suspend.svg",
                 accent: Constants.power_color_suspend,
                 command: ["systemctl", "suspend"]
             },
             {
                 title: "Log Out",
                 desc: "End session",
-                vector: "logout.svg",
+                vector: "Logout.svg",
                 accent: Constants.power_color_logout,
                 command: ["loginctl", "kill-session", Quickshell.env("XDG_SESSION_ID")]
             }
@@ -82,16 +82,12 @@ RowLayout {
                     anchors.margins: Constants.padding * 2
                     spacing: Constants.spacing / 2
 
-                    ClickableWithIcon {
+                    IconControl {
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         Layout.bottomMargin: Constants.padding
                         size: 48
-                        padding: 0
-                        iconname: item.vector
-                        enabled: false
-                        active: item.active
-                        styles.icon_color_idle: Constants.power_color_ink_muted
-                        styles.icon_color_active: item.accent
+                        source: item.vector
+                        tint: (item.active) ? item.accent : Constants.power_color_ink_muted
                     }
 
                     StyledText {
@@ -116,7 +112,7 @@ RowLayout {
                         elide: Text.ElideRight
                         maximumLineCount: 2
                         text: item.desc
-                        styles.color_idle: Qt.alpha(Constants.power_color_subtext, 0.75)
+                        styles.color_idle: Constants.power_color_ink_muted
                         styles.color_active: Constants.power_color_ink_default
                         active: item.active
                     }
@@ -125,7 +121,7 @@ RowLayout {
             }
 
             onClicked: {
-                Debug.log("[Power Menu] Executing System Action: " + command)
+                Debug.log(["Power Menu"], "Executing System Action: " + command)
                 Quickshell.execDetached({ command: command });
             }
         }

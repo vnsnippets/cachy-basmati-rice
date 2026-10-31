@@ -11,46 +11,79 @@ import qs.Components
 ClickableWithIcon {
     id: root
 
-    property var datamap: {
-        if (!Networking.wifiEnabled) return {
-            icon:          "wifi-disconnect.svg",
-            highlighted:    false,
-            accent:         Constants.network_color_ink_muted
-        }
-        
-        switch (NetworkService.activeNetwork?.device.type) {
-            case (DeviceType.Wired): return {
-                icon:           "ethernet.svg",
-                label:          "Ethernet",
-                highlighted:    false,
-                accent:         Constants.network_color_active
-            }
+    component DatamapModel: QtObject {
+        property string icon: "WiFi-Empty.svg"
+        property string label: ""
+        property bool highlighted: false
+        property color accent: Constants.network_color_ink_default
+    }
 
-            case (DeviceType.Wifi):
-                const icons =       [ "wifi-empty.svg", "wifi-low.svg", "wifi-medium.svg", "wifi-high.svg", "wifi-full.svg" ];
+    property DatamapModel datamap: DatamapModel {
+        readonly property list<string> icons: [
+            "WiFi-Empty.svg",
+            "WiFi-Low.svg",
+            "WiFi-Medium.svg",
+            "WiFi-High.svg",
+            "WiFi-Full.svg"
+        ]
+
+        icon: {
+            if (!Networking.wifiEnabled) return "WiFi-Off.svg";
+
+            const type = NetworkService.activeNetwork?.device.type;
+            if (type === DeviceType.Wired) return "Ethernet.svg";
+
+            if (type === DeviceType.Wifi) {
                 const targetIndex = Math.floor(NetworkService.activeNetwork.signalStrength * icons.length);
-                const safeIndex =   Math.min(Math.max(0, targetIndex), icons.length - 1);
-                const iscritical =  NetworkService.activeNetwork.signalStrength <= Constants.network_threshold_critical
-                const iswarning =   NetworkService.activeNetwork.signalStrength <= Constants.network_threshold_warning
-                
-                return {
-                    icon:           icons[safeIndex],
-                    label:          (Constants.network_hide_ssid) ? "" : NetworkService.activeNetwork.name,
-                    highlighted:    (iscritical || iswarning),
-                    accent:         (iscritical) ? Constants.network_color_critical :
-                                        (iswarning) ? Constants.network_color_warning :
-                                            Constants.network_color_active
-                }
-
-            default: return {
-                icon:          "wifi-disconnect.svg",
-                highlighted:    false,
-                accent:         Constants.network_color_active
+                const safeIndex = Math.min(Math.max(0, targetIndex), icons.length - 1);
+                return icons[safeIndex];
             }
+
+            return "WiFi-Empty.svg";
+        }
+
+        label: {
+            const type = NetworkService.activeNetwork?.device.type;
+            if (type === DeviceType.Wired) return "Ethernet";
+
+            if (type === DeviceType.Wifi && NetworkService.activeNetwork) {
+                const netName = NetworkService.activeNetwork.name;
+                return Constants.network_scramble_ssid ? NetworkService.scramble(netName) : netName;
+            }
+
+            return "";
+        }
+
+        highlighted: {
+            if (!Networking.wifiEnabled) return false;
+
+            const type = NetworkService.activeNetwork?.device.type;
+            if (type === DeviceType.Wifi && NetworkService.activeNetwork) {
+                const strength = NetworkService.activeNetwork.signalStrength;
+                return strength <= Constants.network_threshold_critical || strength <= Constants.network_threshold_warning;
+            }
+
+            return false;
+        }
+
+        accent: {
+            if (!Networking.wifiEnabled) return Constants.network_color_ink_default;
+
+            const type = NetworkService.activeNetwork?.device.type;
+            if (type === DeviceType.Wired) return Constants.network_color_active;
+
+            if (type === DeviceType.Wifi && NetworkService.activeNetwork) {
+                const strength = NetworkService.activeNetwork.signalStrength;
+                if (strength <= Constants.network_threshold_critical) return Constants.network_color_critical;
+                if (strength <= Constants.network_threshold_warning) return Constants.network_color_warning;
+                return Constants.network_color_active;
+            }
+
+            return Constants.network_color_active;
         }
     }
 
-    size: Constants.icon_size 
+    size: Constants.icon_size
     padding: Constants.padding
     leftPadding: Constants.padding
     rightPadding: (text.length > 0) ? Constants.padding * 1.25 : Constants.padding
@@ -65,11 +98,13 @@ ClickableWithIcon {
     styles.border_color_idle: Constants.control_color_border_default
     styles.border_color_active: datamap.accent
 
-    palette.buttonText: (hovered || active) ? Constants.network_color_ink_active : datamap.accent
+    styles.text_color_idle: datamap.accent
+    styles.text_color_active: Constants.network_color_ink_active
 
     font.family: Constants.font_family
     text: datamap?.label ?? ""
 
-    radius: (active) ? Constants.icon_size : Constants.radius
+    radius: (active) ? Constants.radius_active : Constants.radius
+    
     Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 }

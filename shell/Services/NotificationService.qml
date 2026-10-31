@@ -4,13 +4,12 @@ pragma Singleton
 import QtQuick
 
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.Notifications
 
 import qs.Utilities
 
 Singleton {
-    id: _Service
-
     property alias notifications: _NotificationServer.trackedNotifications
 
     NotificationServer {
@@ -23,19 +22,13 @@ Singleton {
 
         onNotification: (e) => {
             e.tracked = true;
-            Debug.log("[Notification] Received", e.appName, "| ID:", e.id);
+            Debug.log(["Notification"], "Received", e.appName, "| ID:", e.id);
         }
     }
 
-    function push(title, message) {
-        // notify-send -u critical -i dialog-warning -a "System Monitor" "Thermal Warning" "CPU temperature has exceeded 85°C"
-        Quickshell.execDetached(["notify-send", "-u critical", "-i dialog-warning", `-a "${title}"`, `"${message}"`]);
-    }
+    function push(title, body) { notification_process.send(title, body ?? ""); }
 
     function target(clients, notification) {
-        Debug.log("-------: ", notification);
-        Debug.log("---", "Discovered", clients.length, "clients");
-
         if (!notification || !Array.isArray(clients) || clients.length === 0) return null;
 
         const hints = notification.hints || {};
@@ -58,7 +51,7 @@ Singleton {
         if (pid) {
             const pidMatch = clients.find((c) => c.pid === pid);
             if (pidMatch) {
-                Debug.log("---", "Found target client with PID:", pid);
+                Debug.log(["Notification", "Action"], "Found target client with PID:", pid);
                 return pidMatch;
             }
         }
@@ -79,7 +72,7 @@ Singleton {
         for (const cand of candidates) {
             const exactAppIdMatch = clients.find((c) => normalize(c.appid) === cand);
             if (exactAppIdMatch) {
-                Debug.log("---", "Found target client with App ID:", cand);
+                Debug.log(["Notification", "Action"], "Found target client with App ID:", cand);
                 return exactAppIdMatch;
             }
         }
@@ -99,7 +92,7 @@ Singleton {
             });
 
             if (partialAppIdMatch) {
-                Debug.log("---", "Found target client with partial App ID match:", cand);
+                Debug.log(["Notification", "Action"], "Found target client with partial App ID match:", cand);
                 return partialAppIdMatch;
             }
         }
@@ -111,11 +104,19 @@ Singleton {
         if (summary.length > 2) {
             const partialTitleMatch = clients.find((c) => (c.title || "").toLowerCase().includes(summary));
             if (partialTitleMatch) {
-                Debug.log("---", "Found target client with partial title match:", cand);
+                Debug.log(["Notification", "Action"], "Found target client with partial title match:", cand);
                 return partialTitleMatch;
             }
         }
 
         return null;
+    }
+
+    Process {
+        id: notification_process
+        function send(title, body) {
+            command = ["notify-send", "-u", "critical", "-a", title, body];
+            running = true;
+        }
     }
 }

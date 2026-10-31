@@ -14,23 +14,36 @@ ClickableWithIcon {
     readonly property bool charging: root.device.state === UPowerDeviceState.Charging || root.device.state === UPowerDeviceState.PendingCharge
     readonly property real batterypercentage: root.device.percentage
 
-    property var datamap: {
-        if (root.charging) return {
-            icon:   "battery-charge.svg",
-            accent: Constants.battery_color_charging
-        };
+    component DatamapModel: QtObject {
+        property string icon:   "Battery-Empty.svg"
+        property color accent:  Constants.battery_color_charging
+    }
 
-        const icons = [ "battery-empty.svg", "battery-low.svg", "battery-medium.svg", "battery-high.svg", "battery-full.svg" ];
+    property DatamapModel datamap: DatamapModel {
+        readonly property list<string> icons: [
+            "Battery-Empty.svg",
+            "Battery-01.svg",
+            "Battery-02.svg",
+            "Battery-03.svg",
+            "Battery-04.svg",
+            "Battery-05.svg",
+            "Battery-06.svg",
+            "Battery-Full.svg",
+        ]
 
-        const targetIndex = Math.floor(root.batterypercentage * icons.length);
-        const safeIndex =   Math.min(Math.max(0, targetIndex), icons.length - 1);
+        icon: {
+            if (root.charging) return "Battery-Charge.svg";
+            const targetIndex = Math.floor(root.batterypercentage * icons.length);
+            const safeIndex = Math.min(Math.max(0, targetIndex), icons.length - 1);
+            return icons[safeIndex];
+        }
 
-        return {
-            icon:   icons[safeIndex],
-            accent: (root.batterypercentage <= Constants.battery_threshold_critical) ? Constants.battery_color_critical :
-                    (root.batterypercentage <= Constants.battery_threshold_warning) ? Constants.battery_color_warning :
-                        Constants.battery_color_ink_default
-        };
+        accent: {
+            if (root.charging) return Constants.battery_color_charging;
+            if (root.batterypercentage <= Constants.battery_threshold_critical) return Constants.battery_color_critical;
+            if (root.batterypercentage <= Constants.battery_threshold_warning) return Constants.battery_color_warning;
+            return Constants.battery_color_ink_default;
+        }
     }
 
     size: Constants.icon_size
@@ -54,6 +67,6 @@ ClickableWithIcon {
     text: Math.floor(root.batterypercentage * 100) + "%"
     iconname: datamap.icon
 
-    radius: (active) ? Constants.icon_size : Constants.radius
+    radius: (active) ? Constants.radius_active : Constants.radius
     Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 }

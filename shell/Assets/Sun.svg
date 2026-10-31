@@ -1,0 +1,11 @@
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10 4.75C12.8995 4.75 15.25 7.10051 15.25 10C15.25 12.8995 12.8995 15.25 10 15.25C7.10051 15.25 4.75 12.8995 4.75 10C4.75 7.10051 7.10051 4.75 10 4.75Z" stroke-width="1.5" stroke="#CDD6F4"/>
+<rect x="9" y="1" width="2" height="2" rx="1" fill="#CDD6F4"/>
+<rect x="3" y="3" width="2" height="2" rx="1" fill="#CDD6F4"/>
+<rect x="15" y="3" width="2" height="2" rx="1" fill="#CDD6F4"/>
+<rect x="15" y="15" width="2" height="2" rx="1" fill="#CDD6F4"/>
+<rect x="3" y="15" width="2" height="2" rx="1" fill="#CDD6F4"/>
+<rect x="17" y="8.5" width="2" height="2" rx="1" fill="#CDD6F4"/>
+<rect x="1" y="8.5" width="2" height="2" rx="1" fill="#CDD6F4"/>
+<rect x="9" y="17" width="2" height="2" rx="1" fill="#CDD6F4"/>
+</svg>

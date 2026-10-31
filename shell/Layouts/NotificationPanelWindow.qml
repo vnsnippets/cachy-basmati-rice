@@ -89,20 +89,20 @@ PanelWindow {
             onClicked: {
                 dismiss_timeout.stop();
                 const defaultAction = modelData.actions.find(a => a && (a.identifier === "default" || a.id === "default"));
-                Debug.log(container.screen.name, "[Notification]", delegate_item.modelData.appName, "", "Default Action");
+                Debug.log([container.screen.name, "Notification"], delegate_item.modelData.appName, "", "Default Action");
 
                 if (defaultAction) {
                     MangoIPCService.clients((clients) => {
                         try {
                             const target = NotificationService.target(clients, delegate_item.modelData);
                             if (target && target.id) {
-                                Daemon.execute(["mmsg", "dispatch", "focusid", `client, ${target.id}`]);
+                                MangoIPCService.dispatch(["focusid", `client, ${target.id}`]);
                                 defaultAction.invoke();
                             } else {
-                                Debug.log(container.screen.name, "[Notification]", "Could not match notification to an active Mango client");
+                                Debug.log([container.screen.name, "Notification"], "Could not match notification to an active Mango client");
                             }
                         } catch (err) {
-                            Debug.log(container.screen.name, "[Notification]", "Failed open target client:", err);
+                            Debug.log([container.screen.name, "Notification"], "Failed open target client:", err);
                         }
                     });
                     return;
@@ -133,10 +133,12 @@ PanelWindow {
                 width: Constants.notification_width
                 implicitHeight: _ContentColumn.implicitHeight + item_padding
 
-                color: Qt.alpha(Constants.notification_color_background, 0.80)
+                color: Constants.notification_color_background
                 radius: Constants.radius
                 border.width: 1
-                border.color: Qt.alpha(Constants.notification_color_border, delegate_item.containsMouse ? 0.6 : 0.4)
+                border.color: delegate_item.containsMouse ? Constants.notification_color_border : Constants.notification_color_border_muted
+
+                opacity: delegate_item.containsMouse ? 0.95 : 0.85
 
                 Behavior on opacity { NumberAnimation { duration: Constants.animation_duration } }
 
@@ -212,7 +214,7 @@ PanelWindow {
 
                         ClickableWithIcon {
                             size: 16
-                            iconname: "dismiss.svg"
+                            iconname: "Dismiss.svg"
                             styles.icon_color_idle: Constants.notification_color_ink_muted
                             styles.icon_color_active: Constants.notification_color_ink_critical
 
@@ -353,7 +355,7 @@ PanelWindow {
             ]
 
             Component.onCompleted: {
-                Debug.log(container.screen.name, "[Notification]", delegate_item.modelData.appName, "| ID:", delegate_item.modelData.id);
+                Debug.log([container.screen.name, "Notification"], delegate_item.modelData.appName, "| ID:", delegate_item.modelData.id);
                 state = "visible"
             }
         }

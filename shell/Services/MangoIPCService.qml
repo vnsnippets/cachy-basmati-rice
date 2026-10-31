@@ -30,31 +30,39 @@ Singleton {
         });
     }
 
-    QtObject {
-        id: monitors
-        function current(callback) {
-            if (!callback) return false;
+    function sleep_monitor(name) {
+        if (!name) return;
 
-            Daemon.execute(["mmsg", "get", "last_open_surface"], (e) => {
-                // E.g. {"monitor":"eDP-1","last_open_surface":"quickshell"}
-                const result = JSON.parse(e?.output?.trim());
-                callback(result ?? null);
-            });
-        }
-
-        function all(callback) {
-            if (!callback) return false;
-
-            Daemon.execute(["mmsg", "get", "all-monitors"], (e) => {
-                try {
-                    const result = JSON.parse(e?.output?.trim() ?? "[]");
-                    callback(result ?? []);
-                } catch (err) {
-                    callback([]);
-                }
-            });
-        }
+        Debug.log(["Mango IPC", "Monitor"], "Sleep", name);
+        Daemon.execute(["mmsg", "dispatch", "sleep_monitor,", name]);
+        // Daemon.execute(["wlr-randr", "--output", name, "--dpms", "off"]);
     }
+
+    function wake_monitor(name) {
+        if (!name) return;
+
+        Debug.log(["Mango IPC", "Monitor"], "Wake", name);
+        Daemon.execute(["mmsg", "dispatch", "wakeup_monitor,", name]);
+        // Daemon.execute(["wlr-randr", "--output", name, "--dpms", "on"]);
+    }
+    
+    function dispatch(args) {
+        if (!args || args.length === 0) return;
+        Daemon.execute(["mmsg", "dispatch", ...args]);
+    }
+
+    // function all_monitors(callback) {
+    //     if (!callback) return false;
+
+    //     Daemon.execute(["mmsg", "get", "all-monitors"], (e) => {
+    //         try {
+    //             const result = JSON.parse(e?.output?.trim() ?? "[]");
+    //             callback(result ?? []);
+    //         } catch (err) {
+    //             callback([]);
+    //         }
+    //     });
+    // }
 
     // Socket {
     //     id: monitorwatch
@@ -62,7 +70,6 @@ Singleton {
     //     connected: true
 
     //     onConnectedChanged: {
-    //         Debug.log("[Mango IPC]", `(${Quickshell.env("MANGO_INSTANCE_SIGNATURE")})`, connected ? "Connected." : "Connection Dropped.");
     //         if (connected) {
     //             this.write("watch all-monitors\n")
     //         }
@@ -71,7 +78,6 @@ Singleton {
     //     parser: SplitParser {
     //         splitMarker: "\n"
     //         onRead: (msg) => {
-    //             Debug.log("[Watch All Monitors] Triggered.")
     //         }
     //     }
     // }

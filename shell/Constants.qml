@@ -5,10 +5,8 @@ import QtQuick
 import Quickshell
 
 Singleton {
-    readonly property SystemClock clock:                            SystemClock { precision: SystemClock.Minutes }
-
     readonly property string namespace:                             "shell.basmati.rice"
-    readonly property string icons_directory:                       "./Assets"
+    readonly property string icons_directory:                       "/Assets"
 
     readonly property int    font_size:                             14
     readonly property int    font_size_lg:                          font_size + 2
@@ -76,6 +74,7 @@ Singleton {
 
     readonly property real   roundness:                             0.25
     readonly property int    radius:                                roundness * 24
+    readonly property int    radius_active:                         icon_size
 
     readonly property int    animation_duration:                    250
 
@@ -98,7 +97,7 @@ Singleton {
     readonly property bool   console_backdrop_enabled:              true
     
     readonly property color  console_color_background:              color_mantle
-    readonly property color  console_color_border:                  Qt.alpha(color_surface, 0.50)
+    readonly property color  console_color_border:                  color_surface
 
     readonly property color  console_color_backdrop_active:         Qt.alpha(color_dark, 0.6)
     readonly property color  console_color_backdrop_inactive:       Qt.alpha(color_dark, 0)
@@ -126,15 +125,16 @@ Singleton {
     readonly property int    notification_timeout:                  15000
 
     readonly property color  notification_color_background:         color_mantle
-    readonly property color  notification_color_border:             color_overlay
+    readonly property color  notification_color_border_muted:       Qt.alpha(color_overlay, 0.75)
+    readonly property color  notification_color_border:             Qt.alpha(default_color_accent, 0.6)
 
     readonly property color  notification_color_ink_default:        color_text
     readonly property color  notification_color_ink_critical:       color_red
     readonly property color  notification_color_ink_muted:          color_subtext
 
     // System : Battery
-    readonly property real   battery_threshold_warning:             0.40
-    readonly property real   battery_threshold_critical:            0.20
+    readonly property real   battery_threshold_warning:             0.20
+    readonly property real   battery_threshold_critical:            0.10
 
     readonly property color  battery_color_warning:                 color_yellow
     readonly property color  battery_color_critical:                color_red
@@ -182,12 +182,13 @@ Singleton {
 
     // Widgets: Brightness
     readonly property color  display_control_color_track:           color_surface
+    readonly property color  display_control_color_active:          color_yellow
+    readonly property color  display_control_color_muted:           color_overlay
     readonly property color  display_control_color_ink_default:     color_text
-    readonly property color  display_control_color_ink_active:      color_yellow
-    readonly property color  display_control_color_ink_muted:       color_overlay
+    readonly property color  display_control_color_ink_active:      color_base
 
     // Network
-    readonly property bool   network_hide_ssid:                     false
+    readonly property bool   network_scramble_ssid:                 false
     readonly property real   network_threshold_warning:             0.50
     readonly property real   network_threshold_critical:            0.25
 
@@ -219,6 +220,8 @@ Singleton {
     readonly property color  bluetooth_color_active:                color_sapphire
     readonly property color  bluetooth_color_inactive:              color_surface
     readonly property color  bluetooth_color_critical:              color_red
+    readonly property color  bluetooth_color_saved:                 color_blue
+    readonly property color  bluetooth_color_secure:                color_green
     readonly property color  bluetooth_color_busy:                  color_yellow
 
     // Application Launchpad / Spotlight
@@ -233,4 +236,9 @@ Singleton {
 
     readonly property color  spotlight_color_background_default:    Qt.alpha(color_base, 0.10)
     readonly property color  spotlight_color_background_active:     Qt.alpha(color_base, 0.25)
+
+    // Screen Capture
+    readonly property string screen_capture_command_region:         "$HOME/.config/mango/scripts/satty.sh --region --save"
+    readonly property string screen_capture_command_full:           "$HOME/.config/mango/scripts/satty.sh --full --save"
+    readonly property string screen_capture_command_clipboard:      "$HOME/.config/mango/scripts/satty.sh --clipboard"
 }
