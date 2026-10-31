@@ -15,6 +15,19 @@ ColumnLayout {
     property int _current_index: 0
     property int _pending_index: -1
 
+    function next() {
+        const nextIndex = (_current_index + 1) % tabs.length;
+        root._pending_index = nextIndex;
+        tab_transition.start();
+    }
+
+    function previous() {
+        const prevIndex = (_current_index - 1 + tabs.length) % tabs.length;
+
+        root._pending_index = prevIndex;
+        tab_transition.start();
+    }
+
     // --- TAB BAR ---
     Flickable {
         id: tab_bar_flickable
@@ -40,8 +53,12 @@ ColumnLayout {
 
                 delegate: Clickable {
                     id: tab_item
+
                     required property int index
                     required property string name
+                    required property bool active
+
+                    enabled: active
 
                     readonly property bool is_selected: root._current_index === index
 
@@ -58,7 +75,9 @@ ColumnLayout {
                         font.weight: (active) ? 800 : 600
                     }
 
-                    onClicked: {
+                    onClicked: {       
+                        if (!enabled) return;
+
                         if (root._current_index !== index && !tab_transition.running) {
                             root._pending_index = index;
                             tab_transition.start();

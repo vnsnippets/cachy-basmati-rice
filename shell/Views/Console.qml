@@ -245,7 +245,7 @@ StyledBox {
                 onClicked: root.navigate(app_installer)
                 Component { 
                     id: app_installer
-                    SetupApplication { 
+                    WizardTarball { 
                         implicitHeight: 400
                         onCompleted: root.back()
                     } 

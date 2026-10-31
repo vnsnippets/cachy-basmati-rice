@@ -103,7 +103,8 @@ ColumnLayout {
         }).map(dev => ({
             name: dev.name.toUpperCase(),
             template: component_network_device,
-            context: { "device": dev }
+            context: { "device": dev },
+            active: true
         }))
     }
 }

@@ -47,12 +47,14 @@ ColumnLayout {
             {
                 name: "Speakers",
                 template: component_audio_output,
-                context: null
+                context: null,
+                active: true
             },
             {
                 name: "Microphones",
                 template: component_audio_input,
-                context: null
+                context: null,
+                active: true
             }
         ]
     }
