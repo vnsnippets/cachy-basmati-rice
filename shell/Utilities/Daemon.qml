@@ -29,11 +29,25 @@ Singleton {
         return p;
     }
 
+
+    function run(category, args, callback) {
+        const p = _shell.createObject(daemon, {
+            "category": category,
+            "command":  args,
+            "callback": callback
+        });
+
+        threads.push(p);
+        p.running = true;
+        return p;
+    }
+
     Component {
         id: _shell
 
         Process {
             id: thread
+            property string category: ""
             property var callback: null
             
             readonly property alias _stdoutCollector: stdoutColl
@@ -55,6 +69,10 @@ Singleton {
 
                 const log = _stdoutCollector.text.trim();
                 const err = _stderrCollector.text.trim();
+
+                if (err.length > 0) {
+                    Debug.log([ category ], err);
+                }
 
                 if (callback) {
                     const result = {

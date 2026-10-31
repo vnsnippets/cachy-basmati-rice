@@ -38,19 +38,14 @@ ListView {
         readonly property bool is_selected: root.currentIndex === item.index
         readonly property bool active: item.containsMouse || is_selected
 
-        Rectangle {
+        StyledBox {
             id: item_container
 
             anchors.fill: parent
             radius: Constants.radius
-            color: (item.is_selected) ? Constants.spotlight_color_background_active : Constants.color_transparent
 
-            border.width: 1
-            border.color: Qt.alpha(Constants.spotlight_color_border, (item.active) ? 0.25 : 0)
-
-            Behavior on radius { NumberAnimation { duration: Constants.animation_duration } }
-            Behavior on color { ColorAnimation { duration: Constants.animation_duration } }
-            Behavior on border.color { ColorAnimation { duration: Constants.animation_duration } }
+            colors.background: (item.is_selected) ? Constants.spotlight_color_background_active : Constants.color_transparent
+            colors.border: Qt.alpha(Constants.spotlight_color_border, (item.active) ? 0.25 : 0)
 
             RowLayout {
                 id: item_details

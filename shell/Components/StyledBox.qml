@@ -2,8 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 
-import qs
-
 Rectangle {
     component ColorStyles: QtObject {
         property color background: "#313244"
@@ -18,4 +16,8 @@ Rectangle {
     radius: 0
     antialiasing: true
     clip: true
+
+    Behavior on color { ColorAnimation { duration: 250 }}
+    Behavior on border.color { ColorAnimation { duration: 250 }}
+    Behavior on radius { NumberAnimation { duration: 250 } }
 }

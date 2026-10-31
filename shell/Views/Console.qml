@@ -35,6 +35,13 @@ StyledBox {
     implicitWidth: content_layout.implicitWidth
     implicitHeight: content_layout.implicitHeight + (root._padding * 2)
 
+    function back() {
+        if (root.navigation_stack.length > 1) {
+            const updated_stack = root.navigation_stack.slice(0, -1);
+            root.navigation_stack = updated_stack;
+        }
+    }
+
     function navigate(_content) {
         // Toggling back to default if re-selecting current content
         if (_content === root.content) {
@@ -213,15 +220,37 @@ StyledBox {
                 styles.icon_color_idle: Constants.control_color_ink_default
                 styles.icon_color_active: Constants.control_color_ink_active
 
-                onClicked: {
-                    if (root.navigation_stack.length > 1) {
-                        const updated_stack = root.navigation_stack.slice(0, -1);
-                        root.navigation_stack = updated_stack;
-                    }
-                }
+                onClicked: root.back()
             }
 
             Item { Layout.fillWidth: true }
+            
+            ClickableWithIcon {
+                size: Constants.icon_size
+                padding: Constants.padding
+                radius: Constants.icon_size
+
+                iconname: "Applications.svg"
+
+                styles.background_color_idle: Constants.control_color_background_default
+
+                styles.border_width: 1
+                styles.border_color_idle: Constants.control_color_border_default
+                styles.border_color_active: Constants.control_color_ink_active
+
+                styles.icon_color_idle: Constants.control_color_ink_default
+                styles.icon_color_active: Constants.control_color_ink_active
+               
+                active: root.content === app_installer
+                onClicked: root.navigate(app_installer)
+                Component { 
+                    id: app_installer
+                    SetupApplication { 
+                        implicitHeight: 400
+                        onCompleted: root.back()
+                    } 
+                }
+            }
 
             DisplayControl {                
                 active: root.content === display_management
