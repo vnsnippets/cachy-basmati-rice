@@ -133,8 +133,8 @@ Singleton {
     readonly property color  notification_color_ink_muted:          color_subtext
 
     // System : Battery
-    readonly property real   battery_threshold_warning:             0.40
-    readonly property real   battery_threshold_critical:            0.20
+    readonly property real   battery_threshold_warning:             0.20
+    readonly property real   battery_threshold_critical:            0.10
 
     readonly property color  battery_color_warning:                 color_yellow
     readonly property color  battery_color_critical:                color_red

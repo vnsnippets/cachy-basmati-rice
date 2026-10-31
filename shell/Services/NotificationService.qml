@@ -10,8 +10,6 @@ import Quickshell.Services.Notifications
 import qs.Utilities
 
 Singleton {
-    id: _Service
-
     property alias notifications: _NotificationServer.trackedNotifications
 
     NotificationServer {
@@ -28,7 +26,7 @@ Singleton {
         }
     }
 
-    function push(title, body) { notification_process.send(title, body); }
+    function push(title, body) { notification_process.send(title, body ?? ""); }
 
     function target(clients, notification) {
         if (!notification || !Array.isArray(clients) || clients.length === 0) return null;
