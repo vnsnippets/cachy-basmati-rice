@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 
 import Quickshell.Io
 
@@ -9,6 +10,7 @@ import qs
 import qs.Layouts
 import qs.Services
 import qs.Utilities
+import qs.Components
 
 ColumnLayout {
     id: root
@@ -17,84 +19,455 @@ ColumnLayout {
 
     signal completed
 
-    ListModel { id: tarball_folders_listmodel }
+    readonly property string scanDirectory: "$HOME/Downloads"
+    readonly property string installDirectory: "$HOME/.local/apps"
+    readonly property int itemHeight: Constants.size
+    readonly property int listViewHeight: 200
 
-    QtObject {
-        id: context
-        property string selected_tarball_name: ""
-        property string selected_tarball_path: ""
-        property string selected_tarball_folder: ""
-        property string destination_folder: ""
+    component Context: QtObject {
+        property string packagePath: ""
+        property string packageDirectory: ""
+        property string extractionDirectory: packageDirectory
     }
 
-    ContentContainerForTabs {
+    
+    property Context context: Context {}
+    readonly property string extractionPath: `${installDirectory}/${context.extractionDirectory}`
+     
+    function getPackageName(path) { return path.substring(path.lastIndexOf("/") + 1); }
+
+    property bool success: false
+
+    ListModel { id: _TarballList }
+    ListModel { id: _TarballDirectoryList }
+
+    ContentContainer {
         id: container
-
         Layout.fillWidth: true
-        Layout.fillHeight: true
+        Layout.preferredHeight: container.implicitHeight
+        content: (root.context.packagePath === "" || _InspectionProcess.running) ? _TarballSelectionComponent : _TarballExtractionComponent
+    }
 
-        Component {
-            id: tarball_selection_step
-            WizardTarballSelection {
-                Layout.fillWidth: true                
-                onTarballSelected: (path, name) => {
-                    context.selected_tarball_path = path;
-                    context.selected_tarball_name = name;
-                    container.next();
-                }
-            }
-        }
+    Component {
+        id: _TarballSelectionComponent
+        
+        ColumnLayout {
+            spacing: Constants.spacing
 
-        Component {
-            id: tarball_extraction_step
-            WizardTarballExtraction {
+            RowLayout {
                 Layout.fillWidth: true
-                selected_tarball_path: context.selected_tarball_path
-                onBackPressed: {
-                    context.selected_tarball_name = context.selected_tarball_path = context.selected_tarball_folder = "";
-                    container.previous();
+
+                StyledText {
+                    color: Constants.spotlight_color_ink_active
+                    font.pixelSize: Constants.font_size_lg
+                    text: "Select package"
                 }
 
-                onExtractionStart: (source, target) => {
-                    context.selected_tarball_folder = source;
-                    context.destination_folder = target;
-                    container.next();
+                Item { Layout.fillWidth: true }
+
+                ClickableButton {
+                    enabled: !_InspectionProcess.running
+                    colors.accent: Constants.color_sky
+                    text: "Refresh"
+                    onClicked: _FolderScanProcess.run()
                 }
             }
-        }
 
-        Component {
-            id: tarball_completed_step
-            WizardTarballCompleted {
+            ListView {
+                id: _ListViewTarballs
+
                 Layout.fillWidth: true
-                tarball_name: context.selected_tarball_name
-                tarball_path: context.selected_tarball_path
-                source_directory: context.selected_tarball_folder
-                destination_directory: context.destination_folder
+                Layout.preferredHeight: root.listViewHeight
 
-                onCompleted: root.completed()
+                model: _TarballList
+                clip: true
+                spacing: 4
+
+                delegate: Clickable {
+                    id: _TarballItem
+
+                    implicitWidth: _ListViewTarballs.width
+                    implicitHeight: root.itemHeight
+                    enabled: !_InspectionProcess.running
+
+                    required property string path
+                    readonly property bool active: _TarballItem.containsMouse && enabled
+
+                    property bool inspecting: false
+
+                    StyledBox {
+                        anchors.fill: parent
+
+                        radius: Constants.radius
+                        colors.background: _TarballItem.active ? Constants.spotlight_color_background_active : Constants.spotlight_color_background_default
+                        colors.border: Qt.alpha(Constants.spotlight_color_border, _TarballItem.active ? 0.5 : 0.25)
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: Constants.padding
+                            anchors.rightMargin: Constants.padding
+                            spacing: Constants.spacing
+
+                            IconControl {
+                                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                                size: 16
+                                source: "Package.svg"
+                                tint: _TarballItem.active ? Constants.spotlight_color_ink_active : Constants.spotlight_color_ink_muted
+                            }
+
+                            StyledText {
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                                horizontalAlignment: Text.AlignLeft
+                                verticalAlignment: Text.AlignVCenter
+
+                                color: _TarballItem.enabled ? Constants.spotlight_color_ink_active : Constants.spotlight_color_ink_muted
+                                text: root.getPackageName(_TarballItem.path) 
+                            }
+
+                            StyledText {
+                                Layout.alignment: Qt.AlignVCenter
+                                horizontalAlignment: Text.AlignLeft
+                                verticalAlignment: Text.AlignVCenter
+
+                                visible: _TarballItem.inspecting
+                                color: Constants.spotlight_color_ink_muted
+
+                                text: "Inspecting..."
+                            }
+                        }
+                    }
+
+                    onClicked: {
+                        inspecting = true;
+                        _InspectionProcess.run(path);
+                    }
+                }
+
+                StyledBox {
+                    implicitWidth: _ListViewTarballs.width
+                    implicitHeight: Constants.size
+                    visible: _TarballList.count === 0
+
+                    radius: Constants.radius
+                    colors.background: Constants.spotlight_color_background_default
+                    colors.border: Qt.alpha(Constants.spotlight_color_border, 0.25)
+
+                    StyledText {
+                        anchors.centerIn: parent
+                        color: Constants.spotlight_color_ink_muted
+                        text: "No tarballs found in " + root.scanDirectory
+                    }
+                }
             }
+
+            Component.onCompleted: _FolderScanProcess.running = true
         }
+    }
 
-        tabs: [
-            {
-                name: "Select",
-                template: tarball_selection_step,
-                context: null,
-                active: true
-            },
-            {
-                name: "Configure",
-                template: tarball_extraction_step,
-                context: null,
-                active: context.selected_tarball_path !== ""
-            },
-            {
-                name: "Install",
-                template: tarball_completed_step,
-                context: null,
-                active: context.selected_tarball_path !== "" && context.selected_tarball_folder !== ""
+    Component {
+        id: _TarballExtractionComponent
+
+        ColumnLayout {
+            spacing: root.spacing
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Constants.spacing
+
+                StyledText {
+                    color: Constants.spotlight_color_ink_active
+                    font.pixelSize: Constants.font_size_lg
+                    text: "Select folder from tarball"
+                }
+                
+                Item { Layout.fillWidth: true }
+
+                ClickableButton {
+                    enabled: !_ExtractionProcess.running && !root.success
+                    colors.accent: Constants.color_red
+                    colors.muted: Constants.color_overlay
+                    colors.ink: Constants.color_base
+                    text: "Cancel"
+
+                    onClicked: {
+                        root.context.packagePath = "";
+                        root.context.packageDirectory = "";
+                        root.context.extractionDirectory = root.context.packageDirectory;
+                    }
+                }
             }
+
+            ListView {
+                id: _ListViewTarballDirectories
+                Layout.fillWidth: true
+                Layout.preferredHeight: 120
+                model: _TarballDirectoryList
+                clip: true
+                spacing: 4
+
+                delegate: Clickable {
+                    id: _TarballDirectoryItem
+
+                    implicitWidth: _ListViewTarballDirectories.width
+                    implicitHeight: root.itemHeight
+                    enabled: !_ExtractionProcess.running
+
+                    required property string name
+                    readonly property bool active: enabled && _TarballDirectoryItem.containsMouse
+
+                    property bool selected: false
+
+                    StyledBox {
+                        anchors.fill: parent
+
+                        radius: Constants.radius
+                        colors.background: _TarballDirectoryItem.active ? Constants.spotlight_color_background_active : Constants.spotlight_color_background_default
+                        colors.border: _TarballDirectoryItem.selected ? Qt.alpha(Constants.color_green, 0.5) : 
+                            Qt.alpha(Constants.spotlight_color_border, _TarballDirectoryItem.active ? 0.5 : 0.25)
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: Constants.padding
+                            anchors.rightMargin: Constants.padding
+                            spacing: Constants.spacing
+
+                            IconControl {
+                                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                                size: 16
+                                source: "Folder.svg"
+                                tint: _TarballDirectoryItem.selected ? Constants.color_green : 
+                                        _TarballDirectoryItem.active ? Constants.spotlight_color_ink_active : 
+                                            Constants.spotlight_color_ink_muted
+                            }
+
+                            StyledText {
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                                horizontalAlignment: Text.AlignLeft
+                                verticalAlignment: Text.AlignVCenter
+
+                                color: _TarballDirectoryItem.selected ? Constants.color_green : Constants.spotlight_color_ink_active
+                                text: _TarballDirectoryItem.name
+                            }
+                        }
+                    }
+
+                    onClicked: {
+                        selected = true
+                        root.context.packageDirectory = _TarballDirectoryItem.name
+                    }
+                }
+            }
+
+            StyledText {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                Layout.leftMargin: 2
+                Layout.rightMargin: 2
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                
+                color: Constants.spotlight_color_ink_muted
+                text: `[Tarball]/${root.context.packageDirectory} → ${root.extractionPath}`
+            }        
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.preferredHeight: root.itemHeight
+
+                TextField {
+                    id: target_folder_text_field
+
+                    enabled: !_ExtractionProcess.running
+
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    leftPadding: Constants.padding
+                    rightPadding: Constants.padding
+                    verticalAlignment: TextInput.AlignVCenter
+                    
+                    color: Constants.spotlight_color_ink_active
+                    font.pixelSize: Constants.font_size
+                    focus: true
+                    
+                    placeholderTextColor: Qt.alpha(color, 0.5)
+                    placeholderText: "Enter preferred directory for extraction"
+
+                    text: root.context.packageDirectory
+                    onTextChanged: root.context.extractionDirectory = text
+
+                    background: Rectangle {
+                        color: target_folder_text_field.activeFocus ? Constants.spotlight_color_background_active : Constants.spotlight_color_background_default
+                        border.color: Qt.alpha(Constants.spotlight_color_border, target_folder_text_field.activeFocus ? 0.50 : 0.15)
+                        radius: Constants.radius
+                    }
+                }
+
+                ClickableButton {
+                    enabled: root.context.packageDirectory !== "" && target_folder_text_field.text !== "" && !_ExtractionProcess.running && !root.success
+
+                    colors.accent: enabled ? Constants.color_green : Constants.color_overlay
+                    colors.muted: Constants.color_overlay
+                    colors.ink: Constants.color_base
+                    
+                    text: "Install"
+                    onClicked: _ExtractionProcess.run()
+                }
+            }
+
+            StyledText {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                Layout.leftMargin: 2
+                Layout.rightMargin: 2
+                visible: _ExtractionProcess.running || root.success
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                
+                color: root.success ? Constants.color_green : Constants.color_yellow
+                text: root.success ? "Extraction completed!" : "Extraction in progress..."
+            }  
+        }
+    }
+
+    
+    Process {
+        id: _FolderScanProcess
+        
+        stdout: StdioCollector { id: scan_stdout }
+        stderr: StdioCollector { id: scan_stderr }
+
+        running: false
+        command: [
+            "bash", "-c",
+            `find ${root.scanDirectory} -maxdepth 2 -type f \\( -name '*.tar' -o -name '*.tar.gz' -o -name '*.tgz' -o -name '*.tar.bz2' -o -name '*.tbz2' -o -name '*.tar.xz' \\) 2>/dev/null | sort`
         ]
+
+        function run() {
+            _FolderScanProcess.running = true;
+        }
+
+        onRunningChanged: {
+            if (running) return;
+
+            const log = scan_stdout.text.trim();
+            const err = scan_stderr.text.trim();
+
+            if (err.length > 0) {
+                Debug.log([ "Tarball Installation" ], `Folder scanning for tarballs failed: ${err}`);
+                return;
+            }
+
+            Debug.log(["Wizard", "Tarball", "Folder Scan"], `\n${log}`)
+
+            const lines = log.split("\n") ?? [];
+            _TarballList.clear();
+
+            const items = [];
+            for (const line of lines) {
+                const path = line.trim();
+                if (path !== "") items.push({ path: path });
+            }
+
+            if (items.length > 0) _TarballList.append(items);
+        }
+    }
+
+    Process {
+        id: _InspectionProcess
+        
+        stdout: StdioCollector { id: inspection_stdout }
+        stderr: StdioCollector { id: inspection_stderr }
+        running: false
+
+        property string path: ""
+        command: ["tar", "-tf", path];
+
+        function run(_path) {
+            path = _path;
+            running = true;
+        }
+
+        onRunningChanged: {
+            if (running) return;
+
+            const log = inspection_stdout.text.trim();
+            const err = inspection_stderr.text.trim();
+
+            if (err.length > 0) {
+                Debug.log([ "Tarball Installation" ], `Tarball inspection failed: ${err}`);
+                return;
+            }
+
+            const lines = log ? log.split("\n") : [];
+            _TarballDirectoryList.clear();
+
+            const directories = new Set();
+            for (const line of lines) {
+                let parts = line.split("/");
+                if (parts.length > 0 && parts[0] !== "") {
+                    directories.add(parts[0]);
+                }
+            }
+
+            const folders = [];
+            for (const dir of directories) folders.push({ name: dir });
+            if (folders.length > 0) _TarballDirectoryList.append(folders);
+
+            root.context.packagePath = path;
+        }
+    }
+
+
+    Process {
+        id: _ExtractionProcess
+        
+        stderr: StdioCollector { id: installation_stderr }
+        running: false
+
+        command: ["bash", "-c", `
+            mkdir -p "${root.installDirectory}"
+            rm -rf "${root.extractionPath}"
+            mkdir -p "${root.extractionPath}"
+            tar -xf "${root.context.packagePath}" -C "${root.extractionPath}" --strip-components=1 "${root.context.packageDirectory}"
+        `];
+
+        function run(folder) {
+            if (!root.context.packagePath || !root.context.packageDirectory || !root.context.extractionDirectory) return;
+            running = true;
+        }
+
+        onRunningChanged: {
+            if (running) return;
+
+            const err = installation_stderr.text.trim();
+            command = [];
+
+            if (err.length > 0) {
+                Debug.log([ "Tarball Installation" ], `Installation failed: ${err}`);
+                return;
+            }
+
+            root.success = true;
+            _SuccessTimeout.start();
+        }
+    }
+
+    Timer {
+        id: _SuccessTimeout
+        interval: 1000
+        repeat: false
+
+        readonly property string packageName: root.getPackageName(root.context.packagePath)
+
+        onTriggered: {
+            Debug.log([ "Tarball Installation" ], "Installation completed:", packageName);
+            NotificationService.push(
+                "Installation Completed",
+                `Package: ${packageName}\nExtracted ${root.context.extractionDirectory} to ${root.extractionPath}`);
+            root.completed();
+        }
     }
 }
