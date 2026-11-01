@@ -645,12 +645,10 @@ ColumnLayout {
         readonly property string packageName: root.getPackageName(root.context.packagePath)
 
         onTriggered: {
-            if (root.isAppImage(root.context.packagePath)) {
-                NotificationService.push(
-                    "Installation Completed",
-                    `Package: ${packageName}\nExtracted to ${root.extractionPath}`
-                );
-            }
+            NotificationService.push(
+                "Extraction Completed",
+                `Package: ${packageName}\nExtracted to ${root.extractionPath}`
+            );
             root.completed();
         }
     }
