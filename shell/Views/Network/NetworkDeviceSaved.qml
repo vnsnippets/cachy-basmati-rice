@@ -78,15 +78,15 @@ ColumnLayout {
     // --- Content Loader ---
     Loader {
         Layout.fillWidth: true
-        sourceComponent: (root.networks.length > 0) ? component_with_networks : component_no_network
+        sourceComponent: (root.networks.length > 0) ? _NetworksFoundComponent : _NoNetworkComponent
     }
 
     // --- Networks ListView ---
     Component {
-        id: component_with_networks
+        id: _NetworksFoundComponent
 
         ListView {
-            id: network_list
+            id: _ListViewNetworks
             Layout.fillWidth: true
 
             implicitHeight: root.capped_height
@@ -102,8 +102,8 @@ ColumnLayout {
             ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff; }
 
             delegate: StyledBox {
-                id: network_item
-                width: ListView.view.width
+                id: _NetworkItem
+                width: _ListViewNetworks.width
                 radius: Constants.radius
 
                 required property var modelData
@@ -125,7 +125,7 @@ ColumnLayout {
                     anchors.rightMargin: Constants.padding * 1.25
 
                     StyledText {
-                        text: (Constants.network_scramble_ssid) ? NetworkService.scramble(network_item.ssid) : network_item.ssid
+                        text: (Constants.network_scramble_ssid) ? NetworkService.scramble(_NetworkItem.ssid) : _NetworkItem.ssid
                         color: Constants.network_color_ink_default
                         elide: Text.ElideRight
                     }
@@ -133,36 +133,22 @@ ColumnLayout {
                     Item { Layout.fillWidth: true }
                     
                     StyledText {
-                        text: network_item.type.toUpperCase()
+                        text: _NetworkItem.type.toUpperCase()
                         color: Constants.network_color_ink_muted
                         font.pixelSize: Constants.font_size_sm
                     }
 
-                    ClickableWithIcon {
-                        readonly property color accent: Constants.network_color_critical
+                    ClickableButton {
+                        implicitWidth: 76
 
-                        padding: Constants.padding / 1.5
-                        leftPadding: Constants.padding
-                        rightPadding: Constants.padding
+                        topPadding: Constants.padding / 1.5
+                        bottomPadding: Constants.padding / 1.5
 
-                        styles.background_color_idle: Qt.alpha(accent, 0.05)
-                        styles.background_color_active: Qt.alpha(accent, 1)
-
-                        styles.icon_color_idle: accent
-                        styles.icon_color_active: Constants.network_color_ink_active
-
-                        styles.border_width: 1
-                        styles.border_color_idle: Qt.alpha(accent, 0.5)
-                        styles.border_color_active: Qt.alpha(accent, 1)
-
-                        styles.text_color_idle: accent
-                        styles.text_color_active: Constants.network_color_ink_active
-
-                        font.family: Constants.font_family
+                        colors.accent: Constants.network_color_critical
+                        colors.ink: Constants.network_color_ink_active
                         text: "Forget"
-                        radius: Constants.radius
 
-                        onClicked: root.forget(network_item.uuid)
+                        onClicked: root.forget(_NetworkItem.uuid)
                     }
                 }
             }
@@ -171,17 +157,17 @@ ColumnLayout {
 
     // --- Empty State ---
     Component {
-        id: component_no_network
+        id: _NoNetworkComponent
         Rectangle {
             Layout.fillWidth: true
-            implicitHeight: no_network_label.implicitHeight + Constants.padding * 3
+            implicitHeight: _NoNetworkLabel.implicitHeight + Constants.padding * 3
             radius: Constants.radius
             color: Qt.alpha(Constants.network_color_inactive, 0.15)
             border.width: 1
             border.color: Constants.network_color_inactive
 
             StyledText {
-                id: no_network_label
+                id: _NoNetworkLabel
                 leftPadding: Constants.padding * 1.5
                 rightPadding: Constants.padding * 1.5
                 anchors.verticalCenter: parent.verticalCenter

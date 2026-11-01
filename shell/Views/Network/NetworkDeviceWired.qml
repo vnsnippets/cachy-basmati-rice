@@ -22,13 +22,13 @@ ColumnLayout {
 
     Loader {
         Layout.fillWidth: true
-        sourceComponent: (root.page_size > 0) ? component_with_networks : component_no_network
+        sourceComponent: (root.page_size > 0) ? _NetworksFoundComponent : _NoNetworkComponent
     }
 
     Component {
-        id: component_with_networks
+        id: _NetworksFoundComponent
         ListView {
-            id: network_list
+            id: _ListViewNetworks
             Layout.fillWidth: true
 
             implicitHeight: root.capped_height
@@ -42,8 +42,8 @@ ColumnLayout {
             ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff; }
 
             delegate: StyledBox {
-                id: network
-                width: ListView.view.width
+                id: _NetworkItem
+                width: _ListViewNetworks.width
                 radius: Constants.radius
 
                 readonly property int _padding: Constants.padding
@@ -69,10 +69,10 @@ ColumnLayout {
                 function connect() { modelData.connect(); }
 
                 function handleConnect() {
-                    if (network.connected) {
-                        network.disconnect();
+                    if (_NetworkItem.connected) {
+                        _NetworkItem.disconnect();
                     } else {
-                        network.connect();
+                        _NetworkItem.connect();
                     }
                 }
 
@@ -81,7 +81,7 @@ ColumnLayout {
                 border.width: 1
 
                 ColumnLayout {
-                    id: network_content
+                    id: _NetworkItemDetails
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -93,30 +93,29 @@ ColumnLayout {
                             spacing: 1
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                            Layout.margins: network._padding * 1.25
+                            Layout.margins: _NetworkItem._padding * 1.25
 
                             StyledText {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                                text: network.name
-                                color: network.connected ? network.accent : Constants.network_color_ink_default
+                                text: _NetworkItem.name
+                                color: _NetworkItem.connected ? _NetworkItem.accent : Constants.network_color_ink_default
                                 elide: Text.ElideRight
                             }
 
                             StyledText {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                                text: network.connection_state
+                                text: _NetworkItem.connection_state
                                 color: Constants.network_color_ink_muted
                                 font.pixelSize: Constants.font_size - 1
                                 // qmllint disable
-                                visible: network.modelData?.state !== ConnectionState.Disconnected
+                                visible: _NetworkItem.modelData?.state !== ConnectionState.Disconnected
                                 // qmllint enable
                             }
                         }
 
                         RowLayout {
-                            id: network_properties
                             spacing: Constants.spacing
                             Layout.fillHeight: true
 
@@ -124,12 +123,12 @@ ColumnLayout {
                                 size: Constants.font_size_lg
                                 padding: 0
 
-                                enabled: network.is_known
+                                enabled: _NetworkItem.is_known
                                 styles.icon_color_idle: Constants.network_color_ink_muted
                                 styles.icon_color_active: (enabled) ? Constants.network_color_ink_default : Constants.network_color_ink_muted
                                 iconname: (enabled) ? "Tag-Filled.svg" : "Tag-Outline.svg"
                                 opacity: enabled ? 1 : 0.4
-                                onClicked: network.forget()
+                                onClicked: _NetworkItem.forget()
                             }
 
                             // Wired Link Speed Indicator
@@ -148,53 +147,36 @@ ColumnLayout {
                         RowLayout {
                             spacing: Constants.spacing
                             Layout.fillHeight: true
-                            Layout.rightMargin: network._padding * 1.25
+                            Layout.rightMargin: _NetworkItem._padding * 1.25
 
                             Loader {
                                 Layout.preferredWidth: implicitWidth
                                 Layout.alignment: Qt.AlignVCenter
 
-                                sourceComponent: (network.state_changing) ? action_busy : action_connect
+                                sourceComponent: (_NetworkItem.state_changing) ? _BusyActionComponent : _ConnectActionComponent
 
                                 Component {
-                                    id: action_connect
+                                    id: _ConnectActionComponent
 
-                                    ClickableWithIcon {
+                                    ClickableButton {
                                         implicitWidth: 96
                                         Layout.fillHeight: true
 
-                                        readonly property color accent: (network.connected) ? Constants.network_color_critical : Constants.network_color_active
+                                        topPadding: Constants.padding / 1.5
+                                        bottomPadding: Constants.padding / 1.5
 
-                                        padding: Constants.padding / 1.5
-                                        leftPadding: Constants.padding
-                                        rightPadding: Constants.padding
+                                        colors.accent: (_NetworkItem.connected) ? Constants.network_color_critical : Constants.network_color_active
+                                        colors.ink: Constants.network_color_ink_active
+                                        text: (_NetworkItem.connected) ? "Disconnect" : "Connect"
 
-                                        styles.background_color_idle: Qt.alpha(accent, 0.2)
-                                        styles.background_color_active: Qt.alpha(accent, 1)
-
-                                        styles.icon_color_idle: accent
-                                        styles.icon_color_active: Constants.network_color_ink_active
-
-                                        styles.border_width: 1
-                                        styles.border_color_idle: Qt.alpha(accent, 0.5)
-                                        styles.border_color_active: Qt.alpha(accent, 1)
-
-                                        styles.text_color_idle: accent
-                                        styles.text_color_active: Constants.network_color_ink_active
-
-                                        font.family: Constants.font_family
-                                        text: (network.connected) ? "Disconnect" : "Connect"
-
-                                        radius: Constants.radius
-
-                                        onClicked: network.handleConnect()
+                                        onClicked: _NetworkItem.handleConnect()
                                     }
                                 }
 
                                 Component {
-                                    id: action_busy
+                                    id: _BusyActionComponent
                                     Item {
-                                        id: busy_box
+                                        id: _BusyBox
                                         implicitWidth: 96
                                         Layout.fillHeight: true
                                         Layout.margins: Constants.padding / 1.5
@@ -202,7 +184,7 @@ ColumnLayout {
                                         Layout.rightMargin: Constants.padding
 
                                         Rectangle {
-                                            id: rect_ball
+                                            id: _BusyBoxBall
                                             anchors.verticalCenter: parent.verticalCenter
 
                                             implicitHeight: 10
@@ -212,22 +194,22 @@ ColumnLayout {
                                             radius: implicitHeight
 
                                             readonly property real min_x: Constants.padding
-                                            readonly property real max_x: busy_box.width - rect_ball.width - Constants.padding
+                                            readonly property real max_x: _BusyBox.width - _BusyBoxBall.width - Constants.padding
 
                                             SequentialAnimation on x {
                                                 loops: Animation.Infinite
                                                 running: true
 
                                                 NumberAnimation {
-                                                    from: rect_ball.min_x
-                                                    to: rect_ball.max_x
+                                                    from: _BusyBoxBall.min_x
+                                                    to: _BusyBoxBall.max_x
                                                     duration: Constants.animation_duration * 2
                                                     easing.type: Easing.InOutQuad
                                                 }
 
                                                 NumberAnimation {
-                                                    from: rect_ball.max_x
-                                                    to: rect_ball.min_x
+                                                    from: _BusyBoxBall.max_x
+                                                    to: _BusyBoxBall.min_x
                                                     duration: Constants.animation_duration * 2
                                                     easing.type: Easing.InOutQuad
                                                 }
@@ -244,17 +226,17 @@ ColumnLayout {
     }
 
     Component {
-        id: component_no_network
+        id: _NoNetworkComponent
         Rectangle {
             Layout.fillWidth: true
-            implicitHeight: no_network_label.implicitHeight + Constants.padding * 3
+            implicitHeight: _NoNetworkLabel.implicitHeight + Constants.padding * 3
             radius: Constants.radius
             color: Qt.alpha(Constants.network_color_inactive, 0.15)
             border.width: 1
             border.color: Constants.network_color_inactive
 
             StyledText {
-                id: no_network_label
+                id: _NoNetworkLabel
                 leftPadding: Constants.padding * 1.5
                 rightPadding: Constants.padding * 1.5
                 anchors.verticalCenter: parent.verticalCenter

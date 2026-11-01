@@ -15,9 +15,7 @@ ClickableWithIcon {
     property Styles colors: Styles {}
     readonly property color _accent: (enabled) ? colors.accent : colors.muted
 
-    padding: Constants.padding / 1.5
-    leftPadding: Constants.padding
-    rightPadding: Constants.padding
+    padding: Constants.padding
 
     styles.background_color_idle: Qt.alpha(_accent, 0.05)
     styles.background_color_active: Qt.alpha(_accent, 1)

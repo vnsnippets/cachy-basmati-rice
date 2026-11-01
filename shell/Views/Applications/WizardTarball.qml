@@ -19,8 +19,6 @@ ColumnLayout {
 
     signal completed
 
-    readonly property string scanDirectory: "$HOME/Downloads"
-    readonly property string installDirectory: "$HOME/.local/apps"
     readonly property int itemHeight: Constants.size
     readonly property int listViewHeight: 200
 
@@ -31,7 +29,7 @@ ColumnLayout {
     }
 
     property Context context: Context {}
-    readonly property string extractionPath: `${installDirectory}/${context.extractionDirectory}`
+    readonly property string extractionPath: `${Constants.wizard_tarball_extraction_directory}/${context.extractionDirectory}`
      
     function getPackageName(path) { return path.substring(path.lastIndexOf("/") + 1); }
 
@@ -66,6 +64,9 @@ ColumnLayout {
 
                 ClickableButton {
                     enabled: !_InspectionProcess.running
+                    padding: Constants.padding / 1.5
+                    leftPadding: Constants.padding
+                    rightPadding: Constants.padding
                     colors.accent: Constants.color_sky
                     text: "Refresh"
                     onClicked: _FolderScanProcess.run()
@@ -151,7 +152,7 @@ ColumnLayout {
                     StyledText {
                         anchors.centerIn: parent
                         color: Constants.spotlight_color_ink_muted
-                        text: "No tarballs found in " + root.scanDirectory
+                        text: "No tarballs found in " + Constants.wizard_tarball_scan_directory
                     }
                 }
             }
@@ -180,6 +181,8 @@ ColumnLayout {
 
                 ClickableButton {
                     enabled: !_ExtractionProcess.running && !root.success
+                    topPadding: Constants.padding / 1.5
+                    bottomPadding: Constants.padding / 1.5
                     colors.accent: Constants.color_red
                     colors.muted: Constants.color_overlay
                     colors.ink: Constants.color_base
@@ -277,6 +280,7 @@ ColumnLayout {
 
                     leftPadding: Constants.padding
                     rightPadding: Constants.padding
+                    
                     verticalAlignment: TextInput.AlignVCenter
                     
                     color: Constants.spotlight_color_ink_active
@@ -298,6 +302,8 @@ ColumnLayout {
 
                 ClickableButton {
                     enabled: root.context.packageDirectory !== "" && _TextFieldDestinationFolder.text !== "" && !_ExtractionProcess.running && !root.success
+
+                    Layout.fillHeight: true
 
                     colors.accent: enabled ? Constants.color_green : Constants.color_overlay
                     colors.muted: Constants.color_overlay
@@ -334,7 +340,7 @@ ColumnLayout {
         function run() {
             command = [
                 "bash", "-c",
-                `find ${root.scanDirectory} -maxdepth 2 -type f \\( -name '*.tar' -o -name '*.tar.gz' -o -name '*.tgz' -o -name '*.tar.bz2' -o -name '*.tbz2' -o -name '*.tar.xz' \\) 2>/dev/null | sort`
+                `find ${Constants.wizard_tarball_scan_directory} -maxdepth 2 -type f \\( -name '*.tar' -o -name '*.tar.gz' -o -name '*.tgz' -o -name '*.tar.bz2' -o -name '*.tbz2' -o -name '*.tar.xz' \\) 2>/dev/null | sort`
             ];
             running = true;
         }
@@ -347,7 +353,7 @@ ColumnLayout {
             const err = scan_stderr.text.trim();
 
             if (err.length > 0) {
-                Debug.log([ "Tarball Installation" ], `Folder scanning for tarballs failed: ${err}`);
+                Debug.log(["Wizard", "Tarball", "Folder Scanning" ], `Folder scanning for tarballs failed: ${err}`);
                 return;
             }
 
@@ -385,7 +391,7 @@ ColumnLayout {
             const err = inspection_stderr.text.trim();
 
             if (err.length > 0) {
-                Debug.log([ "Tarball Installation" ], `Tarball inspection failed: ${err}`);
+                Debug.log(["Wizard", "Tarball", "Inspection" ], `Tarball inspection failed: ${err}`);
                 root.context.packagePath = "";
                 return;
             }
@@ -417,7 +423,7 @@ ColumnLayout {
             if (!root.context.packagePath || !root.context.packageDirectory || !root.context.extractionDirectory) return;
 
             command = ["bash", "-c", `
-                mkdir -p "${root.installDirectory}"
+                mkdir -p "${Constants.wizard_tarball_extraction_directory}"
                 rm -rf "${root.extractionPath}"
                 mkdir -p "${root.extractionPath}"
                 tar -xf "${root.context.packagePath}" -C "${root.extractionPath}" --strip-components=1 "${root.context.packageDirectory}"
@@ -432,7 +438,7 @@ ColumnLayout {
             command = [];
 
             if (err.length > 0) {
-                Debug.log([ "Tarball Installation" ], `Installation failed: ${err}`);
+                Debug.log(["Wizard", "Tarball", "Extraction" ], `Failed: ${err}`);
                 return;
             }
 
@@ -449,10 +455,11 @@ ColumnLayout {
         readonly property string packageName: root.getPackageName(root.context.packagePath)
 
         onTriggered: {
-            Debug.log([ "Tarball Installation" ], "Installation completed:", packageName);
+            Debug.log(["Wizard", "Tarball", "Extraction" ], "Completed:", packageName);
             NotificationService.push(
                 "Installation Completed",
-                `Package: ${packageName}\nExtracted ${root.context.extractionDirectory} to ${root.extractionPath}`);
+                `Package: ${packageName}\nExtracted ${root.context.extractionDirectory} to ${root.extractionPath}`
+            );
             root.completed();
         }
     }
