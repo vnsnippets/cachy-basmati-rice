@@ -144,7 +144,7 @@ ColumnLayout {
                 StyledBox {
                     implicitWidth: _ListViewTarballs.width
                     implicitHeight: Constants.size + Constants.padding
-                    visible: _TarballList.count === 0
+                    visible: !_FolderScanProcess.running && _TarballList.count === 0
 
                     radius: Constants.radius
                     colors.background: Constants.spotlight_color_background_default
@@ -339,10 +339,7 @@ ColumnLayout {
         running: false
 
         function run() {
-            command = [
-                "bash", "-c",
-                `find ${Constants.wizard_tarball_scan_directory} -maxdepth 2 -type f \\( -name '*.tar' -o -name '*.tar.gz' -o -name '*.tgz' -o -name '*.tar.bz2' -o -name '*.tbz2' -o -name '*.tar.xz' \\) 2>/dev/null | sort`
-            ];
+            command = [ "sh", `${Quickshell.shellDir}/Scripts/ExtractTarball.sh`, "--scan", Constants.wizard_tarball_scan_directory ]
             running = true;
         }
 
@@ -425,7 +422,7 @@ ColumnLayout {
             if (!root.context.packagePath || !root.context.packageDirectory || !root.context.extractionDirectory) return;
 
             let args = [
-                "bash", `${Quickshell.shellDir}/Scripts/ExtractTarball.sh`,
+                "sh", `${Quickshell.shellDir}/Scripts/ExtractTarball.sh`,
                 "--package", root.context.packagePath,
                 "--folder", root.context.packageDirectory,
                 "--destination", root.extractionPath
