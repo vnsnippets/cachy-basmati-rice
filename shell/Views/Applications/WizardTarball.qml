@@ -30,7 +30,6 @@ ColumnLayout {
         property string extractionDirectory: packageDirectory
     }
 
-    
     property Context context: Context {}
     readonly property string extractionPath: `${installDirectory}/${context.extractionDirectory}`
      
@@ -92,8 +91,7 @@ ColumnLayout {
 
                     required property string path
                     readonly property bool active: _TarballItem.containsMouse && enabled
-
-                    property bool inspecting: false
+                    readonly property bool inspecting: root.context.packagePath === path && _InspectionProcess.running
 
                     StyledBox {
                         anchors.fill: parent
@@ -138,10 +136,7 @@ ColumnLayout {
                         }
                     }
 
-                    onClicked: {
-                        inspecting = true;
-                        _InspectionProcess.run(path);
-                    }
+                    onClicked: _InspectionProcess.run(path)
                 }
 
                 StyledBox {
@@ -161,7 +156,7 @@ ColumnLayout {
                 }
             }
 
-            Component.onCompleted: _FolderScanProcess.running = true
+            Component.onCompleted: _FolderScanProcess.run()
         }
     }
 
@@ -215,8 +210,7 @@ ColumnLayout {
 
                     required property string name
                     readonly property bool active: enabled && _TarballDirectoryItem.containsMouse
-
-                    property bool selected: false
+                    readonly property bool selected: root.context.packageDirectory === name
 
                     StyledBox {
                         anchors.fill: parent
@@ -253,10 +247,7 @@ ColumnLayout {
                         }
                     }
 
-                    onClicked: {
-                        selected = true
-                        root.context.packageDirectory = _TarballDirectoryItem.name
-                    }
+                    onClicked: root.context.packageDirectory = _TarballDirectoryItem.name
                 }
             }
 
@@ -277,7 +268,7 @@ ColumnLayout {
                 Layout.preferredHeight: root.itemHeight
 
                 TextField {
-                    id: target_folder_text_field
+                    id: _TextFieldDestinationFolder
 
                     enabled: !_ExtractionProcess.running
 
@@ -299,14 +290,14 @@ ColumnLayout {
                     onTextChanged: root.context.extractionDirectory = text
 
                     background: Rectangle {
-                        color: target_folder_text_field.activeFocus ? Constants.spotlight_color_background_active : Constants.spotlight_color_background_default
-                        border.color: Qt.alpha(Constants.spotlight_color_border, target_folder_text_field.activeFocus ? 0.50 : 0.15)
+                        color: _TextFieldDestinationFolder.activeFocus ? Constants.spotlight_color_background_active : Constants.spotlight_color_background_default
+                        border.color: Qt.alpha(Constants.spotlight_color_border, _TextFieldDestinationFolder.activeFocus ? 0.50 : 0.15)
                         radius: Constants.radius
                     }
                 }
 
                 ClickableButton {
-                    enabled: root.context.packageDirectory !== "" && target_folder_text_field.text !== "" && !_ExtractionProcess.running && !root.success
+                    enabled: root.context.packageDirectory !== "" && _TextFieldDestinationFolder.text !== "" && !_ExtractionProcess.running && !root.success
 
                     colors.accent: enabled ? Constants.color_green : Constants.color_overlay
                     colors.muted: Constants.color_overlay
@@ -331,7 +322,6 @@ ColumnLayout {
             }  
         }
     }
-
     
     Process {
         id: _FolderScanProcess
@@ -340,18 +330,19 @@ ColumnLayout {
         stderr: StdioCollector { id: scan_stderr }
 
         running: false
-        command: [
-            "bash", "-c",
-            `find ${root.scanDirectory} -maxdepth 2 -type f \\( -name '*.tar' -o -name '*.tar.gz' -o -name '*.tgz' -o -name '*.tar.bz2' -o -name '*.tbz2' -o -name '*.tar.xz' \\) 2>/dev/null | sort`
-        ]
 
         function run() {
-            _FolderScanProcess.running = true;
+            command = [
+                "bash", "-c",
+                `find ${root.scanDirectory} -maxdepth 2 -type f \\( -name '*.tar' -o -name '*.tar.gz' -o -name '*.tgz' -o -name '*.tar.bz2' -o -name '*.tbz2' -o -name '*.tar.xz' \\) 2>/dev/null | sort`
+            ];
+            running = true;
         }
 
         onRunningChanged: {
             if (running) return;
 
+            command = [];
             const log = scan_stdout.text.trim();
             const err = scan_stderr.text.trim();
 
@@ -360,9 +351,7 @@ ColumnLayout {
                 return;
             }
 
-            Debug.log(["Wizard", "Tarball", "Folder Scan"], `\n${log}`)
-
-            const lines = log.split("\n") ?? [];
+            const lines = log ? log.split("\n") : [];
             _TarballList.clear();
 
             const items = [];
@@ -382,22 +371,22 @@ ColumnLayout {
         stderr: StdioCollector { id: inspection_stderr }
         running: false
 
-        property string path: ""
-        command: ["tar", "-tf", path];
-
         function run(_path) {
-            path = _path;
+            root.context.packagePath = _path;
+            command = ["tar", "-tf", _path];
             running = true;
         }
 
         onRunningChanged: {
             if (running) return;
 
+            command = [];
             const log = inspection_stdout.text.trim();
             const err = inspection_stderr.text.trim();
 
             if (err.length > 0) {
                 Debug.log([ "Tarball Installation" ], `Tarball inspection failed: ${err}`);
+                root.context.packagePath = "";
                 return;
             }
 
@@ -415,11 +404,8 @@ ColumnLayout {
             const folders = [];
             for (const dir of directories) folders.push({ name: dir });
             if (folders.length > 0) _TarballDirectoryList.append(folders);
-
-            root.context.packagePath = path;
         }
     }
-
 
     Process {
         id: _ExtractionProcess
@@ -427,15 +413,15 @@ ColumnLayout {
         stderr: StdioCollector { id: installation_stderr }
         running: false
 
-        command: ["bash", "-c", `
-            mkdir -p "${root.installDirectory}"
-            rm -rf "${root.extractionPath}"
-            mkdir -p "${root.extractionPath}"
-            tar -xf "${root.context.packagePath}" -C "${root.extractionPath}" --strip-components=1 "${root.context.packageDirectory}"
-        `];
-
-        function run(folder) {
+        function run() {
             if (!root.context.packagePath || !root.context.packageDirectory || !root.context.extractionDirectory) return;
+
+            command = ["bash", "-c", `
+                mkdir -p "${root.installDirectory}"
+                rm -rf "${root.extractionPath}"
+                mkdir -p "${root.extractionPath}"
+                tar -xf "${root.context.packagePath}" -C "${root.extractionPath}" --strip-components=1 "${root.context.packageDirectory}"
+            `];
             running = true;
         }
 
