@@ -21,7 +21,7 @@ ColumnLayout {
     signal completed
 
     readonly property int itemHeight: Constants.size
-    readonly property int listViewHeight: 200
+    readonly property int listViewHeight: 296
 
     component Context: QtObject {
         property string packagePath: ""
@@ -39,10 +39,19 @@ ColumnLayout {
     ListModel { id: _TarballList }
     ListModel { id: _TarballDirectoryList }
 
+    StyledText {
+        Layout.topMargin: Constants.padding
+        Layout.alignment: Qt.AlignVCenter
+        text: "PACKAGE INSTALLATION"
+        color: Constants.spotlight_color_ink_muted
+        font.weight: 600
+    }
+
     ContentContainer {
         id: container
         Layout.fillWidth: true
         Layout.preferredHeight: container.implicitHeight
+
         content: (root.context.packagePath === "" || _InspectionProcess.running) ? _TarballSelectionComponent : _TarballExtractionComponent
     }
 
@@ -57,7 +66,7 @@ ColumnLayout {
 
                 StyledText {
                     color: Constants.spotlight_color_ink_active
-                    font.pixelSize: Constants.font_size_lg
+                    font.pixelSize: Constants.font_size
                     text: "Select package"
                 }
 
@@ -174,7 +183,7 @@ ColumnLayout {
 
                 StyledText {
                     color: Constants.spotlight_color_ink_active
-                    font.pixelSize: Constants.font_size_lg
+                    font.pixelSize: Constants.font_size
                     text: "Select folder from tarball"
                 }
                 
@@ -197,10 +206,18 @@ ColumnLayout {
                 }
             }
 
+            StyledText {
+                color: Constants.spotlight_color_ink_muted
+                font.pixelSize: Constants.font_size_sm
+                text: root.context.packagePath
+            }
+
             ListView {
                 id: _ListViewTarballDirectories
+
                 Layout.fillWidth: true
-                Layout.preferredHeight: 120
+                Layout.preferredHeight: root.listViewHeight
+
                 model: _TarballDirectoryList
                 clip: true
                 spacing: 4

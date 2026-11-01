@@ -224,6 +224,12 @@ StyledBox {
             }
 
             Item { Layout.fillWidth: true }
+
+            DisplayControl {             
+                active: root.content === display_management
+                onClicked: root.navigate(display_management)
+                Component { id: display_management; DisplayManagement { implicitHeight: 400; } }
+            }
             
             ClickableWithIcon {
                 size: Constants.icon_size
@@ -243,19 +249,11 @@ StyledBox {
                
                 active: root.content === app_installer
                 onClicked: root.navigate(app_installer)
+                
                 Component { 
                     id: app_installer
-                    WizardTarball {
-                        implicitHeight: 400
-                        onCompleted: root.back()
-                    }
+                    WizardTarball { onCompleted: root.back() }
                 }
-            }
-
-            DisplayControl {                
-                active: root.content === display_management
-                onClicked: root.navigate(display_management)
-                Component { id: display_management; DisplayManagement { implicitHeight: 400; } }
             }
         }
     }
