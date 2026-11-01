@@ -227,6 +227,10 @@ Singleton {
     // Application Launchpad / Spotlight
     readonly property string spotlight_search_placeholder:          "Search..."
     readonly property bool   spotlight_show_appid:                  true
+    readonly property list<string> spotlight_hidden_apps:           [ "bssh", "bvnc", "avahi-discover", "btop", "btrfs-assistant", "cachyos-hello", 
+                                                                      "org.cachyos.KernelManager", "cachyos-pi", "footclient", "foot-server",
+                                                                      "nwg-look", "lstopo", "org.gnome.Meld", "micro", "mpv", "qv4l2", "qvidcap",
+                                                                      "org.cachyos.scx-manager", "com.shellyorg.shelly", "org.pulseaudio.pavucontrol" ]
 
     readonly property int    spotlight_item_height:                 40 + padding
 

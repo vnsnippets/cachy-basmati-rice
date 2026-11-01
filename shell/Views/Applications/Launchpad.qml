@@ -17,30 +17,37 @@ ColumnLayout {
     required property int page_size
     readonly property string default_app_icon: "application-x-executable"
 
+    property bool showHiddenApps: false
+
     spacing: Constants.spacing
 
     ListModel { 
-        id: results
+        id: _SearchResults
         function update() {
-            const filterText = search_text_field.text.toLowerCase().trim();
+            const filterText = _SearchTextField.text.toLowerCase().trim();
             
             // Collect all matching applications
             const matches = [];
             for (const app of DesktopEntries.applications.values) {
                 if (app.noDisplay) continue;
                 
+                // Exclude hidden apps if showHiddenApps is false
+                if (!root.showHiddenApps && Constants.spotlight_hidden_apps && Constants.spotlight_hidden_apps.includes(app.id)) {
+                    continue;
+                }
+                
                 if (filterText === "" || app.name.toLowerCase().includes(filterText)) {
                     matches.push(app);
                 }
             }
 
-            // Sort matching apps alphabetically by name
+            // Sort matching _ApplicationsView alphabetically by name
             matches.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 
             // Rebuild model content in alphabetical order
-            results.clear();
+            _SearchResults.clear();
             for (const app of matches) {
-                results.append({
+                _SearchResults.append({
                     id: app.id,
                     name: app.name,
                     icon: app.icon ? app.icon : root.default_app_icon,
@@ -48,90 +55,114 @@ ColumnLayout {
                 });
             }
 
-            apps.currentIndex = 0;
+            _ApplicationsView.currentIndex = 0;
         }
     }
 
-    TextField {
-        id: search_text_field
-        
+    RowLayout {
         Layout.fillWidth: true
-        Layout.preferredHeight: Constants.spotlight_item_height
+        spacing: Constants.spacing
 
-        leftPadding: icon.size + icon.padding + Constants.padding
-        rightPadding: Constants.padding
-        verticalAlignment: TextInput.AlignVCenter
-        
-        color: Constants.spotlight_color_ink_active
-        font.pixelSize: Constants.font_size
-        focus: true
-        
-        placeholderText: Constants.spotlight_search_placeholder
-        placeholderTextColor: Qt.alpha(color, 0.5)
+        TextField {
+            id: _SearchTextField
+            
+            Layout.fillWidth: true
+            Layout.preferredHeight: Constants.spotlight_item_height
 
-        ClickableWithIcon {
-            id: icon
-            size: 20
-            padding: 12
-            anchors.verticalCenter: parent.verticalCenter
-            iconname: "Search.svg"
-            enabled: false
-            icon_color: Qt.alpha(Constants.spotlight_color_ink_muted, (search_text_field.activeFocus) ? 0.60: 0.20)
-        }
+            readonly property int iconSize: 20
+            readonly property int iconPadding: 12
 
-        background: Rectangle {
-            color: (search_text_field.activeFocus) ? Constants.spotlight_color_background_active : Constants.spotlight_color_background_default
-            border.color: Qt.alpha(Constants.spotlight_color_border, (search_text_field.activeFocus) ? 0.50: 0.15)
-            radius: Constants.radius
-        }
+            leftPadding: iconSize + iconPadding + Constants.padding
+            rightPadding: iconSize + iconPadding + Constants.padding
 
-        Keys.onEscapePressed: EventOrchestrator.consoleDismissContentEvent()
+            verticalAlignment: TextInput.AlignVCenter
+            
+            color: Constants.spotlight_color_ink_active
+            font.pixelSize: Constants.font_size
+            focus: true
+            
+            placeholderText: Constants.spotlight_search_placeholder
+            placeholderTextColor: Qt.alpha(color, 0.5)
 
-        Keys.onReturnPressed: {
-            if (results.count > 0 && apps.currentIndex >= 0) {
-                results.get(apps.currentIndex).app.execute();
-                EventOrchestrator.consoleDismissContentEvent();
+            ClickableWithIcon {
+                size: _SearchTextField.iconSize
+                padding: _SearchTextField.iconPadding
+                anchors.verticalCenter: parent.verticalCenter
+                iconname: "Search.svg"
+                enabled: false
+                icon_color: Qt.alpha(Constants.spotlight_color_ink_muted, (_SearchTextField.activeFocus) ? 0.60: 0.20)
             }
-        }
 
-        Keys.onUpPressed: {
-            if (apps.currentIndex > 0) {
-                apps.currentIndex -= 1;
+            ClickableWithIcon {
+                size: _SearchTextField.iconSize
+                padding: _SearchTextField.iconPadding
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                iconname: root.showHiddenApps ? "Eye.svg" : "Eye-Off.svg"
+                styles.icon_color_idle: Constants.spotlight_color_ink_muted
+                styles.icon_color_active: Constants.spotlight_color_ink_active
+                active: root.showHiddenApps
+                onClicked: {
+                    root.showHiddenApps = !root.showHiddenApps;
+                    _SearchTextField.forceActiveFocus();
+                    _SearchResults.update();
+                }
             }
-        }
 
-        Keys.onDownPressed: {
-            if (apps.currentIndex < results.count - 1) {
-                apps.currentIndex += 1;
-            } else {
-                apps.currentIndex = 0;
+            background: Rectangle {
+                color: (_SearchTextField.activeFocus) ? Constants.spotlight_color_background_active : Constants.spotlight_color_background_default
+                border.color: Qt.alpha(Constants.spotlight_color_border, (_SearchTextField.activeFocus) ? 0.50: 0.15)
+                radius: Constants.radius
             }
-        }
 
-        Component.onCompleted: search_text_field.forceActiveFocus();
-        
-        HoverHandler { cursorShape: Qt.IBeamCursor }
+            Keys.onEscapePressed: EventOrchestrator.consoleDismissContentEvent()
+
+            Keys.onReturnPressed: {
+                if (_SearchResults.count > 0 && _ApplicationsView.currentIndex >= 0) {
+                    _SearchResults.get(_ApplicationsView.currentIndex).app.execute();
+                    EventOrchestrator.consoleDismissContentEvent();
+                }
+            }
+
+            Keys.onUpPressed: {
+                if (_ApplicationsView.currentIndex > 0) {
+                    _ApplicationsView.currentIndex -= 1;
+                }
+            }
+
+            Keys.onDownPressed: {
+                if (_ApplicationsView.currentIndex < _SearchResults.count - 1) {
+                    _ApplicationsView.currentIndex += 1;
+                } else {
+                    _ApplicationsView.currentIndex = 0;
+                }
+            }
+
+            Component.onCompleted: _SearchTextField.forceActiveFocus();
+            
+            HoverHandler { cursorShape: Qt.IBeamCursor }
+        }
     }
 
     Applications {
-        id: apps
-        model: results        
+        id: _ApplicationsView
+        model: _SearchResults
         spacing: root.spacing
         Layout.fillWidth: true
 
         item_height: Constants.spotlight_item_height
         page_size: root.page_size
 
-        Component.onCompleted: results.update()
+        Component.onCompleted: _SearchResults.update()
     }
 
     Connections {
-        target: search_text_field
-        function onTextChanged() { results.update(); }
+        target: _SearchTextField
+        function onTextChanged() { _SearchResults.update(); }
     }
 
     Connections {
         target: DesktopEntries
-        function onApplicationsChanged() { results.update(); }
+        function onApplicationsChanged() { _SearchResults.update(); }
     } 
 }

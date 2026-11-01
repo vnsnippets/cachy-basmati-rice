@@ -24,9 +24,9 @@ ListView {
     keyNavigationEnabled: false
 
     delegate: Clickable {
-        id: item
+        id: _ApplicationItem
 
-        width: ListView.view.width
+        width: root.width
         implicitHeight: root.item_height
 
         required property int index
@@ -35,21 +35,17 @@ ListView {
         required property string icon
         required property var app
 
-        readonly property bool is_selected: root.currentIndex === item.index
-        readonly property bool active: item.containsMouse || is_selected
+        readonly property bool is_selected: root.currentIndex === _ApplicationItem.index
+        readonly property bool active: _ApplicationItem.containsMouse || is_selected
 
         StyledBox {
-            id: item_container
-
             anchors.fill: parent
             radius: Constants.radius
 
-            colors.background: (item.is_selected) ? Constants.spotlight_color_background_active : Constants.color_transparent
-            colors.border: Qt.alpha(Constants.spotlight_color_border, (item.active) ? 0.25 : 0)
+            colors.background: (_ApplicationItem.is_selected) ? Constants.spotlight_color_background_active : Constants.color_transparent
+            colors.border: Qt.alpha(Constants.spotlight_color_border, (_ApplicationItem.active) ? 0.25 : 0)
 
             RowLayout {
-                id: item_details
-
                 anchors.fill: parent
                 anchors.leftMargin: Constants.padding
                 anchors.rightMargin: Constants.padding
@@ -57,7 +53,7 @@ ListView {
 
                 IconImage {
                     implicitSize: Constants.spotlight_item_height - Constants.padding * 2
-                    source: Quickshell.iconPath(item.icon, true)
+                    source: Quickshell.iconPath(_ApplicationItem.icon, true)
                     mipmap: true
                 }
 
@@ -72,9 +68,9 @@ ListView {
                     styles.color_idle: Constants.spotlight_color_ink_muted
                     styles.color_active: Constants.spotlight_color_ink_active
 
-                    active: item.active
+                    active: _ApplicationItem.active
 
-                    text: item.name
+                    text: _ApplicationItem.name
                 }
 
                 StyledText {
@@ -87,10 +83,10 @@ ListView {
                     styles.color_idle: Constants.spotlight_color_ink_muted
                     styles.color_active: Constants.spotlight_color_ink_active
 
-                    active: item.active
+                    active: _ApplicationItem.active
                     opacity: (active) ? 0.70 : 0.50
 
-                    text: (Constants.spotlight_show_appid) ? item.id : item.app.genericName ? item.app.genericName : ""
+                    text: (Constants.spotlight_show_appid) ? _ApplicationItem.id : _ApplicationItem.app.genericName ? _ApplicationItem.app.genericName : ""
 
                     Behavior on opacity { NumberAnimation { duration: Constants.animation_duration } }
                 }
@@ -98,8 +94,8 @@ ListView {
         }
 
         onClicked: {
-            root.currentIndex = item.index;
-            item.app.execute();
+            root.currentIndex = _ApplicationItem.index;
+            _ApplicationItem.app.execute();
             EventOrchestrator.consoleDismissContentEvent();
         }
     }
