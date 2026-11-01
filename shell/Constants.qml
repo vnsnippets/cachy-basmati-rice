@@ -245,4 +245,5 @@ Singleton {
     // Wizard: Tarball Extraction
     readonly property string wizard_tarball_scan_directory:         "$HOME/Downloads"
     readonly property string wizard_tarball_extraction_directory:   "$HOME/.local/apps"
+    readonly property bool wizard_tarball_delete_original_packages: true
 }

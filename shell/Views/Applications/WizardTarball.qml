@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import Quickshell
 import Quickshell.Io
 
 import qs
@@ -142,7 +143,7 @@ ColumnLayout {
 
                 StyledBox {
                     implicitWidth: _ListViewTarballs.width
-                    implicitHeight: Constants.size
+                    implicitHeight: Constants.size + Constants.padding
                     visible: _TarballList.count === 0
 
                     radius: Constants.radius
@@ -416,25 +417,34 @@ ColumnLayout {
     Process {
         id: _ExtractionProcess
         
-        stderr: StdioCollector { id: installation_stderr }
+        stdout: StdioCollector { id: extraction_stdout }
+        stderr: StdioCollector { id: extraction_stderr }
         running: false
 
         function run() {
             if (!root.context.packagePath || !root.context.packageDirectory || !root.context.extractionDirectory) return;
 
-            command = ["bash", "-c", `
-                mkdir -p "${Constants.wizard_tarball_extraction_directory}"
-                rm -rf "${root.extractionPath}"
-                mkdir -p "${root.extractionPath}"
-                tar -xf "${root.context.packagePath}" -C "${root.extractionPath}" --strip-components=1 "${root.context.packageDirectory}"
-            `];
+            let args = [
+                "bash", `${Quickshell.shellDir}/Scripts/ExtractTarball.sh`,
+                "--package", root.context.packagePath,
+                "--folder", root.context.packageDirectory,
+                "--destination", root.extractionPath
+            ];
+
+            if (Constants.wizard_tarball_delete_original_packages) {
+                args.push("--delete");
+            }
+
+            command = args;
             running = true;
         }
 
         onRunningChanged: {
             if (running) return;
 
-            const err = installation_stderr.text.trim();
+            const log = extraction_stdout.text.trim();
+            const err = extraction_stderr.text.trim();
+
             command = [];
 
             if (err.length > 0) {
@@ -442,6 +452,7 @@ ColumnLayout {
                 return;
             }
 
+            Debug.log(["Wizard", "Tarball", "Extraction" ], `Completed:\n${log}`);
             root.success = true;
             _SuccessTimeout.start();
         }
@@ -455,7 +466,6 @@ ColumnLayout {
         readonly property string packageName: root.getPackageName(root.context.packagePath)
 
         onTriggered: {
-            Debug.log(["Wizard", "Tarball", "Extraction" ], "Completed:", packageName);
             NotificationService.push(
                 "Installation Completed",
                 `Package: ${packageName}\nExtracted ${root.context.extractionDirectory} to ${root.extractionPath}`
