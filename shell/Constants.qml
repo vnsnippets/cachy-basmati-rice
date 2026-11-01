@@ -247,7 +247,7 @@ Singleton {
     readonly property string screen_capture_command_clipboard:      "$HOME/.config/mango/scripts/satty.sh --clipboard"
 
     // Wizard: Tarball Extraction
-    readonly property string wizard_tarball_scan_directory:         "$HOME/Downloads"
-    readonly property string wizard_tarball_extraction_directory:   "$HOME/.local/apps"
-    readonly property bool wizard_tarball_delete_original_packages: true
+    readonly property string package_extraction_scan_directory:         "~/Downloads"
+    readonly property string package_extraction_target_directory:       "~/.local/apps"
+    readonly property bool package_extraction_delete_originals:         true
 }

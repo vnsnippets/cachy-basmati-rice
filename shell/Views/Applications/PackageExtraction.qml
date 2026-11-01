@@ -30,9 +30,23 @@ ColumnLayout {
     }
 
     property Context context: Context {}
-    readonly property string extractionPath: `${Constants.wizard_tarball_extraction_directory}/${context.extractionDirectory}`
+    readonly property string extractionPath: `${Constants.package_extraction_target_directory}/${context.extractionDirectory}`
      
     function getPackageName(path) { return path.substring(path.lastIndexOf("/") + 1); }
+    function isAppImage(path) {
+        return path.toLowerCase().endsWith(".appimage");
+    }
+    function isTarball(path) {
+        let lower = path.toLowerCase();
+        return lower.endsWith(".tar") || lower.endsWith(".tar.gz") || lower.endsWith(".tgz") || lower.endsWith(".tar.bz2") || lower.endsWith(".tbz2") || lower.endsWith(".tar.xz");
+    }
+    function getDefaultFolderName(path) {
+        let name = getPackageName(path);
+        if (isAppImage(path)) {
+            name = name.substring(0, name.length - 9);
+        }
+        return name;
+    }
 
     property bool success: false
 
@@ -52,11 +66,19 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: container.implicitHeight
 
-        content: (root.context.packagePath === "" || _InspectionProcess.running) ? _TarballSelectionComponent : _TarballExtractionComponent
+        content: {
+            if (root.context.packagePath === "" || (root.isTarball(root.context.packagePath) && _TarballInspectionProcess.running)) {
+                return _PackageSelectionComponent;
+            } else if (root.isAppImage(root.context.packagePath)) {
+                return _AppImageExtractionComponent;
+            } else {
+                return _TarballExtractionComponent;
+            }
+        }
     }
 
     Component {
-        id: _TarballSelectionComponent
+        id: _PackageSelectionComponent
         
         ColumnLayout {
             spacing: Constants.spacing
@@ -73,7 +95,7 @@ ColumnLayout {
                 Item { Layout.fillWidth: true }
 
                 ClickableButton {
-                    enabled: !_InspectionProcess.running
+                    enabled: !_TarballInspectionProcess.running
                     padding: Constants.padding / 1.5
                     leftPadding: Constants.padding
                     rightPadding: Constants.padding
@@ -98,11 +120,11 @@ ColumnLayout {
 
                     implicitWidth: _ListViewTarballs.width
                     implicitHeight: root.itemHeight
-                    enabled: !_InspectionProcess.running
+                    enabled: !_TarballInspectionProcess.running
 
                     required property string path
                     readonly property bool active: _TarballItem.containsMouse && enabled
-                    readonly property bool inspecting: root.context.packagePath === path && _InspectionProcess.running
+                    readonly property bool inspecting: root.context.packagePath === path && root.isTarball(path) && _TarballInspectionProcess.running
 
                     StyledBox {
                         anchors.fill: parent
@@ -147,7 +169,15 @@ ColumnLayout {
                         }
                     }
 
-                    onClicked: _InspectionProcess.run(path)
+                    onClicked: {
+                        if (root.isAppImage(path)) {
+                            root.context.packagePath = path;
+                            root.context.packageDirectory = "";
+                            root.context.extractionDirectory = root.getDefaultFolderName(path);
+                        } else {
+                            _TarballInspectionProcess.run(path);
+                        }
+                    }
                 }
 
                 StyledBox {
@@ -162,7 +192,7 @@ ColumnLayout {
                     StyledText {
                         anchors.centerIn: parent
                         color: Constants.spotlight_color_ink_muted
-                        text: "No tarballs found in " + Constants.wizard_tarball_scan_directory
+                        text: "No packages found in " + Constants.package_extraction_scan_directory
                     }
                 }
             }
@@ -175,16 +205,27 @@ ColumnLayout {
         id: _TarballExtractionComponent
 
         ColumnLayout {
-            spacing: root.spacing
+            spacing: Constants.padding * 2
 
             RowLayout {
                 Layout.fillWidth: true
+                Layout.topMargin: Constants.padding
                 spacing: Constants.spacing
 
-                StyledText {
-                    color: Constants.spotlight_color_ink_active
-                    font.pixelSize: Constants.font_size
-                    text: "Select folder from tarball"
+                Column {
+                    spacing: 1
+
+                    StyledText {
+                        color: Constants.spotlight_color_ink_active
+                        font.pixelSize: Constants.font_size
+                        text: "Select folder from tarball"
+                    }
+
+                    StyledText {
+                        color: Constants.spotlight_color_ink_muted
+                        font.pixelSize: Constants.font_size_sm
+                        text: root.context.packagePath
+                    }
                 }
                 
                 Item { Layout.fillWidth: true }
@@ -204,12 +245,6 @@ ColumnLayout {
                         root.context.extractionDirectory = root.context.packageDirectory;
                     }
                 }
-            }
-
-            StyledText {
-                color: Constants.spotlight_color_ink_muted
-                font.pixelSize: Constants.font_size_sm
-                text: root.context.packagePath
             }
 
             ListView {
@@ -327,7 +362,127 @@ ColumnLayout {
                     colors.muted: Constants.color_overlay
                     colors.ink: Constants.color_base
                     
-                    text: "Install"
+                    text: "Extract"
+                    onClicked: _ExtractionProcess.run()
+                }
+            }
+
+            StyledText {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                Layout.leftMargin: 2
+                Layout.rightMargin: 2
+                visible: _ExtractionProcess.running || root.success
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                
+                color: root.success ? Constants.color_green : Constants.color_yellow
+                text: root.success ? "Extraction completed!" : "Extraction in progress..."
+            }  
+        }
+    }
+
+    Component {
+        id: _AppImageExtractionComponent
+
+        ColumnLayout {
+            spacing: Constants.padding * 2
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.topMargin: Constants.padding
+                spacing: Constants.spacing
+
+                Column {
+                    spacing: 1
+
+                    StyledText {
+                        color: Constants.spotlight_color_ink_active
+                        font.pixelSize: Constants.font_size
+                        text: "Configure extraction folder"
+                    }
+
+                    StyledText {
+                        color: Constants.spotlight_color_ink_muted
+                        font.pixelSize: Constants.font_size_sm
+                        text: root.context.packagePath
+                    }
+                }
+
+                Item { Layout.fillWidth: true }
+
+                ClickableButton {
+                    enabled: !_ExtractionProcess.running && !root.success
+                    topPadding: Constants.padding / 1.5
+                    bottomPadding: Constants.padding / 1.5
+                    colors.accent: Constants.color_red
+                    colors.muted: Constants.color_overlay
+                    colors.ink: Constants.color_base
+                    text: "Cancel"
+
+                    onClicked: {
+                        root.context.packagePath = "";
+                        root.context.extractionDirectory = "";
+                    }
+                }
+            }
+
+            StyledText {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                Layout.leftMargin: 2
+                Layout.rightMargin: 2
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                
+                color: Constants.spotlight_color_ink_muted
+                text: `Destination: ${root.extractionPath}`
+            }        
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.preferredHeight: root.itemHeight
+
+                TextField {
+                    id: _TextFieldAppImageDestination
+
+                    enabled: !_ExtractionProcess.running
+
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    leftPadding: Constants.padding
+                    rightPadding: Constants.padding
+                    
+                    verticalAlignment: TextInput.AlignVCenter
+                    
+                    color: Constants.spotlight_color_ink_active
+                    font.pixelSize: Constants.font_size
+                    focus: true
+                    
+                    placeholderTextColor: Qt.alpha(color, 0.5)
+                    placeholderText: "Enter destination folder name"
+
+                    text: root.context.extractionDirectory
+                    onTextChanged: root.context.extractionDirectory = text
+
+                    background: Rectangle {
+                        color: _TextFieldAppImageDestination.activeFocus ? Constants.spotlight_color_background_active : Constants.spotlight_color_background_default
+                        border.color: Qt.alpha(Constants.spotlight_color_border, _TextFieldAppImageDestination.activeFocus ? 0.50 : 0.15)
+                        radius: Constants.radius
+                    }
+                }
+
+                ClickableButton {
+                    enabled: root.context.extractionDirectory !== "" && !_ExtractionProcess.running && !root.success
+
+                    Layout.fillHeight: true
+
+                    colors.accent: enabled ? Constants.color_green : Constants.color_overlay
+                    colors.muted: Constants.color_overlay
+                    colors.ink: Constants.color_base
+                    
+                    text: "Extract"
                     onClicked: _ExtractionProcess.run()
                 }
             }
@@ -356,7 +511,8 @@ ColumnLayout {
         running: false
 
         function run() {
-            command = [ "sh", `${Quickshell.shellDir}/Scripts/ExtractTarball.sh`, "--scan", Constants.wizard_tarball_scan_directory ]
+            const scanDir = Constants.package_extraction_scan_directory;
+            command = [ "sh", `${Quickshell.shellDir}/Scripts/ExtractPackage.sh`, "--scan", scanDir ]
             running = true;
         }
 
@@ -368,7 +524,7 @@ ColumnLayout {
             const err = scan_stderr.text.trim();
 
             if (err.length > 0) {
-                Debug.log(["Wizard", "Tarball", "Folder Scanning" ], `Folder scanning for tarballs failed: ${err}`);
+                Debug.log(["Wizard", "Package", "Folder Scanning" ], `Folder scanning failed: ${err}`);
                 return;
             }
 
@@ -386,7 +542,7 @@ ColumnLayout {
     }
 
     Process {
-        id: _InspectionProcess
+        id: _TarballInspectionProcess
         
         stdout: StdioCollector { id: inspection_stdout }
         stderr: StdioCollector { id: inspection_stderr }
@@ -427,7 +583,7 @@ ColumnLayout {
             if (folders.length > 0) _TarballDirectoryList.append(folders);
         }
     }
-
+    
     Process {
         id: _ExtractionProcess
         
@@ -436,16 +592,25 @@ ColumnLayout {
         running: false
 
         function run() {
-            if (!root.context.packagePath || !root.context.packageDirectory || !root.context.extractionDirectory) return;
+            let isAppImg = root.isAppImage(root.context.packagePath);
+
+            // Validate required fields based on type
+            if (!root.context.packagePath || !root.extractionPath) return;
+            if (!isAppImg && !root.context.packageDirectory) return;
 
             let args = [
-                "sh", `${Quickshell.shellDir}/Scripts/ExtractTarball.sh`,
+                "sh", `${Quickshell.shellDir}/Scripts/ExtractPackage.sh`,
                 "--package", root.context.packagePath,
-                "--folder", root.context.packageDirectory,
-                "--destination", root.extractionPath
+                "--destination", root.extractionPath,
+                "--type", isAppImg ? "appimage" : "tarball"
             ];
 
-            if (Constants.wizard_tarball_delete_original_packages) {
+            // Tarballs require the internal folder argument
+            if (!isAppImg) {
+                args.push("--folder", root.context.packageDirectory);
+            }
+
+            if (Constants.package_extraction_delete_originals) {
                 args.push("--delete");
             }
 
@@ -462,11 +627,11 @@ ColumnLayout {
             command = [];
 
             if (err.length > 0) {
-                Debug.log(["Wizard", "Tarball", "Extraction" ], `Failed: ${err}`);
+                Debug.log(["Wizard", "Package", "Extraction"], `Failed: ${err}`);
                 return;
             }
 
-            Debug.log(["Wizard", "Tarball", "Extraction" ], `Completed:\n${log}`);
+            Debug.log(["Wizard", "Package", "Extraction"], `Completed:\n${log}`);
             root.success = true;
             _SuccessTimeout.start();
         }
@@ -480,10 +645,12 @@ ColumnLayout {
         readonly property string packageName: root.getPackageName(root.context.packagePath)
 
         onTriggered: {
-            NotificationService.push(
-                "Installation Completed",
-                `Package: ${packageName}\nExtracted ${root.context.extractionDirectory} to ${root.extractionPath}`
-            );
+            if (root.isAppImage(root.context.packagePath)) {
+                NotificationService.push(
+                    "Installation Completed",
+                    `Package: ${packageName}\nExtracted to ${root.extractionPath}`
+                );
+            }
             root.completed();
         }
     }

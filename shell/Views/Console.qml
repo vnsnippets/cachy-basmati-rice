@@ -252,7 +252,7 @@ StyledBox {
                 
                 Component { 
                     id: app_installer
-                    WizardTarball { onCompleted: root.back() }
+                    PackageExtraction { onCompleted: root.back() }
                 }
             }
         }
