@@ -22,11 +22,8 @@ Button {
 
     padding: 0
 
-    width: size - (padding * 2)
-    height: size - (padding * 2)
-
-    icon.width: width
-    icon.height: height
+    icon.width: size
+    icon.height: size
     icon.color: tint
     icon.source: (_path.length > 0) ? Qt.resolvedUrl(_path) : ""
 

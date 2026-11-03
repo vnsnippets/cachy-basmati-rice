@@ -112,11 +112,10 @@ ColumnLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: Constants.spotlight_item_height
 
-            readonly property int iconSize: 20
-            readonly property int iconPadding: 12
+            readonly property int _padding: (_SearchTextField.implicitHeight - font.pixelSize) / 1.5
 
-            leftPadding: iconSize + iconPadding + Constants.padding
-            rightPadding: iconSize + iconPadding + Constants.padding
+            leftPadding: Constants.spotlight_icon_size + _padding + Constants.padding
+            rightPadding: Constants.spotlight_icon_size + _padding
 
             verticalAlignment: TextInput.AlignVCenter
 
@@ -127,18 +126,18 @@ ColumnLayout {
             placeholderText: Constants.spotlight_search_placeholder
             placeholderTextColor: Qt.alpha(color, 0.5)
 
-            ClickableWithIcon {
-                size: _SearchTextField.iconSize
-                padding: _SearchTextField.iconPadding
+            IconControl {
+                leftPadding: _SearchTextField._padding
+                rightPadding: _SearchTextField._padding
                 anchors.verticalCenter: parent.verticalCenter
-                iconname: "Search.svg"
-                enabled: false
-                icon_color: Qt.alpha(Constants.spotlight_color_ink_muted, (_SearchTextField.activeFocus) ? 0.60: 0.20)
+                size: Constants.spotlight_icon_size
+                source: "Search.svg"
+                tint: Qt.alpha(Constants.spotlight_color_ink_muted, (_SearchTextField.activeFocus) ? 0.60: 0.20)
             }
 
             ClickableWithIcon {
-                size: _SearchTextField.iconSize
-                padding: _SearchTextField.iconPadding
+                size: Constants.spotlight_icon_size
+                padding: _SearchTextField._padding
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 iconname: root.showHiddenApps ? "Eye.svg" : "Eye-Off.svg"

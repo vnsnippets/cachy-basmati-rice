@@ -232,14 +232,15 @@ Singleton {
                                                                       "nwg-look", "lstopo", "org.gnome.Meld", "micro", "mpv", "qv4l2", "qvidcap",
                                                                       "org.cachyos.scx-manager", "com.shellyorg.shelly", "org.pulseaudio.pavucontrol" ]
 
-    readonly property int    spotlight_item_height:                 40 + padding
+    readonly property int    spotlight_item_height:                 40
+    readonly property int    spotlight_icon_size:                   20
 
     readonly property color  spotlight_color_border:                color_subtext
     readonly property color  spotlight_color_ink_active:            color_text
     readonly property color  spotlight_color_ink_muted:             color_subtext
 
     readonly property color  spotlight_color_background_default:    Qt.alpha(color_base, 0.10)
-    readonly property color  spotlight_color_background_active:     Qt.alpha(color_base, 0.25)
+    readonly property color  spotlight_color_background_active:     Qt.alpha(color_surface, 0.20)
 
     // Screen Capture
     readonly property string screen_capture_command_region:         "$HOME/.config/mango/scripts/satty.sh --region --save"
@@ -247,7 +248,7 @@ Singleton {
     readonly property string screen_capture_command_clipboard:      "$HOME/.config/mango/scripts/satty.sh --clipboard"
 
     // Wizard: Tarball Extraction
-    readonly property string package_extraction_scan_directory:         "~/Downloads"
-    readonly property string package_extraction_target_directory:       "~/.local/apps"
-    readonly property bool package_extraction_delete_originals:         true
+    readonly property string package_extraction_scan_directory:     "~/Downloads"
+    readonly property string package_extraction_target_directory:   "~/.local/apps"
+    readonly property bool package_extraction_delete_originals:     true
 }
