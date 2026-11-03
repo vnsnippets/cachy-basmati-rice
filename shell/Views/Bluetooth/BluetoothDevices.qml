@@ -24,6 +24,8 @@ ColumnLayout {
     RowLayout {
         Layout.topMargin: Constants.padding
         Layout.fillWidth: true
+
+        
         spacing: Constants.spacing
 
         // Discovery Timer Progress Indicator
@@ -33,7 +35,7 @@ ColumnLayout {
             Layout.topMargin: 4
             Layout.bottomMargin: 4
 
-            value: 1.0 - (timeout_discovery.remaining / timeout_discovery.interval)
+            value: 1.0 - (_DiscoveryTimeout.remaining / _DiscoveryTimeout.interval)
             blink: false
             length: 25
             radius: Constants.radius / 2
@@ -43,33 +45,14 @@ ColumnLayout {
             styles.color_active: Constants.bluetooth_color_busy
         }
 
-        // Scan / Discovery Toggle Button
-        ClickableWithIcon {
-            implicitHeight: Constants.size - (Constants.padding / 2)
+        ClickableButton {
             implicitWidth: 108
-            padding: Constants.padding
-
+            Layout.maximumHeight: parent.height
             enabled: root.adapter.enabled
-
-            readonly property color accent: 
-                (!root.adapter.enabled) ? Constants.bluetooth_color_inactive :
-                    (root.adapter.discovering) ? Constants.bluetooth_color_critical : Constants.bluetooth_color_active
-
-            styles.background_color_idle: Qt.alpha(accent, 0.05)
-            styles.background_color_active: accent
-
-            styles.border_width: 1
-            styles.border_color_idle: Qt.alpha(accent, 0.5)
-            styles.border_color_active: Qt.alpha(accent, 1)
-
-            styles.text_color_idle: accent
-            styles.text_color_active: Constants.bluetooth_color_ink_active
-
-            font.family: Constants.font_family
+            colors.accent: (root.adapter.discovering) ? Constants.bluetooth_color_critical : Constants.bluetooth_color_active
+            colors.muted: Constants.bluetooth_color_inactive
+            colors.ink: Constants.bluetooth_color_ink_active
             text: root.adapter.discovering ? "Stop Scan" : "Scan Devices"
-
-            radius: Constants.radius
-
             onClicked: {
                 if (root.adapter) {
                     root.adapter.discovering = !root.adapter.discovering;
@@ -96,22 +79,22 @@ ColumnLayout {
             styles.border_color_idle: Constants.bluetooth_color_active
             styles.border_color_active: Constants.bluetooth_color_active
 
-            iconname: "power.svg"
+            iconname: "Power.svg"
 
             onClicked: if (root.adapter) {
                 root.adapter.discovering = false;
                 root.adapter.enabled = !root.adapter.enabled;
             }
             
-            radius: (active) ? Constants.icon_size : Constants.radius
+            radius: (active) ? Constants.radius_active : Constants.radius
             Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
         }
     }
 
     Component {
-        id: component_with_devices
+        id: _DevicesFoundComponent
         ListView {
-            id: device_list
+            id: _DevicesListView
             Layout.fillWidth: true
 
             implicitHeight: root.capped_height
@@ -127,8 +110,8 @@ ColumnLayout {
             ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff; }
 
             delegate: StyledBox {
-                id: device_item
-                width: ListView.view.width
+                id: _DeviceItem
+                width: _DevicesListView.width
                 radius: Constants.radius
 
                 readonly property int _padding: Constants.padding * 1.25
@@ -168,146 +151,176 @@ ColumnLayout {
                 function cancel() { modelData.cancelPair(); }
 
                 function clicked() {
-                    if (device_item.pairing) {
-                        device_item.cancel()
-                    } else if (device_item.connected) {
-                        device_item.disconnect();
-                    } else if (device_item.paired) {
-                        device_item.connect();
-                    } else {
-                        // device_item.pair();
+                    if (_DeviceItem.pairing)_DeviceItem.cancel()
+                    else if (_DeviceItem.connected) _DeviceItem.disconnect();
+                    else if (_DeviceItem.paired) _DeviceItem.connect();
+                    else {
+                        _DeviceItem.modelData.trusted = true
+                        // _DeviceItem.pair();
                         Quickshell.execDetached([
                             "foot", "sh", "-c", 
-                            `(echo 'agent on'; echo 'default-agent'; echo 'pair ${device_item.address}'; cat) | bluetoothctl`
+                            `(echo 'agent on'; echo 'default-agent'; echo 'pair ${_DeviceItem.address}'; cat) | bluetoothctl`
                         ]);
                     }
                 }
 
-
                 color: Constants.bluetooth_color_background
-                border.color: (connected) ? Qt.alpha(accent, 0.5) : Constants.bluetooth_color_border
+                border.color:  (modelData.blocked) ? Qt.alpha(Constants.bluetooth_color_critical, 0.5) :
+                    (connected) ? Qt.alpha(accent, 0.5) : Constants.bluetooth_color_border
                 border.width: 1
 
+                Behavior on border.color { ColorAnimation { duration: Constants.animation_duration } }
+
                 RowLayout {
-                    id: device_content
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
+                    anchors.leftMargin: _DeviceItem._padding
+                    anchors.rightMargin: _DeviceItem._padding
+
+                    spacing: Constants.spacing
+
+                    // IconControl {
+                    //     size: Constants.icon_size * 1.25
+                    //     source: "bluetooth/" + _DeviceItem.icon + ".svg"
+                    //     tint: (_DeviceItem.connected) ? Constants.bluetooth_color_active : Constants.bluetooth_color_ink_muted
+                    // }
 
                     Column {
                         spacing: 1
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                        Layout.margins: device_item._padding
 
                         StyledText {
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                            text: device_item.device_name
-                            color: device_item.connected ? device_item.accent : Constants.bluetooth_color_ink_default
+                            text: _DeviceItem.device_name
+                            color: _DeviceItem.connected ? _DeviceItem.accent : Constants.bluetooth_color_ink_default
                             elide: Text.ElideRight
                         }
 
                         StyledText {
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                            text: device_item.connection_state
+                            text: _DeviceItem.connection_state + (_DeviceItem.modelData.batteryAvailable ? ` | Battery: ${(_DeviceItem.modelData.battery * 100).toFixed(0)}%` : "") 
                             color: Constants.bluetooth_color_ink_muted
                             font.pixelSize: Constants.font_size - 1
-                            visible: device_item.connection_state !== ""
-                        }
-                    }
-                    
-                    RowLayout {
-                        spacing: Constants.spacing
-                        Layout.fillHeight: true
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-
-                        StyledText {
-                            text: "Bonded: " + device_item.modelData.bonded
-                            color: Constants.bluetooth_color_ink_muted
-                            font.pixelSize: Constants.font_size - 1
-                            visible: device_item.connection_state !== ""
-                        }
-                        StyledText {
-                            text: "Trusted: " + device_item.modelData.trusted
-                            color: Constants.bluetooth_color_ink_muted
-                            font.pixelSize: Constants.font_size - 1
-                            visible: device_item.connection_state !== ""
-                        }
-                        StyledText {
-                            text: "Blocked: " + device_item.modelData.blocked
-                            color: Constants.bluetooth_color_ink_muted
-                            font.pixelSize: Constants.font_size - 1
-                            visible: device_item.connection_state !== ""
-                        }
-                        StyledText {
-                            text: "Wake: " + device_item.modelData.wakeAllowed
-                            color: Constants.bluetooth_color_ink_muted
-                            font.pixelSize: Constants.font_size - 1
-                            visible: device_item.connection_state !== ""
+                            visible: _DeviceItem.connection_state !== ""
                         }
                     }
 
-                    RowLayout {
+                    Row {
+                        id: _DeviceItemStatus
+                        spacing: Constants.spacing
+
+                        readonly property color muted: Qt.alpha(Constants.bluetooth_color_ink_muted, 0.5)
+
+                        ClickableWithIcon {
+                            Layout.fillHeight: true
+                            implicitWidth: implicitHeight
+
+                            active: _DeviceItem.modelData.blocked
+
+                            styles.icon_color_idle: _DeviceItemStatus.muted
+                            styles.icon_color_active: Constants.bluetooth_color_critical
+
+                            styles.border_width: 0
+                            radius: Constants.radius
+
+                            iconname: "Block.svg"
+
+                            onClicked: _DeviceItem.modelData.blocked = !_DeviceItem.modelData.blocked
+                        }
+
+                        ClickableWithIcon {
+                            Layout.fillHeight: true
+                            implicitWidth: implicitHeight
+
+                            active: _DeviceItem.modelData.wakeAllowed
+
+                            styles.icon_color_idle: _DeviceItemStatus.muted
+                            styles.icon_color_active: Constants.bluetooth_color_busy
+
+                            styles.border_width: 0
+                            radius: Constants.radius
+
+                            iconname: "Bolt.svg"
+
+                            onClicked: _DeviceItem.modelData.wakeAllowed = !_DeviceItem.modelData.wakeAllowed
+                        }
+
+                        ClickableWithIcon {
+                            Layout.fillHeight: true
+                            implicitWidth: implicitHeight
+
+                            active: _DeviceItem.modelData.trusted
+
+                            styles.icon_color_idle: _DeviceItemStatus.muted
+                            styles.icon_color_active: Constants.bluetooth_color_secure
+
+                            styles.border_width: 0
+                            radius: Constants.radius
+
+                            iconname: "Shield.svg"
+
+                            onClicked: _DeviceItem.modelData.trusted = !_DeviceItem.modelData.trusted
+                        }
+
+                        ClickableWithIcon {
+                            Layout.fillHeight: true
+                            implicitWidth: implicitHeight
+
+                            active: _DeviceItem.modelData.bonded
+
+                            styles.icon_color_idle: (active) ? Constants.bluetooth_color_saved : _DeviceItemStatus.muted
+
+                            styles.border_width: 0
+                            radius: Constants.radius
+
+                            iconname: (active) ? "Tag-Filled.svg" : "Tag-Outline.svg"                          
+                            enabled: false
+                        }
+                    }
+
+                    Row {
                         spacing: Constants.spacing
                         Layout.fillHeight: true
-                        Layout.margins: device_item._padding
-                        Layout.topMargin: device_item._padding * 2
-                        Layout.bottomMargin: device_item._padding * 2
+                        Layout.topMargin: _DeviceItem._padding * 2
+                        Layout.bottomMargin: _DeviceItem._padding * 2
 
                         Loader {
                             Layout.preferredWidth: implicitWidth
                             Layout.fillHeight: true
                             Layout.alignment: Qt.AlignVCenter
 
-                            sourceComponent: (device_item.state_changing) ? action_busy : action_connect
+                            sourceComponent: (_DeviceItem.state_changing) ? _BusyActionComponent : _ConnectActionComponent
 
                             Component {
-                                id: action_connect
+                                id: _ConnectActionComponent
 
-                                ClickableWithIcon {
-                                    implicitWidth: 96
+                                ClickableButton {
+                                    implicitWidth: 84
 
-                                    readonly property color accent: 
-                                        (device_item.connected) ? Constants.bluetooth_color_critical : 
-                                            Constants.bluetooth_color_active
+                                    topPadding: Constants.padding / 1.5
+                                    bottomPadding: Constants.padding / 1.5
 
-                                    padding: Constants.padding / 1.5
-                                    leftPadding: Constants.padding
-                                    rightPadding: Constants.padding
+                                    colors.accent: (_DeviceItem.connected) ? Constants.bluetooth_color_critical : Constants.bluetooth_color_active
+                                    colors.ink: Constants.bluetooth_color_ink_active
+                                    text: (_DeviceItem.connected) ? "Disconnect" : (_DeviceItem.paired ? "Connect" : "Pair")
 
-                                    styles.background_color_idle: Qt.alpha(accent, 0.05)
-                                    styles.background_color_active: Qt.alpha(accent, 1)
-
-                                    styles.icon_color_idle: accent
-                                    styles.icon_color_active: Constants.bluetooth_color_ink_active
-
-                                    styles.border_width: 1
-                                    styles.border_color_idle: Qt.alpha(accent, 0.5)
-                                    styles.border_color_active: Qt.alpha(accent, 1)
-
-                                    styles.text_color_idle: accent
-                                    styles.text_color_active: Constants.bluetooth_color_ink_active
-
-                                    font.family: Constants.font_family
-                                    text: (device_item.connected) ? "Disconnect" : (device_item.paired ? "Connect" : "Pair")
-
-                                    radius: Constants.radius
-
-                                    onClicked: device_item.clicked()
+                                    onClicked: _DeviceItem.clicked()
                                 }
                             }
 
                             Component {
-                                id: action_busy
+                                id: _BusyActionComponent
                                 Item {
-                                    id: busy_box
+                                    id: _BusyBox
                                     implicitWidth: 96
                                     Layout.fillHeight: true
 
                                     Rectangle {
-                                        id: rect_ball
+                                        id: _BusyBoxBall
                                         anchors.verticalCenter: parent.verticalCenter
 
                                         implicitHeight: 10
@@ -317,22 +330,22 @@ ColumnLayout {
                                         radius: implicitHeight
 
                                         readonly property real min_x: Constants.padding
-                                        readonly property real max_x: busy_box.width - rect_ball.width - Constants.padding
+                                        readonly property real max_x: _BusyBox.width - _BusyBoxBall.width - Constants.padding
 
                                         SequentialAnimation on x {
                                             loops: Animation.Infinite
                                             running: true
 
                                             NumberAnimation {
-                                                from: rect_ball.min_x
-                                                to: rect_ball.max_x
+                                                from: _BusyBoxBall.min_x
+                                                to: _BusyBoxBall.max_x
                                                 duration: Constants.animation_duration * 2
                                                 easing.type: Easing.InOutQuad
                                             }
 
                                             NumberAnimation {
-                                                from: rect_ball.max_x
-                                                to: rect_ball.min_x
+                                                from: _BusyBoxBall.max_x
+                                                to: _BusyBoxBall.min_x
                                                 duration: Constants.animation_duration * 2
                                                 easing.type: Easing.InOutQuad
                                             }
@@ -347,10 +360,10 @@ ColumnLayout {
                             implicitWidth: implicitHeight
                             padding: Constants.padding / 1.5
 
-                            enabled: device_item.paired
+                            enabled: _DeviceItem.paired
 
                             readonly property color accent:
-                                (!device_item.paired) ? Constants.bluetooth_color_inactive : 
+                                (!_DeviceItem.paired) ? Constants.bluetooth_color_inactive : 
                                     Constants.bluetooth_color_critical
 
                             styles.background_color_idle: Qt.alpha(accent, 0.05)
@@ -363,10 +376,10 @@ ColumnLayout {
                             styles.icon_color_idle: accent
                             styles.icon_color_active: Constants.bluetooth_color_ink_active
 
-                            iconname: "dismiss.svg"
+                            iconname: "Dismiss.svg"
                             radius: Constants.radius
 
-                            onClicked: device_item.forget()
+                            onClicked: _DeviceItem.forget()
                         }
                     }
                 }
@@ -375,17 +388,17 @@ ColumnLayout {
     }
 
     Component {
-        id: component_no_device
+        id: _NoDeviceFoundComponent
         Rectangle {
             Layout.fillWidth: true
-            implicitHeight: no_device_label.implicitHeight + Constants.padding * 3
+            implicitHeight: _NoDeviceFoundLabel.implicitHeight + Constants.padding * 3
             radius: Constants.radius
             color: Qt.alpha(Constants.bluetooth_color_inactive, 0.15)
             border.width: 1
             border.color: Constants.bluetooth_color_inactive
 
             StyledText {
-                id: no_device_label
+                id: _NoDeviceFoundLabel
                 leftPadding: Constants.padding * 1.5
                 rightPadding: Constants.padding * 1.5
                 anchors.verticalCenter: parent.verticalCenter
@@ -401,22 +414,22 @@ ColumnLayout {
 
     Loader {
         Layout.fillWidth: true
-        sourceComponent: (!root.adapter.enabled) ? component_powered_off :
-            (root.page_size > 0) ? component_with_devices : component_no_device
+        sourceComponent: (!root.adapter.enabled) ? _OfflineComponent :
+            (root.page_size > 0) ? _DevicesFoundComponent : _NoDeviceFoundComponent
     }
 
     Component {
-        id: component_powered_off
+        id: _OfflineComponent
         Rectangle {
             Layout.fillWidth: true
-            implicitHeight: powered_off_label.implicitHeight + Constants.padding * 3
+            implicitHeight: _OfflineLabel.implicitHeight + Constants.padding * 3
             radius: Constants.radius
             color:  Qt.alpha(Constants.bluetooth_color_inactive, 0.15)
             border.width: 1
             border.color: Qt.alpha(Constants.bluetooth_color_inactive, 0.5)
 
             StyledText {
-                id: powered_off_label
+                id: _OfflineLabel
                 leftPadding: Constants.padding * 1.5
                 rightPadding: Constants.padding * 1.5
                 anchors.verticalCenter: parent.verticalCenter
@@ -431,10 +444,10 @@ ColumnLayout {
     }
 
     Timer {
-        id: timeout_discovery
+        id: _DiscoveryTimeout
 
         property real starttime: -1
-        readonly property int remaining: (running && starttime > 0) ? Math.max(0, interval - (timeout_tick.now - starttime)) : interval
+        readonly property int remaining: (running && starttime > 0) ? Math.max(0, interval - (_TimeoutTick.now - starttime)) : interval
 
         interval: 10000
         running: root.adapter?.discovering ?? false
@@ -444,11 +457,11 @@ ColumnLayout {
     }
 
     Timer {
-        id: timeout_tick
+        id: _TimeoutTick
 
         property real now: Date.now()
         interval: 50
-        running: timeout_discovery.running
+        running: _DiscoveryTimeout.running
         repeat: true
         onTriggered: now = Date.now()
     }

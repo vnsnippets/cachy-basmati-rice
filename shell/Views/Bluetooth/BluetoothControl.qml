@@ -14,41 +14,53 @@ ClickableWithIcon {
     readonly property var adapter: Bluetooth.defaultAdapter
     // qmllint enable
 
-    property var datamap: switch (adapter.state ?? true) {
-        case (BluetoothAdapterState.Enabling): return {
-            label:  "Activating...",
-            icon:   "bluetooth-on.svg",
+    component DatamapModel: QtObject {
+        property string label: "Bluetooth"
+        property string icon: "Bluetooth-Off.svg"
+        property color accent: Constants.bluetooth_color_critical
+    }
+
+    QtObject {
+        id: states
+        property DatamapModel enabling: DatamapModel {
+            icon: "Bluetooth-On.svg"
             accent: Constants.bluetooth_color_busy
         }
-        case (BluetoothAdapterState.Disabling): return {
-            label:  "Deactivating...",
-            icon:   "bluetooth-off.svg",
+        property DatamapModel disabling: DatamapModel {
+            icon: "Bluetooth-Off.svg"
             accent: Constants.bluetooth_color_busy
         }
-        case (BluetoothAdapterState.Disabled): return {
-            label:  "Bluetooth",
-            icon:   "bluetooth-off.svg",
-            accent: Constants.bluetooth_color_ink_muted
-        }
-        case (BluetoothAdapterState.Enabled): return {
-            label:  "Bluetooth",
-            icon:   "bluetooth-on.svg",
-            accent: Constants.bluetooth_color_active
-        }
-        case (BluetoothAdapterState.Blocked): return {
-            label:  "Bluetooth",
-            icon:   "bluetooth-off.svg",
-            accent: Constants.bluetooth_color_critical
-        }
-        default: return {
-            label:  "Bluetooth",
-            icon:   "bluetooth-on.svg",
+        property DatamapModel disabled: DatamapModel {
+            icon: "Bluetooth-Off.svg"
             accent: Constants.bluetooth_color_ink_default
         }
+        property DatamapModel enabled: DatamapModel {
+            icon: "Bluetooth-On.svg"
+            accent: Constants.bluetooth_color_active
+        }
+        property DatamapModel blocked: DatamapModel {
+            icon: "Bluetooth-Error.svg"
+            accent: Constants.bluetooth_color_critical
+        }
+        property DatamapModel unknown: DatamapModel {
+            icon: "Bluetooth-Error.svg"
+            accent: Constants.bluetooth_color_critical
+        }
     }
-    
+
+    property DatamapModel statemap: switch (adapter.state ?? BluetoothAdapterState.Blocked) {
+        case BluetoothAdapterState.Enabling: return states.enabling;
+        case BluetoothAdapterState.Disabling: return states.disabling;
+        case BluetoothAdapterState.Disabled: return states.disabled;
+        case BluetoothAdapterState.Enabled: return states.enabled;
+        case BluetoothAdapterState.Blocked: return states.blocked;
+        default: return states.unknown;
+    }
+
+    property DatamapModel datamap: statemap ?? states.unknown
+
     size: Constants.icon_size
-    
+
     padding: Constants.padding
     rightPadding: (text.length > 0) ? Constants.padding * 1.25 : Constants.padding
 
@@ -68,6 +80,6 @@ ClickableWithIcon {
 
     font.family: Constants.font_family
 
-    radius: (active) ? Constants.icon_size : Constants.radius
+    radius: (active) ? Constants.radius_active : Constants.radius
     Behavior on radius { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 }

@@ -19,21 +19,21 @@ RowLayout {
             {
                 title: "Power Saver",
                 desc: "Optimal Battery",
-                vector: "leaf.svg",
+                vector: "Leaf.svg",
                 accent: Constants.battery_color_powersaver,
                 profile: PowerProfile.PowerSaver
             },
             {
                 title: "Balanced",
                 desc: "Default Profile",
-                vector: "balance.svg",
+                vector: "Balance.svg",
                 accent: Constants.battery_color_balanced,
                 profile: PowerProfile.Balanced
             },
             {
                 title: "Performance",
                 desc: "Full Throttle",
-                vector: "fire.svg",
+                vector: "Fire.svg",
                 accent: Constants.battery_color_performance,
                 profile: PowerProfile.Performance
             }
@@ -73,16 +73,12 @@ RowLayout {
                     anchors.margins: Constants.padding * 2
                     spacing: Constants.spacing / 2
 
-                    ClickableWithIcon {
+                    IconControl {
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         Layout.bottomMargin: Constants.padding
                         size: 48
-                        padding: 0
-                        iconname: item.vector
-                        enabled: false
-                        active: item.active
-                        styles.icon_color_idle: Constants.battery_color_ink_muted
-                        styles.icon_color_active: item.accent
+                        source: item.vector
+                        tint: (item.active) ? item.accent : Constants.battery_color_ink_muted
                     }
 
                     StyledText {

@@ -11,7 +11,7 @@ Singleton {
         objects: [Pipewire.defaultAudioSink, Pipewire.preferredDefaultAudioSink, ...Pipewire.nodes.values]
     }
     
-    readonly property PwNode defaultSink: Pipewire.defaultAudioSink    
+    readonly property PwNode defaultSink: Pipewire.defaultAudioSink ?? null
     readonly property var audioSinks: Pipewire.nodes.values.filter((node) => node.isSink && !node.isStream);
     readonly property var sortedAudioSinks: audioSinks.sort((a, b) => {
         // Name/Description: Alphabetical order
@@ -36,7 +36,7 @@ Singleton {
         return a.id - b.id;
     })
     
-    readonly property PwNode defaultMicrophone: Pipewire.defaultAudioSource
+    readonly property PwNode defaultMicrophone: Pipewire.defaultAudioSource ?? null
     readonly property var connectedMicrophones: Pipewire.nodes.values.filter(node => node.ready && !node.name.includes(".monitor") && node.properties["media.class"] === "Audio/Source").map((node) => {
         const enrichedNode = {
             node: node,

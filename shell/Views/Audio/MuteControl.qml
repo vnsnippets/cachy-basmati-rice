@@ -13,7 +13,7 @@ ClickableWithIcon {
     padding: Constants.padding
     radius: Constants.radius
 
-    iconname: (muted) ? "mic-off.svg" : "mic-on.svg"
+    iconname: (muted) ? "Microphone-Off.svg" : "Microphone-On.svg"
 
     styles.background_color_idle: Constants.control_color_background_default
 

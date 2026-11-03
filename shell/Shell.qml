@@ -4,14 +4,19 @@ import QtQuick
 
 import Quickshell
 import Quickshell.Io
-import Quickshell.Networking
+import Quickshell.Services.UPower
 
+import qs
+import qs.Widgets
 import qs.Layouts
 import qs.Services
 import qs.Utilities
+import qs.Views.Battery
 
 ShellRoot {
     id: shell
+
+    Component.onCompleted: Quickshell.env("")
 
     IpcHandler {
         target: "console"
@@ -19,9 +24,12 @@ ShellRoot {
             MangoIPCService.current_monitor((e) => {
                 const targetscreen = Quickshell.screens.find((s) => s.name === e.monitor);
                 if (!targetscreen) return false;
-                Debug.log("-----");
                 EventOrchestrator.consoleToggleEvent(targetscreen);
             });
+        }
+
+        function screencapture() {
+            EventOrchestrator.osdTriggerEvent(EventOrchestrator._SCREEN_CAPTURE_EVENT, true, null);
         }
     }
 
@@ -41,26 +49,26 @@ ShellRoot {
             Connections {
                 target: EventOrchestrator
                 
-                function onOsdTriggerEvent(key) { scope.osd_active = true; }
-                function onOsdDismissEvent() { scope.osd_active = false; gc(); }
+                function onOsdTriggerEvent() { scope.osd_active = true; }
+                function onOsdDismissCompleted() { scope.osd_active = false; gc(); }
 
                 // --- Console Events ---
                 function onConsoleToggleEvent(targetscreen) {
                     if (scope.console_open) {
-                        Debug.log(`[${targetscreen.name}] -> [${scope.screen.name}]`, "Scope ::", "Console Toggle Event : Closing");
+                        Debug.log([targetscreen.name, "Console"], "Event: Closing");
                         EventOrchestrator.consoleDismissContentEvent();
                         return;
                     }
 
                     if (targetscreen === scope.screen) {
-                        Debug.log(`[${targetscreen.name}] -> [${scope.screen.name}]`, "Scope ::", "Console Toggle Event : Opening");
+                        Debug.log([targetscreen.name, "Console"], "Event: Opening");
                         scope.console_open = true;
                     }
                 }
 
                 function onConsoleCloseCompleted(targetscreen) {
                     if (targetscreen === scope.screen) {
-                        Debug.log(`[${targetscreen.name}] -> [${scope.screen.name}]`, "Scope ::", "Console Toggle Event : Closed");
+                        Debug.log([targetscreen.name, "Console"], "Event: Closed");
                         scope.console_open = false;
                         gc();
                     }
@@ -70,6 +78,9 @@ ShellRoot {
             ToastPanelWindow { screen: scope.screen; visible: scope.osd_active; }
             NotificationPanelWindow { screen: scope.screen; }
             // PolkitControl { screen: scope.screen; }
+
+            // --- Desktop Background Clock ---
+            DesktopDateWidget { screen: scope.screen }
 
             // --- Central Console Loader ---
             LazyLoader {
@@ -86,7 +97,7 @@ ShellRoot {
             target: Quickshell
             function onScreensChanged() {
                 DisplayService.diff((previous, current) => {
-                    EventOrchestrator.osdTriggerEvent(EventOrchestrator._SCREEN_OSD_EVENT_KEY, { previous, current });
+                    EventOrchestrator.osdTriggerEvent(EventOrchestrator._DISPLAY_CHANGE_EVENT, false, { previous, current });
                 });
             }
 
@@ -98,11 +109,11 @@ ShellRoot {
             target: PipewireService.defaultSink?.audio ?? null
             
             function onVolumeChanged() {
-                EventOrchestrator.osdTriggerEvent(EventOrchestrator._AUDIO_OSD_EVENT_KEY, null);
+                EventOrchestrator.osdTriggerEvent(EventOrchestrator._VOLUME_CHANGE_EVENT, false, null);
             }
 
             function onMutedChanged() {
-                EventOrchestrator.osdTriggerEvent(EventOrchestrator._AUDIO_OSD_EVENT_KEY, null);
+                EventOrchestrator.osdTriggerEvent(EventOrchestrator._VOLUME_CHANGE_EVENT, false, null);
             }
         }
 
@@ -110,7 +121,7 @@ ShellRoot {
             target: BacklightService
 
             function onBrightnessChanged() {
-                EventOrchestrator.osdTriggerEvent(EventOrchestrator._BACKLIGHT_OSD_EVENT_KEY, null);
+                EventOrchestrator.osdTriggerEvent(EventOrchestrator._BACKLIGHT_CHANGE_EVENT, false, null);
             }
         }
 
@@ -123,4 +134,6 @@ ShellRoot {
         //     }
         // }
     }
+
+    BatteryMonitor { device: UPower.displayDevice }
 }

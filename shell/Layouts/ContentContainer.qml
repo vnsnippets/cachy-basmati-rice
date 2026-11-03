@@ -11,6 +11,13 @@ Item {
     property Component content: null
     implicitHeight: (content) ? loader.implicitHeight ?? 0 : 0
 
+    Behavior on implicitHeight {
+        NumberAnimation {
+            duration: Constants.animation_duration
+            easing.type: Easing.OutCubic
+        }
+    }
+
     property alias _active_source: loader.sourceComponent
     clip: true
 

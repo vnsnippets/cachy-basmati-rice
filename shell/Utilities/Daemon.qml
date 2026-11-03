@@ -1,12 +1,20 @@
 pragma ComponentBehavior: Bound
 pragma Singleton
 
+import Quickshell.Wayland
+
 import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Services
+import qs.Utilities
+
 Singleton {
     id: daemon
+
+    readonly property IdleInhibitor idle_inhibitor: IdleInhibitor { enabled: Debug._DEBUG_MODE_ ?? false }
+    readonly property SystemClock clock: SystemClock { precision: SystemClock.Minutes }
 
     property var threads: []
 
@@ -21,22 +29,33 @@ Singleton {
         return p;
     }
 
+
+    function run(category, args, callback) {
+        const p = _shell.createObject(daemon, {
+            "category": category,
+            "command":  args,
+            "callback": callback
+        });
+
+        threads.push(p);
+        p.running = true;
+        return p;
+    }
+
     Component {
         id: _shell
 
         Process {
             id: thread
+            property string category: ""
             property var callback: null
-            property int _exitCode: 0
             
             readonly property alias _stdoutCollector: stdoutColl
             readonly property alias _stderrCollector: stderrColl
 
-            environment: ({ LANG: "C.UTF-8", LC_ALL: "C.UTF-8" })
             stdout: StdioCollector { id: stdoutColl }
             stderr: StdioCollector { id: stderrColl }
 
-            onExited: (code) => { _exitCode = code; }
 
             onRunningChanged: {
                 if (running) return;
@@ -48,14 +67,20 @@ Singleton {
                     }
                 }
 
+                const log = _stdoutCollector.text.trim();
+                const err = _stderrCollector.text.trim();
+
+                if (err.length > 0) {
+                    Debug.log([ category ], err);
+                }
+
                 if (callback) {
-                    const result = { 
-                        success: _exitCode === 0, 
-                        output: _stdoutCollector.text.trim(), 
-                        error: _stderrCollector.text.trim(), 
-                        exitCode: _exitCode 
+                    const result = {
+                        success: !(err && err.length > 0), 
+                        output: log, 
+                        error: err, 
                     };
-                    callback(result, _exitCode);
+                    callback(result);
                 }
 
                 thread.destroy(); 
@@ -71,5 +96,46 @@ Singleton {
             }
         }
         threads = [];
+    }
+
+    // 15 Seconds Dim
+    IdleMonitor {
+        timeout: 15
+        enabled: !daemon.idle_inhibitor.enabled
+        property int cached_brightness: -1
+        readonly property bool brightness_is_cached: cached_brightness > -1
+        readonly property int low_brightness_level: 10
+
+        onIsIdleChanged: {
+            Debug.log(["Idle Monitor"], (isIdle) ? `Lowering brightness to ${low_brightness_level}%` : `Restoring brightness to ${cached_brightness}%`);
+
+            if (isIdle) {
+                cached_brightness = (brightness_is_cached) ? cached_brightness : BacklightService.brightness;
+                BacklightService.set(low_brightness_level);
+            }
+            else {
+                BacklightService.set(cached_brightness);
+                cached_brightness = -1;
+            }
+        }
+    }
+
+    // 30 Seconds Sleep
+    IdleMonitor {
+        timeout: 30
+        enabled: !daemon.idle_inhibitor.enabled
+
+        onIsIdleChanged: {
+            Debug.log(["Idle Monitor"], (isIdle) ? "Sleeping monitors" : "Waking Monitors");
+
+            if (isIdle) 
+                Quickshell.screens.map((e) => {
+                    MangoIPCService.sleep_monitor(e.name);
+                })
+            else 
+                Quickshell.screens.map((e) => {
+                    MangoIPCService.wake_monitor(e.name);
+                })
+        }
     }
 }

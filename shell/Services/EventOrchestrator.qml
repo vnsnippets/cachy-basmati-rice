@@ -6,14 +6,18 @@ import Quickshell
 import Quickshell.Services.Polkit
 
 Singleton {
-    readonly property string _AUDIO_OSD_EVENT_KEY:  "AUDIOOSD"
-    readonly property string _SCREEN_OSD_EVENT_KEY: "SCREENOSD"
-    readonly property string _BACKLIGHT_OSD_EVENT_KEY: "BACKLIGHTOSD"
-    readonly property string _POLKIT_OSD_EVENT_KEY: "POLKITOSD"
+    // --- OSD EVENTS ---
+    readonly property string _VOLUME_CHANGE_EVENT:  "VOLUME_CHANGE"
+    readonly property string _DISPLAY_CHANGE_EVENT: "DISPLAY_CHANGE"
+    readonly property string _BACKLIGHT_CHANGE_EVENT: "BACKLIGHT_CHANGE"
+    readonly property string _SCREEN_CAPTURE_EVENT: "SCREEN_CAPTURE"
 
+    readonly property string _POLKIT_REQUEST_EVENT: "POLKIT_REQUEST"
+
+    signal osdDismissCompleted();
+    signal osdTriggerEvent(string key, bool dismissive, var data);
     signal osdDismissEvent();
-    signal osdTriggerEvent(string key, var data);
-    
+
     signal notificationEvent(int timestamp, var data)
     
     signal consoleToggleEvent(ShellScreen screen);

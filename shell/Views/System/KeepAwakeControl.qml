@@ -14,7 +14,7 @@ ClickableWithIcon {
     padding: Constants.padding
     radius: (inhibitor.enabled) ? Constants.icon_size : Constants.radius
 
-    iconname: "toggle.svg"
+    iconname: "Awake.svg"
 
     styles.background_color_idle: Constants.control_color_background_default
     styles.background_color_active: Constants.keepawake_color_active

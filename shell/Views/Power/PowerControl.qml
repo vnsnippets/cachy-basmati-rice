@@ -8,9 +8,9 @@ import qs.Components
 ClickableWithIcon {    
     size: Constants.icon_size 
     padding: Constants.padding
-    radius: (active) ? Constants.icon_size : Constants.radius
+    radius: (active) ? Constants.radius_active : Constants.radius
 
-    iconname: "power.svg"
+    iconname: "Power.svg"
     
     styles.background_color_idle: Constants.control_color_background_default
     styles.background_color_active: Constants.power_color_active

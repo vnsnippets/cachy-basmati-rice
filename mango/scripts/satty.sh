@@ -3,11 +3,12 @@
 # Define default settings
 MODE="region"
 SAVE_DIRECTLY=false
+USE_CLIPBOARD=false
 
 # Parse arguments
-PARSED_ARGS=$(getopt -o rfs --long region,full,save -n "$0" -- "$@")
+PARSED_ARGS=$(getopt -o rfsc --long region,full,save,clipboard -n "$0" -- "$@")
 if [ $? -ne 0 ]; then
-    echo "Usage: $0 [--region|-r] [--full|-f] [--save|-s]"
+    echo "Usage: $0 [--region|-r] [--full|-f] [--save|-s] [--clipboard|-c]"
     exit 1
 fi
 
@@ -25,6 +26,10 @@ while true; do
             ;;
         -s|--save)
             SAVE_DIRECTLY=true
+            shift
+            ;;
+        -c|--clipboard)
+            USE_CLIPBOARD=true
             shift
             ;;
         --)
@@ -52,22 +57,31 @@ else
     TARGET_PATH="$TEMP_DIR/$FILENAME"
 fi
 
-# Determine capture geometry/mode
-if [ "$MODE" = "region" ]; then
-    GEOMETRY=$(slurp -d)
-    # Exit gracefully if user cancels selection (hits Escape)
-    if [ -z "$GEOMETRY" ]; then
-        exit 0
+if [ "$USE_CLIPBOARD" = true ]; then
+    # Verify image data exists in the clipboard before attempting to write
+    if ! wl-paste --list-types | grep -q "^image/"; then
+        echo "Error: No image found in clipboard." >&2
+        exit 1
     fi
-    grim -g "$GEOMETRY" -t png "$TARGET_PATH"
+    wl-paste --type image/png > "$TARGET_PATH"
 else
-    # Capture full screen
-    grim -t png "$TARGET_PATH"
-fi
+    # Determine capture geometry/mode
+    if [ "$MODE" = "region" ]; then
+        GEOMETRY=$(slurp -d)
+        # Exit gracefully if user cancels selection (hits Escape)
+        if [ -z "$GEOMETRY" ]; then
+            exit 0
+        fi
+        grim -g "$GEOMETRY" -t png "$TARGET_PATH"
+    else
+        # Capture full screen
+        grim -t png "$TARGET_PATH"
+    fi
 
-# Instantly copy the captured file to clipboard
-if [ -f "$TARGET_PATH" ]; then
-    wl-copy < "$TARGET_PATH"
+    # Instantly copy the captured file to clipboard
+    if [ -f "$TARGET_PATH" ]; then
+        wl-copy < "$TARGET_PATH"
+    fi
 fi
 
 SAVE_PATH="$SAVE_DIR/$FILENAME"
