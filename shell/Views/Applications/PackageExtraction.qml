@@ -33,18 +33,16 @@ ColumnLayout {
     readonly property string extractionPath: `${Constants.package_extraction_target_directory}/${context.extractionDirectory}`
      
     function getPackageName(path) { return path.substring(path.lastIndexOf("/") + 1); }
-    function isAppImage(path) {
-        return path.toLowerCase().endsWith(".appimage");
-    }
+
+    function isAppImage(path) { return path.toLowerCase().endsWith(".appimage"); }
+
     function isTarball(path) {
-        let lower = path.toLowerCase();
+        const lower = path.toLowerCase();
         return lower.endsWith(".tar") || lower.endsWith(".tar.gz") || lower.endsWith(".tgz") || lower.endsWith(".tar.bz2") || lower.endsWith(".tbz2") || lower.endsWith(".tar.xz");
     }
     function getDefaultFolderName(path) {
         let name = getPackageName(path);
-        if (isAppImage(path)) {
-            name = name.substring(0, name.length - 9);
-        }
+        if (isAppImage(path)) name = name.substring(0, name.length - 9);
         return name;
     }
 
@@ -66,15 +64,7 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: container.implicitHeight
 
-        content: {
-            if (root.context.packagePath === "" || (root.isTarball(root.context.packagePath) && _TarballInspectionProcess.running)) {
-                return _PackageSelectionComponent;
-            } else if (root.isAppImage(root.context.packagePath)) {
-                return _AppImageExtractionComponent;
-            } else {
-                return _TarballExtractionComponent;
-            }
-        }
+        content: (root.context.packagePath === "" || (root.isTarball(root.context.packagePath) && _TarballInspectionProcess.running)) ? _PackageSelectionComponent : _ExtractionComponent
     }
 
     Component {
@@ -200,13 +190,17 @@ ColumnLayout {
             Component.onCompleted: _FolderScanProcess.run()
         }
     }
-
+    
     Component {
-        id: _TarballExtractionComponent
+        id: _ExtractionComponent
 
         ColumnLayout {
+            id: _ExtractionComponentLayout
+
+            readonly property bool selectedPackageIsAppImage: root.isAppImage(root.context.packagePath)
             spacing: Constants.padding * 2
 
+            // --- Header Section ---
             RowLayout {
                 Layout.fillWidth: true
                 Layout.topMargin: Constants.padding
@@ -218,7 +212,7 @@ ColumnLayout {
                     StyledText {
                         color: Constants.spotlight_color_ink_active
                         font.pixelSize: Constants.font_size
-                        text: "Select folder from tarball"
+                        text: _ExtractionComponentLayout.selectedPackageIsAppImage ? "Configure extraction folder" : "Select folder from tarball"
                     }
 
                     StyledText {
@@ -242,16 +236,18 @@ ColumnLayout {
                     onClicked: {
                         root.context.packagePath = "";
                         root.context.packageDirectory = "";
-                        root.context.extractionDirectory = root.context.packageDirectory;
+                        root.context.extractionDirectory = _ExtractionComponentLayout.selectedPackageIsAppImage ? "" : root.context.packageDirectory;
                     }
                 }
             }
 
+            // --- Tarball Directory ListView (Only visible for Tarballs) ---
             ListView {
                 id: _ListViewTarballDirectories
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: root.listViewHeight
+                visible: !_ExtractionComponentLayout.selectedPackageIsAppImage
 
                 model: _TarballDirectoryList
                 clip: true
@@ -307,198 +303,83 @@ ColumnLayout {
                 }
             }
 
-            StyledText {
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                Layout.leftMargin: 2
-                Layout.rightMargin: 2
-                horizontalAlignment: Text.AlignLeft
-                verticalAlignment: Text.AlignVCenter
-                
-                color: Constants.spotlight_color_ink_muted
-                text: `[Tarball]/${root.context.packageDirectory} → ${root.extractionPath}`
-            }        
+            // --- Destination & Action Section ---
+            ColumnLayout {
+                spacing: 4
 
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.preferredHeight: root.itemHeight
-
-                TextField {
-                    id: _TextFieldDestinationFolder
-
-                    enabled: !_ExtractionProcess.running
-
+                StyledText {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
-
-                    leftPadding: Constants.padding
-                    rightPadding: Constants.padding
+                    Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                    Layout.leftMargin: 2
+                    Layout.rightMargin: 2
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
                     
-                    verticalAlignment: TextInput.AlignVCenter
-                    
-                    color: Constants.spotlight_color_ink_active
-                    font.pixelSize: Constants.font_size
-                    focus: true
-                    
-                    placeholderTextColor: Qt.alpha(color, 0.5)
-                    placeholderText: "Enter preferred directory for extraction"
+                    color: Constants.spotlight_color_ink_muted
+                    text: _ExtractionComponentLayout.selectedPackageIsAppImage ? `Destination: ${root.extractionPath}` : `[Tarball]/${root.context.packageDirectory} → ${root.extractionPath}`
+                }        
 
-                    text: root.context.packageDirectory
-                    onTextChanged: root.context.extractionDirectory = text
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: root.itemHeight
 
-                    background: Rectangle {
-                        color: _TextFieldDestinationFolder.activeFocus ? Constants.spotlight_color_background_active : Constants.spotlight_color_background_default
-                        border.color: Qt.alpha(Constants.spotlight_color_border, _TextFieldDestinationFolder.activeFocus ? 0.50 : 0.15)
-                        radius: Constants.radius
-                    }
-                }
+                    TextField {
+                        id: _TextFieldDestinationFolder
 
-                ClickableButton {
-                    enabled: root.context.packageDirectory !== "" && _TextFieldDestinationFolder.text !== "" && !_ExtractionProcess.running && !root.success
+                        enabled: !_ExtractionProcess.running
 
-                    Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
 
-                    colors.accent: enabled ? Constants.color_green : Constants.color_overlay
-                    colors.muted: Constants.color_overlay
-                    colors.ink: Constants.color_base
-                    
-                    text: "Extract"
-                    onClicked: _ExtractionProcess.run()
-                }
-            }
-
-            StyledText {
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                Layout.leftMargin: 2
-                Layout.rightMargin: 2
-                visible: _ExtractionProcess.running || root.success
-                horizontalAlignment: Text.AlignLeft
-                verticalAlignment: Text.AlignVCenter
-                
-                color: root.success ? Constants.color_green : Constants.color_yellow
-                text: root.success ? "Extraction completed!" : "Extraction in progress..."
-            }  
-        }
-    }
-
-    Component {
-        id: _AppImageExtractionComponent
-
-        ColumnLayout {
-            spacing: Constants.padding * 2
-
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.topMargin: Constants.padding
-                spacing: Constants.spacing
-
-                Column {
-                    spacing: 1
-
-                    StyledText {
+                        leftPadding: Constants.padding
+                        rightPadding: Constants.padding
+                        
+                        verticalAlignment: TextInput.AlignVCenter
+                        
                         color: Constants.spotlight_color_ink_active
                         font.pixelSize: Constants.font_size
-                        text: "Configure extraction folder"
+                        focus: true
+                        
+                        placeholderTextColor: Qt.alpha(color, 0.5)
+                        placeholderText: _ExtractionComponentLayout.selectedPackageIsAppImage ? "Enter destination folder name" : "Enter preferred directory for extraction"
+
+                        text: _ExtractionComponentLayout.selectedPackageIsAppImage ? root.context.extractionDirectory : root.context.packageDirectory
+                        onTextChanged: root.context.extractionDirectory = text
+
+                        background: Rectangle {
+                            color: _TextFieldDestinationFolder.activeFocus ? Constants.spotlight_color_background_active : Constants.spotlight_color_background_default
+                            border.color: Qt.alpha(Constants.spotlight_color_border, _TextFieldDestinationFolder.activeFocus ? 0.50 : 0.15)
+                            radius: Constants.radius
+                        }
                     }
 
-                    StyledText {
-                        color: Constants.spotlight_color_ink_muted
-                        font.pixelSize: Constants.font_size_sm
-                        text: root.context.packagePath
+                    ClickableButton {
+                        enabled: (_ExtractionComponentLayout.selectedPackageIsAppImage ? root.context.extractionDirectory !== "" : (root.context.packageDirectory !== "" && _TextFieldDestinationFolder.text !== "")) && !_ExtractionProcess.running && !root.success
+
+                        Layout.fillHeight: true
+
+                        colors.accent: enabled ? Constants.color_green : Constants.color_overlay
+                        colors.muted: Constants.color_overlay
+                        colors.ink: Constants.color_base
+                        
+                        text: "Extract"
+                        onClicked: _ExtractionProcess.run()
                     }
                 }
 
-                Item { Layout.fillWidth: true }
-
-                ClickableButton {
-                    enabled: !_ExtractionProcess.running && !root.success
-                    topPadding: Constants.padding / 1.5
-                    bottomPadding: Constants.padding / 1.5
-                    colors.accent: Constants.color_red
-                    colors.muted: Constants.color_overlay
-                    colors.ink: Constants.color_base
-                    text: "Cancel"
-
-                    onClicked: {
-                        root.context.packagePath = "";
-                        root.context.extractionDirectory = "";
-                    }
-                }
-            }
-
-            StyledText {
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                Layout.leftMargin: 2
-                Layout.rightMargin: 2
-                horizontalAlignment: Text.AlignLeft
-                verticalAlignment: Text.AlignVCenter
-                
-                color: Constants.spotlight_color_ink_muted
-                text: `Destination: ${root.extractionPath}`
-            }        
-
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.preferredHeight: root.itemHeight
-
-                TextField {
-                    id: _TextFieldAppImageDestination
-
-                    enabled: !_ExtractionProcess.running
-
+                StyledText {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
-
-                    leftPadding: Constants.padding
-                    rightPadding: Constants.padding
+                    Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                    Layout.leftMargin: 2
+                    Layout.rightMargin: 2
+                    visible: _ExtractionProcess.running || root.success
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
                     
-                    verticalAlignment: TextInput.AlignVCenter
-                    
-                    color: Constants.spotlight_color_ink_active
-                    font.pixelSize: Constants.font_size
-                    focus: true
-                    
-                    placeholderTextColor: Qt.alpha(color, 0.5)
-                    placeholderText: "Enter destination folder name"
-
-                    text: root.context.extractionDirectory
-                    onTextChanged: root.context.extractionDirectory = text
-
-                    background: Rectangle {
-                        color: _TextFieldAppImageDestination.activeFocus ? Constants.spotlight_color_background_active : Constants.spotlight_color_background_default
-                        border.color: Qt.alpha(Constants.spotlight_color_border, _TextFieldAppImageDestination.activeFocus ? 0.50 : 0.15)
-                        radius: Constants.radius
-                    }
-                }
-
-                ClickableButton {
-                    enabled: root.context.extractionDirectory !== "" && !_ExtractionProcess.running && !root.success
-
-                    Layout.fillHeight: true
-
-                    colors.accent: enabled ? Constants.color_green : Constants.color_overlay
-                    colors.muted: Constants.color_overlay
-                    colors.ink: Constants.color_base
-                    
-                    text: "Extract"
-                    onClicked: _ExtractionProcess.run()
+                    color: root.success ? Constants.color_green : Constants.color_yellow
+                    text: root.success ? "Extraction completed!" : "Extraction in progress..."
                 }
             }
-
-            StyledText {
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                Layout.leftMargin: 2
-                Layout.rightMargin: 2
-                visible: _ExtractionProcess.running || root.success
-                horizontalAlignment: Text.AlignLeft
-                verticalAlignment: Text.AlignVCenter
-                
-                color: root.success ? Constants.color_green : Constants.color_yellow
-                text: root.success ? "Extraction completed!" : "Extraction in progress..."
-            }  
         }
     }
     

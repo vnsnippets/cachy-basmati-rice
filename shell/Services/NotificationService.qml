@@ -26,7 +26,7 @@ Singleton {
         }
     }
 
-    function push(title, body) { notification_process.send(title, body ?? ""); }
+    function push(title, body = null) { notification_process.send(title, body); }
 
     function target(clients, notification) {
         if (!notification || !Array.isArray(clients) || clients.length === 0) return null;
@@ -114,8 +114,13 @@ Singleton {
 
     Process {
         id: notification_process
-        function send(title, body) {
-            command = ["notify-send", "-u", "critical", "-a", title, body];
+        function send(title, body,) {
+            command = [
+                "notify-send",
+                "-u", "critical",
+                "-a", title,
+                ...(body ? [body] : [])
+            ];
             running = true;
         }
     }
