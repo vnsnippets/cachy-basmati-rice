@@ -1,17 +1,6 @@
 ## Ricing Arch
 This is not your everyday rice - this is **Basmati** rice 🍚
 
-### Quickshell
-**Network Widget** requires the [NetworkMonitorPlugin](https://github.com/vnsnippets/qt-plugin-network-monitor) which was developed by yours truly.
-
-You will need to set the `QML_IMPORT_PATH` environment variable to point to where you drop the plugin (after build). You can set that through your `hyprland.conf` - see my own version in this repository itself.
-
-> One of these days, I will get some sleep.   
-> Then I will package the plugin as a GitHub Release.
-
-In all transparency, I make no claims on the plugin's quality.   
-Use at your own risk.
-
 ---
 
 #### Test Scripts
@@ -156,3 +145,47 @@ Importing passwords and bookmarks.
 
 #### GitHub SSH
 Did you really think I will lay out my GitHub SSH credentials here?
+
+#### Desktop Files (Custom)
+Antigravity
+```toml
+[Desktop Entry]
+Name=Antigravity
+Comment=Google Antigravity
+Exec=/home/[user]/.local/apps/antigravity/2.29.0/antigravity %U
+Terminal=false
+Type=Application
+Categories=Development;IDE;
+StartupNotify=true
+StartupWMClass=Antigravity
+Icon=/home/[user]/.local/apps/antigravity/icon.png
+```
+
+Obsidian
+```toml
+[Desktop Entry]
+Name=Obsidian (1.14.5)
+Comment=A private and flexible writing and knowledge base
+Exec="/home/[user]/.local/apps/obsidian/1.14.5/AppRun" %u
+Terminal=false
+Type=Application
+Icon=/home/[user]/.local/apps/obsidian/1.14.5/obsidian.png
+Categories=Office;Utility;TextEditor;
+StartupWMClass=obsidian
+MimeType=x-scheme-handler/obsidian;
+```
+
+Visual Studio Code
+```toml
+[Desktop Entry]
+Name=Visual Studio Code (1.145.2)
+Comment=Code Editing. Redefined.
+GenericName=Text Editor
+Exec=/home/[user]/.local/apps/vscode/1.145.2/bin/code
+Icon=/home/[user]/.local/apps/vscode/1.145.2/resources/app/resources/linux/code.png
+Type=Application
+StartupNotify=true
+StartupWMClass=Code
+Categories=Utility;TextEditor;Development;IDE;
+MimeType=text/plain;inode/directory;application/x-code-workspace;
+```
