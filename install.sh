@@ -132,6 +132,34 @@ copy_item_sudo() {
     log "${GREEN}  Copied: $rel_src → $dest${NC}"
 }
 
+install_pacman() {
+    local pkg="$1"
+
+    if pacman -Q "$pkg" &>/dev/null; then
+        log "${CYAN}  Already installed: $pkg${NC}"
+    else
+        sudo pacman -S --needed --noconfirm "$pkg"
+        log "${GREEN}  Installed: $pkg${NC}"
+    fi
+}
+
+# ==============================================================================
+# Execution: Pacman Packages Installation
+# ==============================================================================
+echo ""
+log "${BLUE}--- Installing Pacman Packages ---${NC}"
+install_pacman "mangowm"
+install_pacman "foot"
+install_pacman "swaybg"
+install_pacman "swayidle"
+install_pacman "wl-clipboard"
+install_pacman "xorg-xwayland"
+install_pacman "xdg-desktop-portal-wlr"
+install_pacman "xdg-desktop-portal-gtk"
+install_pacman "zsh"
+install_pacman "zsh-history-substring-search"
+install_pacman "zsh-syntax-highlighting"
+
 # ==============================================================================
 # Execution: Symlinks Deployment
 # ==============================================================================
