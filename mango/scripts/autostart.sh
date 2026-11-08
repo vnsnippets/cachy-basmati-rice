@@ -11,4 +11,4 @@ swaybg -i "$HOME/Pictures/Wallpapers/gardens-interactive-statues.jpg" -m fill &
 # elephant &
 # walker --gapplication-service &
 
-QS_ICON_THEME="Adwaita" quickshell -p ~/.config/shell/Shell.qml &
+QS_ICON_THEME="Adwaita" quickshell -p ~/.config/quickshell/Shell.qml &
