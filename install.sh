@@ -24,12 +24,12 @@ log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $plain_message" >> "$LOG_FILE"
 }
 
-log "${BLUE}=== Starting Dotfiles Deployment Script ===${NC}"
+log "${BLUE}=== Starting Installation Script ===${NC}"
 
 # ==============================================================================
 # Sudo Authentication & Keep-Alive Management
 # ==============================================================================
-log "${YELLOW}Requesting sudo privileges...${NC}"
+log "${YELLOW}󰑨 Requesting sudo privileges...${NC}"
 sudo -v
 
 # Keep sudo ticket alive in the background for the duration of execution
@@ -61,7 +61,7 @@ handle_conflict() {
         fi
         
         mv "$target" "$backup_path"
-        log "${YELLOW}Backup: $target → $backup_path${NC}"
+        log "${YELLOW}󰆓  Backup: $target → $backup_path${NC}"
     fi
 }
 
@@ -78,7 +78,7 @@ handle_conflict_sudo() {
         fi
         
         sudo mv "$target" "$backup_path"
-        log "${YELLOW}Backup: $target → $backup_path${NC}"
+        log "${YELLOW}󰆓  Backup: $target → $backup_path${NC}"
     fi
 }
 
@@ -91,7 +91,7 @@ create_symlink() {
     local src="$SCRIPT_DIR/$rel_src"
 
     if [ ! -e "$src" ]; then
-        log "${RED}Error: Source path '$src' does not exist!${NC}"
+        log "${RED}  Error: Source path '$src' does not exist!${NC}"
         exit 1
     fi
 
@@ -100,7 +100,7 @@ create_symlink() {
 
     # Idempotency check: Skip if already correctly linked
     if [ -L "$dest" ] && [ "$(readlink -f "$dest")" = "$(readlink -f "$src")" ]; then
-        log "${GREEN}Already linked: $rel_src → $dest${NC}"
+        log "${GREEN}  Already Linked: $rel_src → $dest${NC}"
         return
     fi
 
@@ -108,7 +108,7 @@ create_symlink() {
     handle_conflict "$dest"
 
     ln -s "$src" "$dest"
-    log "${GREEN}Linked: $rel_src → $dest${NC}"
+    log "${GREEN}  Linked: $rel_src → $dest${NC}"
 }
 
 copy_item_sudo() {
@@ -117,7 +117,7 @@ copy_item_sudo() {
     local src="$SCRIPT_DIR/$rel_src"
 
     if [ ! -e "$src" ]; then
-        log "${RED}Error: Source path '$src' does not exist!${NC}"
+        log "${RED}  Error: Source path '$src' does not exist!${NC}"
         exit 1
     fi
 
@@ -128,13 +128,14 @@ copy_item_sudo() {
     handle_conflict_sudo "$dest"
 
     sudo cp -r "$src" "$dest"
-    log "${GREEN}Copied: $rel_src → $dest${NC}"
+    log "${GREEN}  Copied: $rel_src → $dest${NC}"
 }
 
 # ==============================================================================
 # Execution: Symlinks Deployment
 # ==============================================================================
-log "${BLUE}--- Deploying User Symlinks ---${NC}"
+echo ""
+log "${BLUE}--- Creating Symbolic Links ---${NC}"
 create_symlink "fastfetch" "$HOME/.config/fastfetch"
 create_symlink "foot" "$HOME/.config/foot"
 create_symlink "mako" "$HOME/.config/mako"
@@ -152,11 +153,13 @@ create_symlink "themes/micro/settings.json" "$HOME/.config/micro/settings.json"
 # ==============================================================================
 # Execution: System-wide Assets Copying (Sudo)
 # ==============================================================================
-log "${BLUE}--- Deploying System-Wide Assets (Requires Sudo) ---${NC}"
+echo ""
+log "${BLUE}--- Installing System-Wide Assets (Privileged) ---${NC}"
 copy_item_sudo "themes/xcursor/BibataModernIce" "/usr/share/icons/BibataModernIce"
 copy_item_sudo "themes/xcursor/GoogleDotBlue" "/usr/share/icons/GoogleDotBlue"
 copy_item_sudo "themes/sddm" "/usr/share/sddm/themes/material"
 copy_item_sudo "themes/grub/catppuccin" "/usr/share/grub/themes/catppuccin"
 copy_item_sudo "themes/plymouth/cross-hud" "/usr/share/plymouth/themes/cross-hud"
 
+echo ""
 log "${BLUE}=== Installation Completed Successfully ===${NC}"
