@@ -105,10 +105,10 @@ bindkey '^[[B' history-substring-search-down
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/vnsnippets/Downloads/google-cloud-cli-linux-x86_64/google-cloud-sdk/path.zsh.inc' ]; then . '/home/vnsnippets/Downloads/google-cloud-cli-linux-x86_64/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f '$HOME/Downloads/google-cloud-cli-linux-x86_64/google-cloud-sdk/path.zsh.inc' ]; then . '$HOME/Downloads/google-cloud-cli-linux-x86_64/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/home/vnsnippets/Downloads/google-cloud-cli-linux-x86_64/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/vnsnippets/Downloads/google-cloud-cli-linux-x86_64/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f '$HOME/Downloads/google-cloud-cli-linux-x86_64/google-cloud-sdk/completion.zsh.inc' ]; then . '$HOME/Downloads/google-cloud-cli-linux-x86_64/google-cloud-sdk/completion.zsh.inc'; fi
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
