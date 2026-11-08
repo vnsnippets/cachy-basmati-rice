@@ -159,6 +159,7 @@ install_pacman "xdg-desktop-portal-gtk"
 install_pacman "zsh"
 install_pacman "zsh-history-substring-search"
 install_pacman "zsh-syntax-highlighting"
+install_pacman "wlr-randr"
 
 # ==============================================================================
 # Execution: Symlinks Deployment
