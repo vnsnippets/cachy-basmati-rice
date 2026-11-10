@@ -87,3 +87,4 @@ compile_commands.json
 *.ignore.*
 .qmlls.ini
 *.log
+/themes/gtk/**/settings.ini

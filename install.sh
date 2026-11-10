@@ -268,6 +268,33 @@ log "${GREEN}:: Default shell set to ($(which zsh))${NC}"
 
 gsettings set org.gnome.desktop.interface gtk-theme "${GTK_THEME}"
 gsettings set org.gnome.desktop.interface color-scheme "${GTK_MODE}"
+
+mkdir -p "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
+
+cat << EOF > "$HOME/.config/gtk-4.0/settings.ini"
+[Settings]
+gtk-theme-name=${GTK_THEME}
+gtk-icon-theme-name=Adwaita
+gtk-font-name=Noto Sans 11
+gtk-cursor-theme-name=${XCURSOR_THEME}
+gtk-cursor-theme-size=24
+gtk-sound-theme-name=freedesktop
+gtk-error-bell=1
+gtk-application-prefer-dark-theme=$([[ "${GTK_MODE}" == "prefer-dark" ]] && echo 1 || echo 0)
+EOF
+
+cat << EOF > "$HOME/.config/gtk-3.0/settings.ini"
+[Settings]
+gtk-theme-name=${GTK_THEME}
+gtk-icon-theme-name=Adwaita
+gtk-font-name=Noto Sans 11
+gtk-cursor-theme-name=${XCURSOR_THEME}
+gtk-cursor-theme-size=24
+gtk-sound-theme-name=freedesktop
+gtk-error-bell=1
+gtk-application-prefer-dark-theme=$([[ "${GTK_MODE}" == "prefer-dark" ]] && echo 1 || echo 0)
+EOF
+
 log "${GREEN}:: GTK theme set to [${GTK_THEME}][${GTK_MODE}]${NC}"
 
 sudo grub-mkconfig -o /boot/grub/grub.cfg
@@ -281,17 +308,23 @@ echo ""
 log "${BLUE}Installation Completed Successfully${NC}"
 
 if confirm ":: Do you want to setup Docker?"; then
+    log "${YELLOW}:: Configuring Docker and Docker Compose...${NC}"
     install_pacman "docker" "docker-compose"
     getent group docker &>/dev/null || sudo groupadd docker
     sudo usermod -aG docker $USER
     sudo systemctl enable --now docker.service
+    log "${GREEN}:: Done. You will need to reboot (or log out and back in).${NC}"
+    echo ""
 fi
 
 if confirm ":: Do you want to install Thunar (file manager)?"; then
+    log "${YELLOW}:: Installing Thunar, Thunar Volume Manager and GVFS...${NC}"
     install_pacman "thunar" "thunar-volman" "gvfs"
+    log "${GREEN}:: Done.${NC}"
+    echo ""
 fi
 
-if confirm ":: Do you want to restart now?"; then
+if confirm ":: Do you want to reboot now?"; then
     echo ""
     sudo reboot
 else
