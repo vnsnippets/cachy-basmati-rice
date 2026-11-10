@@ -95,6 +95,8 @@ ListView {
                     text: _ApplicationItem.name
                 }
 
+                Item { Layout.fillWidth: true }
+                
                 StyledText {
                     visible: _ApplicationItem.resourceUsage?.active ?? false
 
@@ -121,9 +123,8 @@ ListView {
                     Behavior on opacity { NumberAnimation { duration: Constants.animation_duration } }
                 }
 
-                Item { Layout.fillWidth: true }
-
                 StyledText {
+                	visible: (Constants.spotlight_show_appid && _ApplicationItem.id)
                     Layout.fillHeight: true
                     Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
 
@@ -136,7 +137,7 @@ ListView {
                     active: _ApplicationItem.active
                     opacity: (active) ? 0.70 : 0.50
 
-                    text: (Constants.spotlight_show_appid) ? _ApplicationItem.id : _ApplicationItem.app.genericName ? _ApplicationItem.app.genericName : ""
+                    text: _ApplicationItem.id
 
                     Behavior on opacity { NumberAnimation { duration: Constants.animation_duration } }
                 }

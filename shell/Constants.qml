@@ -226,7 +226,7 @@ Singleton {
 
     // Application Launchpad / Spotlight
     readonly property string spotlight_search_placeholder:          "Search..."
-    readonly property bool   spotlight_show_appid:                  true
+    readonly property bool   spotlight_show_appid:                  false
     readonly property list<string> spotlight_hidden_apps:           [ 
                                                                         "bssh", "bvnc", "avahi-discover", "btop", "btrfs-assistant", "cachyos-hello", 
                                                                         "org.cachyos.KernelManager", "cachyos-pi", "footclient", "foot-server",
