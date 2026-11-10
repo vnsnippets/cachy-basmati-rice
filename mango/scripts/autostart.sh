@@ -5,10 +5,6 @@
 
 # Set the wallpaper using swaybg
 # swaybg -i "$HOME/Pictures/Wallpapers/wallhaven-4d38m0.jpg" -m fill &
-swaybg -i "$HOME/Pictures/Wallpapers/gardens-interactive-statues.jpg" -m fill &
+swaybg -i "$HOME/.config/mango/assets/gardens-interactive-statues.jpg" -m fill &
 
-# Launch Elephant and Walker service
-# elephant &
-# walker --gapplication-service &
-
-QS_ICON_THEME="Adwaita" quickshell -p ~/.config/quickshell/Shell.qml &
+QS_ICON_THEME="Adwaita" quickshell -p $HOME/.config/quickshell/Shell.qml &

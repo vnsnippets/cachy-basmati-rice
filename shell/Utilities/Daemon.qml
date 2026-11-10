@@ -121,21 +121,21 @@ Singleton {
     }
 
     // 30 Seconds Sleep
-    IdleMonitor {
-        timeout: 30
-        enabled: !daemon.idle_inhibitor.enabled
+    // IdleMonitor {
+    //     timeout: 30
+    //     enabled: !daemon.idle_inhibitor.enabled
 
-        onIsIdleChanged: {
-            Debug.log(["Idle Monitor"], (isIdle) ? "Sleeping monitors" : "Waking Monitors");
+    //     onIsIdleChanged: {
+    //         Debug.log(["Idle Monitor"], (isIdle) ? "Sleeping monitors" : "Waking Monitors");
 
-            if (isIdle) 
-                Quickshell.screens.map((e) => {
-                    MangoIPCService.sleep_monitor(e.name);
-                })
-            else 
-                Quickshell.screens.map((e) => {
-                    MangoIPCService.wake_monitor(e.name);
-                })
-        }
-    }
+    //         if (isIdle) 
+    //             Quickshell.screens.map((e) => {
+    //                 MangoIPCService.sleep_monitor(e.name);
+    //             })
+    //         else 
+    //             Quickshell.screens.map((e) => {
+    //                 MangoIPCService.wake_monitor(e.name);
+    //             })
+    //     }
+    // }
 }

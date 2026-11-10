@@ -143,8 +143,6 @@ copy_item_sudo() {
 
 install_pacman() {
     local -a to_install=()
-    local -a verified=()
-    local -a failed=()
     local pkg
 
     # Step 1: Check which packages are already installed vs. missing
@@ -161,15 +159,15 @@ install_pacman() {
         return 0
     fi
 
-    # Step 2: Run a single batched pacman invocation for all missing packages
-    sudo pacman -S --needed --noconfirm "${to_install[@]}"
+    # Step 2: Run pacman silently on the terminal, but log its output to $LOG_FILE
+    sudo pacman -S --needed --noconfirm "${to_install[@]}" >> "$LOG_FILE" 2>&1
 
     # Step 3 & 4: Verify installation status post-execution and log accordingly
     for pkg in "${to_install[@]}"; do
         if pacman -Q "$pkg" &>/dev/null; then
             log "${GREEN}:: Installed: $pkg${NC}"
         else
-            log "${RED}:: Failed to install: $pkg${NC}"
+            log "${RED}:: Installation Failed: $pkg${NC}"
         fi
     done
 }
