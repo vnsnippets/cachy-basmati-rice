@@ -5,7 +5,7 @@ set -euo pipefail
 # Environment & Configuration Setup
 # ==============================================================================
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TIMESTAMP="$(date +%Y%m%d%H%M)"
+TIMESTAMP="$(date +%Y%m%d%H%M%S)"
 LOG_FILE="${SCRIPT_DIR}/${TIMESTAMP}.log"
 
 # Colors for terminal output
@@ -176,18 +176,22 @@ confirm() {
     local prompt="${1}"
     local reply
 
-    # Read user input (-p prints prompt, -r prevents backslash escaping issues) 
     echo ""
     read -rp "$(echo -e "${BLUE}$prompt [y/N]: ${NC}")" reply
 
     # Check if the response matches strictly 'Y' or 'y'
-    [[ "$reply" =~ ^[Yy]$ ]]
+    if [[ "$reply" =~ ^[Yy]$ ]]; then
+        echo -e "${GREEN}[Yes]${NC}"
+        return 0
+    else
+        echo -e "${RED}[No]${NC}"
+        return 1
+    fi
 }
 
 # ==============================================================================
 # Execution: System update
 # ==============================================================================
-echo ""
 if confirm ":: Do you want to update your system now?"; then
     sudo pacman -Syyu
 fi
@@ -257,14 +261,14 @@ copy_item_sudo "themes/grub/grub" "/etc/default/grub"
 copy_item_sudo "themes/plymouth/${PLYMOUTH_THEME}" "/usr/share/plymouth/themes/${PLYMOUTH_THEME}"
 
 # ==============================================================================
-# Execution: System-wide Assets Copying (Sudo)
+# Execution: System configurations (Sometimes sudo)
 # ==============================================================================
 echo ""
 log "${BLUE}Configuring system assets (Privileged)${NC}"
 log "${BLUE}-------------------------------------------${NC}"
 
-sudo chsh -s "$(which zsh)" "$USER"
-log "${GREEN}:: Default shell set to ($(which zsh))${NC}"
+sudo chsh -s "$(which zsh)" "$USER" >> "$LOG_FILE" 2>&1
+log "${GREEN}:: Default shell set to [$(which zsh)]${NC}"
 
 gsettings set org.gnome.desktop.interface gtk-theme "${GTK_THEME}"
 gsettings set org.gnome.desktop.interface color-scheme "${GTK_MODE}"
@@ -297,12 +301,19 @@ EOF
 
 log "${GREEN}:: GTK theme set to [${GTK_THEME}][${GTK_MODE}]${NC}"
 
-sudo grub-mkconfig -o /boot/grub/grub.cfg
-log "${GREEN}:: Grub configured with [${GRUB_THEME}] theme${NC}"
+# ==============================================================================
+# Execution: System configurations (Sometimes sudo)
+# ==============================================================================
+echo ""
+log "${BLUE}Configuring GRUB and Plymouth (Privileged)${NC}"
+log "${BLUE}-------------------------------------------${NC}"
+log "${GRAY}This may take a few minutes (at most).${NC}"
 
-sudo plymouth-set-default-theme -R cross-hud
-sudo mkinitcpio -P
-log "${GREEN}:: Plymouth configured with [${PLYMOUTH_THEME}] theme${NC}"
+sudo grub-mkconfig -o /boot/grub/grub.cfg >> "$LOG_FILE" 2>&1
+sudo plymouth-set-default-theme -R cross-hud >> "$LOG_FILE" 2>&1
+sudo mkinitcpio -P >> "$LOG_FILE" 2>&1
+log "${GREEN}:: Grub theme set to [${GRUB_THEME}]${NC}"
+log "${GREEN}:: Plymouth theme set to [${PLYMOUTH_THEME}]${NC}"
 
 echo ""
 log "${BLUE}Installation Completed Successfully${NC}"
