@@ -4,9 +4,9 @@ import QtQuick
 
 import Quickshell
 import Quickshell.Io
+import Quickshell.Services.Polkit
 import Quickshell.Services.UPower
 
-import qs
 import qs.Widgets
 import qs.Layouts
 import qs.Services
@@ -77,7 +77,7 @@ ShellRoot {
 
             ToastPanelWindow { screen: scope.screen; visible: scope.osd_active; }
             NotificationPanelWindow { screen: scope.screen; }
-            // PolkitControl { screen: scope.screen; }
+            PolkitPanelWindow { screen: scope.screen; }
 
             // --- Desktop Background Clock ---
             DesktopDateWidget { screen: scope.screen }
@@ -126,13 +126,12 @@ ShellRoot {
         }
 
         // Native Quickshell Polkit Agent backend
-        // PolkitAgent {
-        //     id: agent
-        //     onIsActiveChanged: {
-        //         if (agent.isActive)
-        //             EventOrchestrator.polkitRequestEvent(agent);
-        //     }
-        // }
+        PolkitAgent {
+            id: agent
+            onIsActiveChanged: {
+                if (agent.isActive) EventOrchestrator.polkitEvent(agent)
+            }
+        }
     }
 
     BatteryMonitor { device: UPower.displayDevice }

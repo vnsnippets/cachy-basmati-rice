@@ -187,6 +187,12 @@ Singleton {
     readonly property color  display_control_color_ink_default:     color_text
     readonly property color  display_control_color_ink_active:      color_base
 
+    // Polkit
+    readonly property color  polkit_color_background:               color_transparent
+    readonly property color  polkit_color_border:                   color_surface
+    readonly property color  polkit_color_ink_default:              color_text
+    readonly property color  polkit_color_ink_muted:                color_subtext
+
     // Network
     readonly property bool   network_scramble_ssid:                 false
     readonly property real   network_threshold_warning:             0.50
@@ -252,5 +258,5 @@ Singleton {
     // Wizard: Tarball Extraction
     readonly property string package_extraction_scan_directory:     "~/Downloads"
     readonly property string package_extraction_target_directory:   "~/.local/apps"
-    readonly property bool package_extraction_delete_originals:     true
+    readonly property bool package_extraction_delete_originals:     false
 }

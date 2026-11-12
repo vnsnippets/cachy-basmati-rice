@@ -100,11 +100,11 @@ Singleton {
 
     // 15 Seconds Dim
     IdleMonitor {
-        timeout: 15
+        timeout: 60
         enabled: !daemon.idle_inhibitor.enabled
         property int cached_brightness: -1
         readonly property bool brightness_is_cached: cached_brightness > -1
-        readonly property int low_brightness_level: 10
+        readonly property int low_brightness_level: 0
 
         onIsIdleChanged: {
             Debug.log(["Idle Monitor"], (isIdle) ? `Lowering brightness to ${low_brightness_level}%` : `Restoring brightness to ${cached_brightness}%`);
@@ -121,21 +121,21 @@ Singleton {
     }
 
     // 30 Seconds Sleep
-    // IdleMonitor {
-    //     timeout: 30
-    //     enabled: !daemon.idle_inhibitor.enabled
+    IdleMonitor {
+        timeout: 60 * 60
+        enabled: !daemon.idle_inhibitor.enabled
 
-    //     onIsIdleChanged: {
-    //         Debug.log(["Idle Monitor"], (isIdle) ? "Sleeping monitors" : "Waking Monitors");
+        onIsIdleChanged: {
+            Debug.log(["Idle Monitor"], (isIdle) ? "Sleeping monitors" : "Waking Monitors");
 
-    //         if (isIdle) 
-    //             Quickshell.screens.map((e) => {
-    //                 MangoIPCService.sleep_monitor(e.name);
-    //             })
-    //         else 
-    //             Quickshell.screens.map((e) => {
-    //                 MangoIPCService.wake_monitor(e.name);
-    //             })
-    //     }
-    // }
+            if (isIdle) 
+                Quickshell.screens.map((e) => {
+                    MangoIPCService.sleep_monitor(e.name);
+                })
+            else 
+                Quickshell.screens.map((e) => {
+                    MangoIPCService.wake_monitor(e.name);
+                })
+        }
+    }
 }

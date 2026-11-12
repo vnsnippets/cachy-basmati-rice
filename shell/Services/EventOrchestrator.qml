@@ -25,5 +25,5 @@ Singleton {
     signal consoleCloseCompleted(ShellScreen screen);
     signal consoleDismissContentEvent();
 
-    signal polkitRequestEvent(PolkitAgent agent);
+    signal polkitEvent(PolkitAgent agent);
 }

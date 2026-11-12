@@ -28,7 +28,7 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
 
     WlrLayershell.namespace: Constants.namespace
-    WlrLayershell.layer: WlrLayer.Top
+    WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
     readonly property color backdrop_color: (expanded) ? Constants.console_color_backdrop_active : Constants.console_color_backdrop_inactive
