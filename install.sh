@@ -54,8 +54,8 @@ trap 'kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true' EXIT
 # ==============================================================================
 # Backup Infrastructure Setup
 # ==============================================================================
-BACKUP_DATE="$(date +%Y%m%d)"
-BACKUP_DIR="$HOME/.config/backup/$BACKUP_DATE"
+BACKUP_DATE="$(date +%Y%m%d%H%M%S)"
+BACKUP_DIR="$HOME/.config/.backup/$BACKUP_DATE"
 
 handle_conflict() {
     local target="$1"
@@ -181,10 +181,10 @@ confirm() {
 
     # Check if the response matches strictly 'Y' or 'y'
     if [[ "$reply" =~ ^[Yy]$ ]]; then
-        echo -e "${GREEN}[Yes]${NC}"
+        echo -e "${GREEN}:: [Yes]${NC}"
         return 0
     else
-        echo -e "${RED}[No]${NC}"
+        echo -e "${RED}:: [No]${NC}"
         return 1
     fi
 }
@@ -193,7 +193,8 @@ confirm() {
 # Execution: System update
 # ==============================================================================
 if confirm ":: Do you want to update your system now?"; then
-    sudo pacman -Syyu
+    sudo pacman -Syyu >> "$LOG_FILE" 2>&1
+    log "${GREEN}:: Done.${NC}"
 fi
 
 # ==============================================================================
@@ -273,33 +274,8 @@ log "${GREEN}:: Default shell set to [$(which zsh)]${NC}"
 gsettings set org.gnome.desktop.interface gtk-theme "${GTK_THEME}"
 gsettings set org.gnome.desktop.interface color-scheme "${GTK_MODE}"
 
-mkdir -p "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
-
-cat << EOF > "$HOME/.config/gtk-4.0/settings.ini"
-[Settings]
-gtk-theme-name=${GTK_THEME}
-gtk-icon-theme-name=Adwaita
-gtk-font-name=Noto Sans 11
-gtk-cursor-theme-name=${XCURSOR_THEME}
-gtk-cursor-theme-size=24
-gtk-sound-theme-name=freedesktop
-gtk-error-bell=1
-gtk-application-prefer-dark-theme=$([[ "${GTK_MODE}" == "prefer-dark" ]] && echo 1 || echo 0)
-EOF
-
-cat << EOF > "$HOME/.config/gtk-3.0/settings.ini"
-[Settings]
-gtk-theme-name=${GTK_THEME}
-gtk-icon-theme-name=Adwaita
-gtk-font-name=Noto Sans 11
-gtk-cursor-theme-name=${XCURSOR_THEME}
-gtk-cursor-theme-size=24
-gtk-sound-theme-name=freedesktop
-gtk-error-bell=1
-gtk-application-prefer-dark-theme=$([[ "${GTK_MODE}" == "prefer-dark" ]] && echo 1 || echo 0)
-EOF
-
 log "${GREEN}:: GTK theme set to [${GTK_THEME}][${GTK_MODE}]${NC}"
+log "${GRAY}:: Skipped GTK setup...${NC}"
 
 # ==============================================================================
 # Execution: System configurations (Sometimes sudo)
@@ -318,22 +294,30 @@ log "${GREEN}:: Plymouth theme set to [${PLYMOUTH_THEME}]${NC}"
 echo ""
 log "${BLUE}Installation Completed Successfully${NC}"
 
+if confirm ":: Do you want to clean up redundant bash files?"; then
+	log "${YELLOW}:: Deleting all files starting with [.bash] from [${HOME}]${NC}"
+	rm $HOME/.bash*
+	log "${GREEN}Done.${NC}"
+fi
+
 if confirm ":: Do you want to setup Docker?"; then
     log "${YELLOW}:: Configuring Docker and Docker Compose...${NC}"
     install_pacman "docker" "docker-compose"
     getent group docker &>/dev/null || sudo groupadd docker
     sudo usermod -aG docker $USER
-    sudo systemctl enable --now docker.service
+    sudo systemctl enable --now docker.service >> "$LOG_FILE" 2>&1
     log "${GREEN}:: Done. You will need to reboot (or log out and back in).${NC}"
-    echo ""
 fi
 
 if confirm ":: Do you want to install Thunar (file manager)?"; then
     log "${YELLOW}:: Installing Thunar, Thunar Volume Manager and GVFS...${NC}"
     install_pacman "thunar" "thunar-volman" "gvfs"
     log "${GREEN}:: Done.${NC}"
-    echo ""
 fi
+ 
+echo ""
+log "${GRAY}Logs saved to ${LOG_FILE}.${NC}"
+log "${GRAY}Backups saved to ${BACKUP_DIR}.${NC}"
 
 if confirm ":: Do you want to reboot now?"; then
     echo ""

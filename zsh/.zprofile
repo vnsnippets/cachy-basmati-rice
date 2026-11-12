@@ -5,4 +5,4 @@ if [[ -z $WAYLAND_DISPLAY && $(tty) == /dev/tty1 ]]; then
 fi
 
 # GNOME Keyring
-# eval $(gnome-keyring-daemon --start)
+eval $(gnome-keyring-daemon --start)

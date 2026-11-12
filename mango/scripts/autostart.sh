@@ -7,4 +7,4 @@
 # swaybg -i "$HOME/Pictures/Wallpapers/wallhaven-4d38m0.jpg" -m fill &
 swaybg -i "$HOME/.config/mango/assets/gardens-interactive-statues.jpg" -m fill &
 
-QS_ICON_THEME="Adwaita" quickshell -p $HOME/.config/quickshell/Shell.qml &
+quickshell -p $HOME/.config/quickshell/Shell.qml &
