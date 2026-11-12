@@ -19,8 +19,6 @@ PanelWindow {
     id: container
 
     anchors.bottom: true
-    anchors.left: true
-    anchors.right: true
 
     focusable: false
     color: "transparent"
@@ -33,6 +31,7 @@ PanelWindow {
     WlrLayershell.namespace: Constants.namespace
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+    aboveWindows: true
 
     readonly property int _animationDuration: Constants.animation_duration
     readonly property int _padding: Constants.toast_offset / 2
