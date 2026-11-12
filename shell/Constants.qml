@@ -199,6 +199,7 @@ Singleton {
     readonly property real   network_threshold_critical:            0.25
 
     readonly property real   network_control_max_width:             160
+    readonly property bool   network_control_hide_ssid:             true
 
     readonly property color  network_color_background:              color_transparent
     readonly property color  network_color_border:                  color_surface

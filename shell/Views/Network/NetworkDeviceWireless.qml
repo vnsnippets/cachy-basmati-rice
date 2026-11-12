@@ -155,7 +155,11 @@ ColumnLayout {
                 onConnectedChanged: if (connected) pskInputOngoing = false;
 
                 property bool pskInputOngoing: false
-                onPskInputOngoingChanged: _NetworkItemPSKTextField.forceActiveFocus();
+                onPskInputOngoingChanged: {
+                    _NetworkItemPSKTextField.forceActiveFocus();
+                    if (pskInputOngoing) _ScanTimeout.stop();
+                    else _ScanTimeout.restart();
+                }
 
                 readonly property color accent:
                     (_NetworkItem.is_critical) ? Constants.network_color_critical :

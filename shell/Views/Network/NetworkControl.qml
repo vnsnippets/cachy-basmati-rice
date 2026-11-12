@@ -102,7 +102,7 @@ ClickableWithIcon {
     styles.text_color_active: Constants.network_color_ink_active
 
     font.family: Constants.font_family
-    text: datamap?.label ?? ""
+    text: Constants.network_control_hide_ssid ? "" : datamap?.label ?? ""
 
     radius: (active) ? Constants.radius_active : Constants.radius
     
