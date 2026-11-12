@@ -140,8 +140,8 @@ Singleton {
     readonly property color  battery_color_critical:                color_red
     readonly property color  battery_color_charging:                color_peach
 
-    readonly property color  battery_color_border:                  Qt.alpha(Constants.color_surface, 0.75)
-    readonly property color  battery_color_background:              Qt.alpha(Constants.color_surface, 0.25)
+    readonly property color  battery_color_border:                  Qt.alpha(color_surface, 0.75)
+    readonly property color  battery_color_background:              Qt.alpha(color_surface, 0.25)
     
     readonly property color  battery_color_ink_default:             color_text
     readonly property color  battery_color_ink_active:              color_base
@@ -158,8 +158,8 @@ Singleton {
     readonly property color  power_color_suspend:                   color_mauve
     readonly property color  power_color_logout:                    color_sapphire
 
-    readonly property color  power_color_background:                Qt.alpha(Constants.color_surface, 0.25)
-    readonly property color  power_color_border:                    Qt.alpha(Constants.color_surface, 0.75)
+    readonly property color  power_color_background:                Qt.alpha(color_surface, 0.25)
+    readonly property color  power_color_border:                    Qt.alpha(color_surface, 0.75)
 
     readonly property color  power_color_active:                    color_red
 
