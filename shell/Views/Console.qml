@@ -3,6 +3,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 
+import Quickshell
+
 import qs
 import qs.Layouts
 import qs.Utilities
@@ -18,6 +20,8 @@ import qs.Views.Applications
 
 StyledBox {
     id: root
+    required property ShellScreen screen
+
     property bool _ready: false
 
     readonly property int _gap: Constants.spacing / 1.5
@@ -228,7 +232,13 @@ StyledBox {
             DisplayControl {             
                 active: root.content === display_management
                 onClicked: root.navigate(display_management)
-                Component { id: display_management; DisplayManagement { implicitHeight: 400; } }
+                Component {
+                    id: display_management
+                    DisplayManagement {
+                        implicitHeight: 400
+                        screen: root.screen
+                    }
+                }
             }
             
             ClickableWithIcon {

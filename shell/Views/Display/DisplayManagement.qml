@@ -11,6 +11,8 @@ import qs.Components
 Item {
     id: root
 
+    required property ShellScreen screen
+
     property var monitors: []
     property var active_monitors: monitors.filter((e) => e.enabled !== false)
 
@@ -128,7 +130,7 @@ Item {
                 Rectangle {
                     anchors.fill: parent
 
-                    color: Qt.alpha(Constants.color_surface, (monitor.containsMouse) ? 1 : 0.5)
+                    color: Qt.alpha(Constants.color_surface, (monitor.containsMouse) ? 0.75 : 0.5)
                     border.color: (monitor.containsMouse) ? Constants.default_color_accent : Constants.color_base
                     border.width: 1
                     radius: Constants.radius / 2
@@ -142,7 +144,7 @@ Item {
 
                         StyledText {
                             text: `${monitor.name} : ${monitor.model}`.toUpperCase()
-                            color: Constants.color_text
+                            color: (root.screen.name === monitor.name) ? Constants.color_green : Constants.color_text
                             font.pixelSize: (root.zoomed) ? Constants.font_size / 1.5 : Constants.font_size
                             font.bold: true
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -154,6 +156,19 @@ Item {
                             font.pixelSize: (root.zoomed) ? Constants.font_size_sm / 1.5 : Constants.font_size_sm
                             anchors.horizontalCenter: parent.horizontalCenter
                         }                        
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.margins: Constants.spacing
+
+                        ClickableIcon {
+                            iconname: "Desktop-Mirror.svg"
+                            size: Constants.icon_size
+                            styles.icon_color_idle: Constants.color_subtext
+                            styles.icon_color_active: Constants.color_text
+                        }
                     }
                 }
             }
@@ -176,9 +191,7 @@ Item {
             styles.background_color_idle: Qt.alpha(Constants.color_surface, 0.5)
             styles.background_color_active: Qt.alpha(Constants.color_surface, 1)
 
-            onClicked: {
-                root.zoomed = !root.zoomed
-            }
+            onClicked: root.zoomed = !root.zoomed;
         }
     }
 

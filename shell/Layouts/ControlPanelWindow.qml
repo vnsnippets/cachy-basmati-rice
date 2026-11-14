@@ -48,6 +48,8 @@ PanelWindow {
         id: centerconsole
         anchors.centerIn: parent
         implicitWidth: Constants.console_width
+
+        screen: container.screen
         
         Keys.onEscapePressed: EventOrchestrator.consoleDismissContentEvent();
 
